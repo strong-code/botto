@@ -1,0 +1,26 @@
+{
+  "name": "botto",
+  "description": "An IRC bot written in node.js",
+  "version": "0.0.1",
+  "main": "botto.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "name": "Colin L.",
+    "url": "http://strongco.de"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/strong-code/botto.git"
+  },
+  "bugs": "https://github.com/strong-code/botto/issues",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "irc": "~0.4.0",
+    "log4js": "~0.6.0"
+  },
+  "engines": {
+    "node": ">=0.10.16"
+  }
+}

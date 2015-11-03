@@ -10,7 +10,6 @@ module.exports = function(opts) {
 
   var moduleName = opts.args[0];
 
-  // Search for the module in the cache
   try {
     console.log("Attempting to reload " + moduleName);
 
