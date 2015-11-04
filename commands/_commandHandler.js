@@ -29,17 +29,17 @@ var reload = require("./_reload.js");
      if (fs.existsSync('./commands/' + opts.command + '.js')) {
        var output = require('./' + opts.command)(opts);
        if (output) {
-         bot.say(sendTo, output);
+         bot.say(receiver, output);
        }
      }
    }
 
    privateCommands.reload = function(opts) {
-     bot.say(sendTo, reload(opts))
+     bot.say(receiver, reload(opts))
    }
 
    if (text && text[0] == '!') {
-     var sendTo = to;
+     var receiver = to;
 
      if (typeof privateCommands[opts.command] === 'function') {
        privateCommands[opts.command](opts);

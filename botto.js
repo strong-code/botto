@@ -1,7 +1,8 @@
-var config = require('./config').config
+var config = require('./config.js').core;
 var fs = require('fs');
 var irc = require('irc');
 var commandHandler = require('./commands/_commandHandler.js');
+var observerHandler = require('./observers/_observerHandler.js')
 
 /*
  * Initiate the bot and the observers
@@ -18,13 +19,9 @@ bot.addListener("message", function(from, to, text, msg) {
 		console.log("[" + to + "] " + from + ": " + text);
 	}
 
-	// Handle commands starting with a !bang to the handler
+	// Delegate explicit commands starting with a !bang to the handler
 	commandHandler(bot, from, to, text, msg);
 
-	// Handle observables (keywords, mentions, etc) to the handler
-
-});
-
-bot.addListener("join", function(chan, who) {
-  bot.say(chan, "welcome back " + who);
+	// Delegate observables (keywords, mentions, etc) to the handler
+	observerHandler(bot, from, to, text, msg);
 });

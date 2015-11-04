@@ -1,7 +1,15 @@
-// var config = require("../config.js");
+var admins = require("../config.js").admin;
 
+/*
+ * All commands should export a single function which acts as a routing layer
+ * for calling the appropriate, non-exported function.
+ */
 module.exports = function (opts) {
-  return isAdmin(opts.args[0], opts.to);
+  if (opts.args.length == 0 || opts.to[0] != '#') {
+    return
+  } else {
+    return isAdmin(opts.args[0], opts.to);
+  }
 };
 
 /*
@@ -11,5 +19,7 @@ module.exports = function (opts) {
  * !admin user123
  */
 function isAdmin(nick, channel) {
-  return "Given " + nick + " in " + channel;
+  if (admins[channel]) {
+    return admins[channel].indexOf(nick) > -1;
+  }
 }

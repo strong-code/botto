@@ -1,4 +1,4 @@
-var config = {
+exports.core = {
 	channels: ["#channel"],
 	server: "server.address.here",
 	botName: "ABotName",
@@ -6,4 +6,6 @@ var config = {
   debug: false
 };
 
-exports.config = config
+exports.admin = {
+	"#channel": ["AdminUsername"]
+}
