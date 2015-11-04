@@ -13,7 +13,6 @@ var reload = require("./_reload.js");
    var privateCommands = {}
 
    var opts = {
-     bot: bot,
      from: from,
      to: to,
      command: String(text.split(' ')[0]).replace('!', '').trim(),

@@ -11,7 +11,6 @@ var fs = require('fs');
  module.exports = function(bot, from, to, text, message) {
 
    var opts = {
-     bot: bot,
      from: from,
      to: to,
      text: text,
