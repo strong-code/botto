@@ -1,16 +1,16 @@
 var needle = require('needle');
 var cheerio = require('cheerio');
 
-module.exports = function(opts, cb) {
+module.exports = function(opts, respond) {
 
   var match = opts.text.match(regex)[0];
 
   if (match) {
     needle.get(match, options, function(err, response) {
       if (err) {
-        cb(err.message);
+        respond(err.message);
       } else {
-        cb("[URL] " + parseTitle(response.body));
+        respond("[URL] " + parseTitle(response.body));
       }
     });
   }
