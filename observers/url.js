@@ -3,10 +3,10 @@ var cheerio = require('cheerio');
 
 module.exports = function(opts, respond) {
 
-  var match = opts.text.match(regex)[0];
+  var match = opts.text.match(regex);
 
-  if (match) {
-    needle.get(match, options, function(err, response) {
+  if (match[0]) {
+    needle.get(match[0], options, function(err, response) {
       if (err) {
         respond(err.message);
       } else {
