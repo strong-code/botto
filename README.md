@@ -6,9 +6,13 @@ A social IRC bot built on node.js
 
 1. Clone this repo
 
-2. Edit `config.js` according to `example.config.js` in the root directory
+2. `cd botto`, then `npm install`. *Note* if you are on OSX Mavericks or later,
+you will have to `brew install icu4k`, then `brew link icu4k`. Or simply run
+`npm install --no-optional` as this is not a required dependency.
 
-3. Launch your botto with `node botto.js`
+3. Edit `config.js` according to `example.config.js` in the root directory
+
+4. Launch your botto with `node botto.js`
 
 # Design
 
