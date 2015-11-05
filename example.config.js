@@ -8,11 +8,13 @@ exports.core = {
 
 exports.admin = {
 	"#channel": ["AdminUsername"]
-}
+};
 
 // Holy shit why does this library use snake_case for variable names
 exports.twitter = {
 	consumer_key: "",
 	consumer_secret: "",
-	app_only_auth: true
-}
+	access_token: "",
+	access_token_secret: "",
+	app_only_auth: false
+};

@@ -14,7 +14,6 @@ var client = new Twitter(config);
 function latestTweetsFromUser(user, numTweets, respond) {
   numTweets = typeof numTweets !== 'undefined' ? numTweets : 1;
 
-
   if (typeof user == 'undefined') {
     respond("No username supplied. Syntax is !twitter <username> <[optional] number of tweets>");
   }
@@ -23,10 +22,11 @@ function latestTweetsFromUser(user, numTweets, respond) {
 
   client.get('statuses/user_timeline', { options }, function(err, data, response) {
     if (err) {
-      return(respond("[" + response.statusCode + "] " + err.message));
+      console.log(err);
+      respond("[" + response.statusCode + "] " + err.message);
+    } else {
+      var tweet = data[0]["text"].replace(/[\r\n]/g, " ");
+      respond(tweet);
     }
-
-    console.log(response);
-
   });
 }
