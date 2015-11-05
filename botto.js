@@ -25,3 +25,13 @@ bot.addListener("message", function(from, to, text, msg) {
 	// Delegate observables (keywords, mentions, etc) to the handler
 	observerHandler(bot, from, to, text, msg);
 });
+
+if (config.debug) {
+	bot.addListener("message", function(from, to, text, message) {
+		console.log("[" + to + "] " + from + ": " + text);
+	});
+
+	bot.addListener("error", function(error) {
+		console.log("[ERROR] ", error);
+	});
+}
