@@ -27,20 +27,36 @@ var admins = require("../config.js").admin;
    }
 
    privateCommands.reload = function(opts) {
-     bot.say(receiver, _reload(opts))
+     if (!isAdmin(opts)) {
+       bot.say(receiver, "Admin-only command.");
+     } else {
+       bot.say(receiver, _reload(opts))
+     }
    }
 
    if (text && text[0] == '!') {
      var opts = makeOptions(bot, from, to, text, message);
      var receiver = to;
 
-     if (typeof privateCommands[opts.command] === 'function') {
+     // All underscore-prefaced modules are considered admin-only.
+     if (opts.command[0] == '_' && !isAdmin(opts)) {
+       bot.say(receiver, "Admin-only command.");
+     } else if (typeof privateCommands[opts.command] === 'function') {
        privateCommands[opts.command](opts);
      } else {
        publicCommands(opts);
      }
    }
  };
+
+ function isAdmin(opts) {
+   var channel = opts.to;
+   var nick = opts.from;
+
+   if (admins[channel]) {
+     return admins[channel].indexOf(nick) > -1;
+   }
+ }
 
 // Helper function to stuff params into an `opts` hash
  function makeOptions(bot, from, to, text, message) {

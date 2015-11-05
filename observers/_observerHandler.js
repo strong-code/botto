@@ -27,11 +27,16 @@ var fs = require('fs');
        receiver = opts.to;
      }
 
-     // Check our observers for anything that may trigger a response
-     fs.readdirSync('./observers/').forEach(function (file) {
-       require('../observers/'+file)(opts, function(result) {
-         bot.say(receiver, result);
+     // All underscore-prefaced modules are considered admin-only.
+     if (opts.command[0] == '_' && !isAdmin(opts)) {
+       bot.say(receiver, "Admin-only command.");
+     } else {
+       // Check our observers for anything that may trigger a response
+       fs.readdirSync('./observers/').forEach(function (file) {
+         require('../observers/'+file)(opts, function(result) {
+           bot.say(receiver, result);
+         });
        });
-     });
+     }
    }
  }
