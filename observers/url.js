@@ -5,7 +5,7 @@ module.exports = function(opts, respond) {
 
   var match = opts.text.match(regex);
 
-  if (match[0]) {
+  if (match) {
     needle.get(match[0], options, function(err, response) {
       if (err) {
         respond(err.message);
