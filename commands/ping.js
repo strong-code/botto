@@ -3,6 +3,6 @@
  * highlighted for testing or to check connection latency.
  */
 
-module.exports = function(opts) {
-  return opts.from + ": PONG";
+module.exports = function(opts, respond) {
+  respond(opts.from + ": PONG");
 }

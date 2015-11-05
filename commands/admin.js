@@ -6,11 +6,11 @@ var admins = require("../config.js").admin;
  *
  * !admin user123
  */
-module.exports = function (opts) {
+module.exports = function (opts, respond) {
   var channel = opts.to;
   var nick = opts.args[0];
 
   if (admins[channel]) {
-    return admins[channel].indexOf(nick) > -1;
+    respond(admins[channel].indexOf(nick) > -1);
   }
 };

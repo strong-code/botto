@@ -25,7 +25,7 @@ module.exports = function(opts) {
   } catch (e) {
     console.log("Error while attempting to reload " + moduleName);
     console.log(e);
-    return e;
+    return e.message;
   }
 
 };

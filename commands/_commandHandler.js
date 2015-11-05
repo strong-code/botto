@@ -19,10 +19,9 @@ var admins = require("../config.js").admin;
     */
    function publicCommands(opts) {
      if (fs.existsSync('./commands/' + opts.command + '.js')) {
-       var output = require('./' + opts.command)(opts);
-       if (output) {
-         bot.say(receiver, output);
-       }
+       require('./' + opts.command)(opts, function(response) {
+         bot.say(receiver, response);
+       });
      }
    }
 
