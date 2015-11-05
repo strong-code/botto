@@ -1,5 +1,5 @@
 var fs = require("fs");
-var reload = require("./_reload.js");
+var _reload = require("./_reload.js");
 
 /*
  * Command handler responsible for routing commands. These include admin only
@@ -34,7 +34,7 @@ var reload = require("./_reload.js");
    }
 
    privateCommands.reload = function(opts) {
-     bot.say(receiver, reload(opts))
+     bot.say(receiver, _reload(opts))
    }
 
    if (text && text[0] == '!') {

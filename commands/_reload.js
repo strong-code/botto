@@ -18,7 +18,7 @@ module.exports = function(opts) {
     } else if (fs.existsSync('./commands/'+moduleName+'.js')) {
       delete require.cache[require.resolve('../commands/'+moduleName)];
     } else {
-      return "Module: " + moduleName + " not found";
+      return "Module \'" + moduleName + "\' not found";
     }
 
     return "Reloaded " + moduleName;
