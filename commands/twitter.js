@@ -17,7 +17,7 @@ function tweetByUser(user, index, respond) {
     return;
   }
 
-  var options = { screen_name: user, index: getOffset(index), trim_user: true };
+  var options = { screen_name: user, offset: getOffset(index), trim_user: true };
 
   client.get('statuses/user_timeline', options, function(err, data, response) {
     if (err) {
@@ -25,7 +25,7 @@ function tweetByUser(user, index, respond) {
       respond("[" + response.statusCode + "] " + err.message);
     } else {
       try {
-        respond("[@" + options.screen_name + "] " + data[options.index]["text"].replace(/[\r\n]/g, " "));
+        respond("[@" + options.screen_name + "] " + data[options.offset]["text"].replace(/[\r\n]/g, " "));
       } catch (e) {
         console.log(e);
         respond("Error fetching tweets for @" + options.screen_name + "...");
@@ -40,7 +40,7 @@ function tweetByUser(user, index, respond) {
  */
 function getOffset(index) {
   if (index == 'random') {
-    return Math.floor(Math.random() * 100 + 0);
+    return Math.floor(Math.random() * 100 + 1);
   } else {
     return typeof index !== 'undefined' ? index : 0;
   }
