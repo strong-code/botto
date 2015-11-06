@@ -40,7 +40,7 @@ function tweetByUser(user, index, respond) {
  */
 function getOffset(index) {
   if (index == 'random') {
-    return Math.floor(Math.random() * 100 + 1);
+    return Math.floor(Math.random() * 20 + 0);
   } else {
     return typeof index !== 'undefined' ? index : 0;
   }
