@@ -12,30 +12,36 @@ module.exports = function(opts, respond) {
 var client = new Twitter(config);
 
 function tweetByUser(user, index, respond) {
-  if (index == 'random') {
-    index = Math.floor(Math.random() * 100 + 1);
-  } else {
-    index = typeof index !== 'undefined' ? index : 1;
-  }
-
-  if (typeof user == 'undefined') {
+  if (user == '') {
     respond("No username supplied. Syntax is !twitter <username> <[optional] number of tweets>");
+    return;
   }
 
-  var options = { screen_name: user, count: index, trim_user: true };
+  var options = { screen_name: user, index: getOffset(index), trim_user: true };
 
   client.get('statuses/user_timeline', options, function(err, data, response) {
     if (err) {
       console.log(err);
       respond("[" + response.statusCode + "] " + err.message);
     } else {
-      var bound = Math.floor(Math.random() * data.length + 1);
       try {
-        var tweet = "[@" + options.screen_name + "] " + data[bound]["text"].replace(/[\r\n]/g, " ");
-        respond(tweet);
+        respond("[@" + options.screen_name + "] " + data[options.index]["text"].replace(/[\r\n]/g, " "));
       } catch (e) {
+        console.log(e);
         respond("Error fetching tweets for @" + options.screen_name + "...");
       }
     }
   });
+}
+
+/*
+ * If second arg is an integer, attempt to retrieve that many tweets. If it is 'random'
+ * then retrieve 100 latest tweets and select at random.
+ */
+function getOffset(index) {
+  if (index == 'random') {
+    return Math.floor(Math.random() * 100 + 0);
+  } else {
+    return typeof index !== 'undefined' ? index : 0;
+  }
 }
