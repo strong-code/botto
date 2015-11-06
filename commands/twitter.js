@@ -5,28 +5,37 @@ module.exports = function(opts, respond) {
   if (opts.args[0] == 'search') {
      respond("search!");
   } else {
-    latestTweetsFromUser(opts.args[0], opts.args[1], respond);
+    tweetByUser(opts.args[0], opts.args[1], respond);
   }
 };
 
 var client = new Twitter(config);
 
-function latestTweetsFromUser(user, numTweets, respond) {
-  numTweets = typeof numTweets !== 'undefined' ? numTweets : 1;
+function tweetByUser(user, index, respond) {
+  if (index == 'random') {
+    index = Math.floor(Math.random() * 100 + 1);
+  } else {
+    index = typeof index !== 'undefined' ? index : 1;
+  }
 
   if (typeof user == 'undefined') {
     respond("No username supplied. Syntax is !twitter <username> <[optional] number of tweets>");
   }
 
-  var options = { screen_name: user, count: numTweets, trim_user: true };
+  var options = { screen_name: user, count: index, trim_user: true };
 
-  client.get('statuses/user_timeline', { options }, function(err, data, response) {
+  client.get('statuses/user_timeline', options, function(err, data, response) {
     if (err) {
       console.log(err);
       respond("[" + response.statusCode + "] " + err.message);
     } else {
-      var tweet = data[0]["text"].replace(/[\r\n]/g, " ");
-      respond(tweet);
+      var bound = Math.floor(Math.random() * data.length + 1);
+      try {
+        var tweet = "[@" + options.screen_name + "] " + data[bound]["text"].replace(/[\r\n]/g, " ");
+        respond(tweet);
+      } catch (e) {
+        respond("Error fetching tweets for @" + options.screen_name + "...");
+      }
     }
   });
 }
