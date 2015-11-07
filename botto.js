@@ -14,11 +14,6 @@ var bot = new irc.Client(config.server, config.botName, {
 // Register all our message listeners (either observers or commands)
 bot.addListener("message", function(from, to, text, msg) {
 
-	// Log to stdout if we have debugging enabled
-	if (config.debug) {
-		console.log("[" + to + "] " + from + ": " + text);
-	}
-
 	// Delegate explicit commands starting with a !bang to the handler
 	commandHandler(bot, from, to, text, msg);
 
