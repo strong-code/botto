@@ -1,5 +1,5 @@
 var fs = require("fs");
-var _reload = require("./_reload.js");
+var _reload = require("../core/_reload.js");
 var admins = require("../config.js").admin;
 
 /*
