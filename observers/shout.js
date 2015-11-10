@@ -20,7 +20,9 @@ module.exports = function(opts, respond) {
   // Retrieve a random all-upcase quote from the `shouts` table
   function getShout(respond) {
     db.executeQuery('SELECT * FROM shouts ORDER BY RANDOM() LIMIT 1', function(result) {
-      respond(result.rows[0]['message']);
+      if (result.row && result.row[0]) {
+        respond(result.rows[0]['message']);
+      }
     });
   }
 
