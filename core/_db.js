@@ -2,6 +2,7 @@ var pg = require('pg');
 
 module.exports = {
 
+  // Execute a supplied string query or prepared statement and return result in callback
   executeQuery: function(queryString, cb) {
     var client = new pg.Client(dbUrl);
 
@@ -17,16 +18,6 @@ module.exports = {
         client.end();
       });
     });
-    // var client = new pg.Client(dbUrl);
-    // client.on('drain', client.end.bind(client));
-    // client.connect();
-    // client.query(queryString, function(err, result) {
-    //   if (err) {
-    //     return console.error('Error while executing query', err);
-    //   } else if (cb) {
-    //     cb(result);
-    //   }
-    // });
   }
 };
 

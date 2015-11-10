@@ -2,7 +2,8 @@ var db = require('../core/_db.js');
 
 module.exports = function(opts, respond) {
 
-  if (opts.text == opts.text.toUpperCase()) {
+  // Store only all uppercase quotes longer than 3 chars
+  if (opts.text.length > 3 && opts.text == opts.text.toUpperCase()) {
     storeShout(opts);
     getShout(respond);
   }
@@ -20,7 +21,7 @@ module.exports = function(opts, respond) {
   // Retrieve a random all-upcase quote from the `shouts` table
   function getShout(respond) {
     db.executeQuery('SELECT * FROM shouts ORDER BY RANDOM() LIMIT 1', function(result) {
-      if (result.row && result.row[0]) {
+      if (result.rows && result.rows[0]) {
         respond(result.rows[0]['message']);
       }
     });
