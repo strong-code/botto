@@ -1,24 +1,36 @@
 var pg = require('pg');
 
 module.exports = {
-  executeQuery: function(query, cb) {
+
+  executeQuery: function(queryString, cb) {
+    var client = new pg.Client(dbUrl);
+
     client.connect(function(err) {
       if (err) {
-        return cb(err);
+        return console.error('Error connecting to postgres', err);
       }
-      client.query(query, function(err, result) {
+      client.query(queryString, function(err, result) {
         if (err) {
-          return cb(err);
+          return console.log('Error executing query', err);
         }
         cb(result);
         client.end();
       });
     });
+    // var client = new pg.Client(dbUrl);
+    // client.on('drain', client.end.bind(client));
+    // client.connect();
+    // client.query(queryString, function(err, result) {
+    //   if (err) {
+    //     return console.error('Error while executing query', err);
+    //   } else if (cb) {
+    //     cb(result);
+    //   }
+    // });
   }
 };
 
 var dbUrl = process.env.DATABSE_URL || 'postgres://localhost:5432/botto';
-var client = new pg.Client(dbUrl);
 
 /*
  * This is intended to be a private command that can be used to set up the
