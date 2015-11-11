@@ -37,10 +37,7 @@ var admins = require("../config.js").admin;
      var opts = makeOptions(bot, from, to, text, message);
      var receiver = to;
 
-     // All underscore-prefaced modules are considered admin-only.
-     if (opts.command[0] == '_' && !isAdmin(opts)) {
-       bot.say(receiver, "Admin-only command.");
-     } else if (typeof privateCommands[opts.command] === 'function') {
+     if (typeof privateCommands[opts.command] === 'function') {
        privateCommands[opts.command](opts);
      } else {
        publicCommands(opts);

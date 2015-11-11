@@ -16,13 +16,13 @@ module.exports = function (opts, respond) {
     respond(admins[channel].indexOf(nick) > -1);
   }
 
-};
-
-// List all admins for a specified channel
-function listAdmins(channel) {
-  if (admins[channel]) {
-    return "Admins for " + channel + ": " + admins[channel].join(', ');
-  } else {
-    return "No administrators specified for " + channel;
+  // List all admins for a specified channel
+  function listAdmins(channel) {
+    if (admins[channel]) {
+      return "Admins for " + channel + ": " + admins[channel].join(', ');
+    } else {
+      return "No administrators specified for " + channel;
+    }
   }
-}
+
+};
