@@ -9,16 +9,16 @@ module.exports = {
     }
 
     if (opts.args[0] == 'add') {
-      module.exports.ignoreUser(opts.args[1], opts.from, respond);
+      module.exports.ignoreUser(opts.args[1], opts.from, opts.to, respond);
     } else if (opts.args[0] == 'del') {
       module.exports.unignoreUser(opts.args[1], respond);
     } else if (opts.args[0] == 'check') {
-      module.exports.isIgnored(opts.args[1], respond);
+      module.exports.isIgnored(opts.args[1], opts.to, respond);
     }
   },
 
-  ignoreUser: function(user, requester, respond) {
-    if (!admin.isAdmin(requester)) {
+  ignoreUser: function(user, requester, channel, respond) {
+    if (!admin.isAdmin(requester, channel)) {
       return;
     }
 
@@ -30,8 +30,8 @@ module.exports = {
     });
   },
 
-  unignoreUser: function(user, respond) {
-    if (!admin.isAdmin(requester)) {
+  unignoreUser: function(user, channel, respond) {
+    if (!admin.isAdmin(requester, channel)) {
       return;
     }
 
