@@ -1,17 +1,20 @@
 var Twitter = require('twit');
 var config = require('../config.js').twitter;
+var client = new Twitter(config);
 
-module.exports = function(opts, respond) {
+module.exports = {
 
-  var client = new Twitter(config);
+  call: function(opts, respond) {
+    module.exports.tweetByUser(opts.args[0], opts.args[1], respond);
+  },
 
-  function tweetByUser(user, index, respond) {
+  tweetByUser: function(user, index, respond) {
     if (user == '') {
-      respond("No username supplied. Syntax is !twitter <username> <[optional] number of tweets>");
+      respond("No username supplied. Syntax is !twitter <username> <[optional] number of tweet>");
       return;
     }
 
-    var options = { screen_name: user, offset: getOffset(index), trim_user: true };
+    var options = { screen_name: user, offset: module.exports.getOffset(index), trim_user: true };
 
     client.get('statuses/user_timeline', options, function(err, data, response) {
       if (err) {
@@ -26,20 +29,18 @@ module.exports = function(opts, respond) {
         }
       }
     });
-  }
+  },
 
   /*
    * If second arg is an integer, attempt to retrieve that many tweets. If it is 'random'
    * then retrieve 100 latest tweets and select at random.
    */
-  function getOffset(index) {
+  getOffset: function(index) {
     if (index == 'random') {
       return Math.floor(Math.random() * 20 + 0);
     } else {
       return typeof index !== 'undefined' ? index : 0;
     }
   }
-
-  tweetByUser(opts.args[0], opts.args[1], respond);
 
 };

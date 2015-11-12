@@ -32,6 +32,10 @@ var options = {
 
 // Extract title from the supplied HTML string
 function parseTitle(html) {
-  var $ = cheerio.load(html);
-  return $('title').text().trim();
+  try {
+    var $ = cheerio.load(html);
+    return $('title').text().trim();
+  } catch (e) {
+    console.error(e);
+  }
 }

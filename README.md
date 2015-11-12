@@ -30,11 +30,24 @@ message, etc). For an better understanding, check out the [observerHandler class
 
 ### Commands
 Commands are explicit commands that start with the !bang syntax and are all listed
-under the [commands](./commands) directory. Command modules prefixed with an `_`
-underscore are considered "internal" commands and are not exposed to non-admin users.
+under the [commands](./commands) directory. Commands must follow the convention of
+module name == command name. In other words, if your command trigger is
+`!foo [args]`, your command module must be named `foo.js`.
 
-Commands must follow the convention of module name == command name. In other words,
-if your command trigger is `!foo [args]`, your command module must be named `foo.js`.
+**Note**: By convention, all commands must export a function like such:
+
+```
+module.exports = {
+  call: function(opts, respond) {
+    // routing logic to other functions here
+  }
+}
+```
+
+Where `opts` is the options hash created in the handler and `respond` is a callback
+to be fired with the string you wish the bot to echo to the receiver. This `call`
+method should be used to parse the incoming message and delegate to the appropriate
+helper functions (which should be exported in the same module).
 
 ### Observers
 Observers are triggered when an observable event happens (a keyword or nickname is

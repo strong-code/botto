@@ -1,6 +1,6 @@
 var fs = require("fs");
 var _reload = require("../core/_reload.js");
-var admins = require("../config.js").admin;
+var admin = require("../core/admin.js");
 
 /*
  * Command handler responsible for routing commands. These include admin only
@@ -19,15 +19,15 @@ var admins = require("../config.js").admin;
     */
    function publicCommands(opts) {
      if (fs.existsSync('./commands/' + opts.command + '.js')) {
-       require('./' + opts.command)(opts, function(response) {
+       require('./' + opts.command).call(opts, function(response) {
          bot.say(receiver, response);
        });
      }
    }
 
    privateCommands.reload = function(opts) {
-     if (!isAdmin(opts)) {
-       bot.say(receiver, "Admin-only command.");
+     if (!admin.isAdmin(opts.from, opts.to)) {
+       return;
      } else {
        bot.say(receiver, _reload(opts))
      }
@@ -44,15 +44,6 @@ var admins = require("../config.js").admin;
      }
    }
  };
-
- function isAdmin(opts) {
-   var channel = opts.to;
-   var nick = opts.from;
-
-   if (admins[channel]) {
-     return admins[channel].indexOf(nick) > -1;
-   }
- }
 
 // Helper function to stuff params into an `opts` hash
  function makeOptions(bot, from, to, text, message) {

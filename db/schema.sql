@@ -30,3 +30,11 @@ CREATE TABLE IF NOT EXISTS replies (
   enabled BOOLEAN DEFAULT TRUE,
   date_added DATE NOT NULL
 );
+
+-- Definition for ingored_users table
+CREATE TABLE IF NOT EXISTS ignored_users (
+  id SERIAL UNIQUE PRIMARY KEY,
+  nick VARCHAR(55) NOT NULL,
+  banned_by VARCHAR(55) NOT NULL,
+  date_added DATE NOT NULL
+);
