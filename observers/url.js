@@ -6,10 +6,17 @@ module.exports = function(opts, respond) {
   var match = opts.text.match(regex);
 
   if (match) {
-    needle.get(match[0].trim(), options, function(err, response) {
+    var url = match[0].trim();
+
+    if (url.slice(-3) == 'jpg' || url.slice(-3) == 'png') {
+      return;
+    }
+
+    needle.get(url, options, function(err, response) {
       if (err) {
         respond(err.message);
       } else {
+        console.log(respond);
         respond("[URL] " + parseTitle(response.body));
       }
     });
