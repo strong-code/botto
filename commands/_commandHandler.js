@@ -1,7 +1,7 @@
 var fs = require("fs");
-var _reload = require("../core/_reload.js");
+var reload = require("../core/reload.js");
 var admin = require("../core/admin.js");
-
+var irc = require("../core/irc.js");
 /*
  * Command handler responsible for routing commands. These include admin only
  * commands as well as any-user commands. Admin/internal functionality is denoted
@@ -26,11 +26,11 @@ var admin = require("../core/admin.js");
    }
 
    privateCommands.reload = function(opts) {
-     if (!admin.isAdmin(opts.from, opts.to)) {
-       return;
-     } else {
-       bot.say(receiver, _reload(opts))
-     }
+     bot.say(receiver, reload.call(opts));
+   }
+
+   privateCommands.irc = function(opts) {
+     bot.say(receiver, irc.call(opts));
    }
 
    if (text && text[0] == '!') {
@@ -38,7 +38,9 @@ var admin = require("../core/admin.js");
      var receiver = to;
 
      if (typeof privateCommands[opts.command] === 'function') {
-       privateCommands[opts.command](opts);
+       if (admin.isAdmin(opts.from, opts.to)) {
+        privateCommands[opts.command](opts);
+       }
      } else {
        publicCommands(opts);
      }
