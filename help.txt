@@ -1,0 +1,40 @@
+Botto Usage Instructions
+
+------------------------
+Commands
+------------------------
+!google <query>
+Get the top Google search result
+
+!ping
+Respond with "PONG $NICKNAME" to you
+
+!twitter <username> < number | random >
+number: Respond with the specified tweet for that user.
+random: Respond with a random tweet for that user.
+
+------------------------
+Observers
+------------------------
+URL: Any URL posted in the channel will have its page title echoed back
+
+SHOUT: Any all-uppercase string over 3 characters will be responded to with a
+random shout quote, as well as store that shout in the database for future use.
+Duplicates are ignored.
+
+------------------------
+ADMIN COMMANDS
+------------------------
+
+!ignore < add | del | check > <usename>
+del: Add a user to the ignored users table. Their commands will be ignored by the bot.
+add: Remove a user from the ignored users table. They can interact with the bot again.
+chec: Check if a user is currently banned.
+
+!reload <module>
+Attempt to reload the specified module from disk, pulling in any code changes.
+
+!irc < join | part | say> <args>
+join: join a specified #channel
+part: leave a specified #channel
+say: say <args> to the specified target (!irc say user123 hey man :))
