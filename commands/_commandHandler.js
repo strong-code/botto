@@ -11,7 +11,16 @@ var irc = require("../core/irc.js");
 
  module.exports = function(bot, from, to, text, message) {
 
+   // A cache for all our "private" commands (bot-admin or internal use only)
    var privateCommands = {}
+
+   privateCommands.reload = function(bot, opts) {
+    reload.call(bot, opts);
+   }
+
+   privateCommands.irc = function(bot, opts) {
+     irc.call(bot, opts);
+   }
 
    /*
     * Dynamically require and look up our triggers/commands, allowing for
@@ -25,21 +34,13 @@ var irc = require("../core/irc.js");
      }
    }
 
-   privateCommands.reload = function(opts) {
-     bot.say(receiver, reload.call(opts));
-   }
-
-   privateCommands.irc = function(opts) {
-     bot.say(receiver, irc.call(opts));
-   }
-
    if (text && text[0] == '!') {
      var opts = makeOptions(bot, from, to, text, message);
      var receiver = to;
 
      if (typeof privateCommands[opts.command] === 'function') {
        if (admin.isAdmin(opts.from, opts.to)) {
-        privateCommands[opts.command](opts);
+        privateCommands[opts.command](bot, opts);
        }
      } else {
        publicCommands(opts);

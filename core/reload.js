@@ -7,7 +7,7 @@ var fs = require('fs');
  */
 module.exports = {
 
-  call: function(opts) {
+  call: function(bot, opts) {
 
     var moduleName = opts.args[0];
 
@@ -17,14 +17,14 @@ module.exports = {
       } else if (fs.existsSync('./commands/'+moduleName+'.js')) {
         delete require.cache[require.resolve('../commands/'+moduleName)];
       } else {
-        return "Module \'" + moduleName + "\' not found";
+        bot.say(opts.to, "Module \'" + moduleName + "\' not found");
       }
 
-      return "Reloaded " + moduleName;
+      bot.say(opts.to, "Reloaded " + moduleName);
     } catch (e) {
       console.error("Error while attempting to reload " + moduleName);
       console.error(e);
-      return e.message;
+      bot.say(opts.to, e.message);
     }
   }
 };
