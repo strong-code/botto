@@ -29,7 +29,7 @@ var fs = require('fs');
 
      // Check our observers for anything that may trigger a response
      fs.readdirSync('./observers/').forEach(function(file) {
-       require('../observers/'+file)(opts, function(response) {
+       require('../observers/'+file).call(opts, function(response) {
          bot.say(receiver, response);
        });
      });

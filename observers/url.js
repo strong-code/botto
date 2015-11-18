@@ -1,31 +1,47 @@
 var needle = require('needle');
 var cheerio = require('cheerio');
 
-module.exports = function(opts, respond) {
+module.exports = {
 
-  var match = opts.text.match(regex);
+  call: function(opts, respond) {
+    var match = opts.text.match(regex);
 
-  if (match) {
-    var url = match[0].trim();
+    if (match) {
+      var url = match[0].trim();
 
-    if (url.slice(-3) == 'jpg' || url.slice(-3) == 'png') {
-      return;
+      if (isImage(url)) {
+        return;
+      } else {
+        module.exports.parsePage(url, opts, respond);
+      }
     }
+  },
 
+  isImage: function(url) {
+    if (url.slice(-3) == 'jpg' || url.slice(-3) == 'png' || url.slice(-3) == 'gif') {
+      return true;
+    }
+    return false;
+  },
+
+  parsePage: function(url, opts, respond) {
     needle.get(url, options, function(err, response) {
       if (err) {
         respond(err.message);
       } else {
-        console.log(respond);
-        respond("[URL] " + parseTitle(response.body));
+        respond("[URL] " + module.exports.parseTitle(response.body));
       }
     });
-  }
+  },
 
+  parseTitle: function(html) {
+    var $ = cheerio.load(html);
+    return $('title').text().trim();
+  }
 };
 
 // Regex to find all URLs. Works with/without HTTP(S) and even without a TLD.
-var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+var expression = /[-a-zA-Z@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
 var regex = new RegExp(expression);
 
 // HTTP client options
@@ -36,13 +52,3 @@ var options = {
       'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1677.0 Safari/537.36"
     }
   }
-
-// Extract title from the supplied HTML string
-function parseTitle(html) {
-  try {
-    var $ = cheerio.load(html);
-    return $('title').text().trim();
-  } catch (e) {
-    console.error(e);
-  }
-}
