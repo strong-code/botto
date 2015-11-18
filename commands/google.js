@@ -5,9 +5,7 @@ var admins = require ('../core/admin.js');
 module.exports = {
 
   call: function(opts, respond) {
-    if (!admins.isAdmin(opts.from, opts.to)) {
-      return;
-    } else if (opts.args.length < 1) {
+    if (opts.args[0] == '') {
       respond("Usage is !google <query>");
     } else {
       query = opts.args.join('+');

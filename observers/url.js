@@ -27,7 +27,7 @@ module.exports = {
   parsePage: function(url, opts, respond) {
     needle.get(url, options, function(err, response) {
       if (err) {
-        respond(err.message);
+        return console.log(err);
       } else {
         respond("[URL] " + module.exports.parseTitle(response.body));
       }
