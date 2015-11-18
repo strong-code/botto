@@ -9,7 +9,7 @@ module.exports = {
     if (match) {
       var url = match[0].trim();
 
-      if (isImage(url)) {
+      if (module.exports.isImage(url)) {
         return;
       } else {
         module.exports.parsePage(url, opts, respond);

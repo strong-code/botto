@@ -14,11 +14,15 @@ var bot = new irc.Client(config.server, config.botName, {
 // Register all our message listeners (either observers or commands)
 bot.addListener("message", function(from, to, text, msg) {
 
-	// Delegate explicit commands starting with a !bang to the handler
-	commandHandler(bot, from, to, text, msg);
+  try {
+    // Delegate explicit commands starting with a !bang to the handler
+  	commandHandler(bot, from, to, text, msg);
+  	// Delegate observables (keywords, mentions, etc) to the handler
+  	observerHandler(bot, from, to, text, msg);
+  } catch (e) {
+    console.error(e);
+  }
 
-	// Delegate observables (keywords, mentions, etc) to the handler
-	observerHandler(bot, from, to, text, msg);
 });
 
 if (config.debug) {
