@@ -36,7 +36,7 @@ module.exports = {
 
   parseTitle: function(html) {
     var $ = cheerio.load(html);
-    return $('title').text().trim();
+    return $('head > title').text();
   }
 };
 
