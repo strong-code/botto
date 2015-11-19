@@ -29,7 +29,8 @@ module.exports = {
 
   part: function(bot, opts) {
     if (opts.args[1]) {
-      bot.part(opts.args[1]);
+      var msg = opts.args.length > 2 ? opts.args.slice(2).join(' ') : "cya nerds";
+      bot.part(opts.args[1], msg);
     } else {
       bot.say(opts.to, "No channel specified");
     }

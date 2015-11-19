@@ -1,7 +1,6 @@
 var fs = require("fs");
 var reload = require("../core/reload.js");
 var admin = require("../core/admin.js");
-var irc = require("../core/irc.js");
 /*
  * Command handler responsible for routing commands. These include admin only
  * commands as well as any-user commands. Admin/internal functionality is denoted
@@ -19,7 +18,7 @@ var irc = require("../core/irc.js");
    }
 
    privateCommands.irc = function(bot, opts) {
-     irc.call(bot, opts);
+     require("../core/irc.js").call(bot, opts);
    }
 
    /*

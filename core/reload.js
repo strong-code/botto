@@ -16,6 +16,8 @@ module.exports = {
         delete require.cache[require.resolve('../observers/'+moduleName)];
       } else if (fs.existsSync('./commands/'+moduleName+'.js')) {
         delete require.cache[require.resolve('../commands/'+moduleName)];
+      } else if (fs.existsSync('./core/'+moduleName+'.js')) {
+        delete require.cache[require.resolve('../core/'+moduleName)];
       } else {
         bot.say(opts.to, "Module \'" + moduleName + "\' not found");
       }
