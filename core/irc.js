@@ -1,5 +1,3 @@
-var admins = require('./admin.js');
-
 module.exports = {
 
   // Routing logic
@@ -76,7 +74,7 @@ module.exports = {
 
   ctcp: function(bot, opts) {
     if (opts.args[1] && opts.args[2]) {
-      bot.ctcp(opts.args[1], opts.args.slice(2).join(' '));
+      bot.ctcp(opts.args[1], opts.args[2], opts.args.slice(3).join(' '));
     } else {
       bot.say(opts.to, "Not enough parameters specified. Usage is !irc ctcp <receiver> <message>");
     }
