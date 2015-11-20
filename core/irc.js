@@ -27,6 +27,8 @@ module.exports = {
         case 'cycle':
           module.exports.cycle(bot, opts);
           break;
+        case 'raw':
+          module.exports.raw(bot, opts);
       }
     }
   },
@@ -84,6 +86,14 @@ module.exports = {
     if (opts.args[1]) {
       bot.part(opts.args[1]);
       bot.join(opts.args[1]);
+    } else {
+      bot.say(opts.to, "No channel specified");
+    }
+  },
+
+  raw: function(bot, opts) {
+    if (opts.args[1]) {
+      bot.send(opts.args.join(' '));
     } else {
       bot.say(opts.to, "No channel specified");
     }
