@@ -54,7 +54,7 @@ module.exports = {
 
   say: function(bot, opts) {
     var receiver = opts.args[1];
-    var message = opts.args[2].join(' ');
+    var message = opts.args.slice(2).join(' ');
 
     if (receiver && message) {
       bot.say(receiver, message);
@@ -65,7 +65,7 @@ module.exports = {
 
   action: function(bot, opts) {
     var receiver = opts.args[1];
-    var action = opts.args[2].join(' ');
+    var action = opts.args.slice(2).join(' ');
 
     if (receiver && action) {
       bot.action(receiver, action);
