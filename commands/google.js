@@ -19,7 +19,9 @@ module.exports = {
         return respond("Error retrieving search results");
       } else {
         var results = module.exports.getSearchResults(response.body);
-        respond("[Google] " + results[0].title + " - " + results[0].url);
+        if (results) {
+          respond("[Google] " + results[0].title + " - " + results[0].url);
+        }
       }
     });
   },
