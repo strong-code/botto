@@ -1,5 +1,4 @@
 var fs = require("fs");
-var reload = require("../core/reload.js");
 var admin = require("../core/admin.js");
 /*
  * Command handler responsible for routing commands. These include admin only
@@ -14,7 +13,7 @@ var admin = require("../core/admin.js");
    var privateCommands = {}
 
    privateCommands.reload = function(bot, opts) {
-    reload.call(bot, opts);
+     require("../core/reload.js").call(bot, opts);
    }
 
    privateCommands.irc = function(bot, opts) {

@@ -4,66 +4,79 @@ var admin = require('../core/admin.js');
 module.exports = {
 
   call: function(opts, respond) {
-    if (opts.args.length != 2) {
-      return respond("Syntax is !ignore <add | del | check> <user>");
+    if (opts.args.length < 2) {
+      return respond("Syntax is !ignore <add | del | check> <user> <host>");
     }
 
     if (opts.args[0] == 'add') {
-      module.exports.ignoreUser(opts.args[1], opts.from, opts.to, respond);
+      module.exports.ignoreUser(opts.args[1], opts.args[2], opts.from, opts.to, respond);
     } else if (opts.args[0] == 'del') {
       module.exports.unignoreUser(opts.args[1], respond);
     } else if (opts.args[0] == 'check') {
-      module.exports.isIgnored(opts.args[1], opts.to, respond);
+      module.exports.isIgnored(opts.args[1], respond);
     }
   },
 
-  ignoreUser: function(user, requester, channel, respond) {
+  ignoreUser: function(nick, host, requester, channel, respond) {
     if (!admin.isAdmin(requester, channel)) {
       return;
+    } else {
+      db.executeQuery({
+        text: "INSERT INTO ignored_users (nick, host, banned_by, date_added) VALUES ($1, $2, $3, $4)",
+        values: [nick, host, requester, new Date().toISOString()]
+      }, function() {
+        respond("Ignoring user: " + nick + ". Bot privilege has been revoked");
+      });
     }
-
-    db.executeQuery({
-      text: "INSERT INTO ignored_users (nick, banned_by, date_added) VALUES ($1, $2, $3)",
-      values: [user, requester, new Date().toISOString()]
-    }, function() {
-      respond("Ignoring user: " + user + ". Bot privilege has been revoked");
-    });
   },
 
-  unignoreUser: function(user, channel, respond) {
+  unignoreUser: function(nick, channel, respond) {
     if (!admin.isAdmin(requester, channel)) {
       return;
+    } else {
+      db.executeQuery({
+        text: "DELETE FROM ignored_users WHERE nick = $1",
+        values: [nick]
+      }, function(result) {
+        respond("No longer ignoring user: " + nick + ". Please be better behaved from now on.");
+      });
     }
-
-    db.executeQuery({
-      text: "DELETE FROM ignored_users WHERE nick = $1",
-      values: [user]
-    }, function(result) {
-      respond("No longer ignoring user: " + user + ". Please be better behaved from now on.");
-    });
   },
 
-  isIgnored: function(user, respond) {
-    module.exports._isIgnored(user, function(ignored) {
+  isIgnored: function(nick, respond) {
+    module.exports.isIgnoredNick(nick, function(ignored) {
       if (ignored) {
-        respond(user + " is currently being ignored");
+        respond(nick + " is currently being ignored");
       } else {
-        respond(user + " is not currently ignored");
+        respond(nick + " is not currently ignored");
       }
     })
   },
 
-  _isIgnored: function(user, cb) {
+  isIgnoredNick: function(nick, cb) {
     db.executeQuery({
       text: "SELECT * FROM ignored_users WHERE nick = $1",
-      values: [user]
+      values: [nick]
     }, function(result) {
-      if (result.rows[0] && result.rows[0]['nick'] == user) {
+      if (result.rows[0] && result.rows[0]['nick'] == nick) {
         cb(true);
       } else {
         cb(false);
       }
-    })
+    });
+  },
+
+  isIgnoredHost: function(host, cb) {
+    db.executeQuery({
+      text: "SELECT * FROM ignored_users WHERE host = $1",
+      values: [host]
+    }, function(result) {
+      if (result.rows[0] && result.rows[0]['host'] == host) {
+        cb(true);
+      } else {
+        cb(false);
+      }
+    });
   }
 
 };
