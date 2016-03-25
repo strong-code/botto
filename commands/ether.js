@@ -1,15 +1,15 @@
 var needle = require('needle');
 
 module.exports = {
-  
+
   call: function(opts, respond) {
     var url = 'https://poloniex.com/public?command=returnTicker';
-    
+
     needle.get(url, options, function(err, response) {
       if (err) {
         return respond('Error fetching price. API might be down');
       }
-      
+
       var results = response.body;
       var btc     = results['BTC_ETH']['last'].slice(0, 7);
       var btc_usd = results['USDT_BTC']['last'].slice(0, 7);
