@@ -61,7 +61,7 @@ module.exports = {
       values: [nick, host]
     }, function (result) {
       var userData = result.rows[0];
-      if (userData && (userData['nick'] === nick || userData['host'] === host) {
+      if (userData && (userData['nick'] === nick || userData['host'] === host)) {
         cb(true);
       } else {
         cb(false);
