@@ -56,7 +56,7 @@ module.exports = {
 
   // Used to check if an incoming message is from an ignored user
   _isIgnoredBool: function (nick, host, cb) {
-    dbb.executeQuery({
+    db.executeQuery({
       text: "SELECT * FROM ignored_users WHERE nick = $1 OR host = $2",
       values: [nick, host]
     }, function (result) {
