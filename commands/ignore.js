@@ -13,7 +13,7 @@ module.exports = {
     } else if (opts.args[0] == 'del') {
       module.exports.unignoreUser(opts.args[1], respond);
     } else if (opts.args[0] == 'check') {
-      module.exports.isIgnored(opts.args[1], respond);
+      module.exports.isIgnored(opts.args[1], opts.args[2], respond);
     }
   },
 
@@ -43,40 +43,43 @@ module.exports = {
     }
   },
 
-  isIgnored: function(nick, respond) {
-    module.exports.isIgnoredNick(nick, function(ignored) {
-      if (ignored) {
-        respond(nick + " is currently being ignored");
-      } else {
-        respond(nick + " is not currently ignored");
-      }
-    })
-  },
-
-  isIgnoredNick: function(nick, cb) {
+  isIgnored: function(nick, host, respond) {
     db.executeQuery({
-      text: "SELECT * FROM ignored_users WHERE nick = $1",
-      values: [nick]
-    }, function(result) {
-      if (result.rows[0] && result.rows[0]['nick'] == nick) {
+      text: "SELECT * FROM ignored_users WHERE nick = $1 OR host = $2",
+      values: [nick, host]
+    }, function (result) {
+      if (results.rows[0] && result.rows[0]['nick'] === nick) {
         cb(true);
       } else {
-        cb(false);
+        cb (false);
       }
     });
   },
 
-  isIgnoredHost: function(host, cb) {
-    db.executeQuery({
-      text: "SELECT * FROM ignored_users WHERE host = $1",
-      values: [host]
-    }, function(result) {
-      if (result.rows[0] && result.rows[0]['host'] == host) {
-        cb(true);
-      } else {
-        cb(false);
-      }
-    });
-  }
+  // isIgnoredNick: function(nick, cb) {
+  //   db.executeQuery({
+  //     text: "SELECT * FROM ignored_users WHERE nick = $1",
+  //     values: [nick]
+  //   }, function(result) {
+  //     if (result.rows[0] && result.rows[0]['nick'] == nick) {
+  //       cb(true);
+  //     } else {
+  //       cb(false);
+  //     }
+  //   });
+  // },
+  //
+  // isIgnoredHost: function(host, cb) {
+  //   db.executeQuery({
+  //     text: "SELECT * FROM ignored_users WHERE host = $1",
+  //     values: [host]
+  //   }, function(result) {
+  //     if (result.rows[0] && result.rows[0]['host'] == host) {
+  //       cb(true);
+  //     } else {
+  //       cb(false);
+  //     }
+  //   });
+  // }
 
 };

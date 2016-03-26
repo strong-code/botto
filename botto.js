@@ -13,24 +13,24 @@ var bot = new irc.Client(config.server, config.botName, {
 });
 
 // Register all our message listeners (either observers or commands)
-bot.addListener("message", function(from, to, text, msg) {
+bot.addListener("message", function(_from, to, text, msg) {
 
-  ignore.isIgnoredHost(msg.host, function(ignored) {
+  ignore.isIgnored(_from, msg.host, function(ignored) {
     if (ignored) {
       // do nothing
     } else {
       // Delegate explicit commands starting with a !bang to the handler
-    	commandHandler(bot, from, to, text, msg);
+    	commandHandler(bot, _from, to, text, msg);
     	// Delegate observables (keywords, mentions, etc) to the handler
-    	observerHandler(bot, from, to, text, msg);
+    	observerHandler(bot, _from, to, text, msg);
     }
   });
 
 });
 
 if (config.debug) {
-	bot.addListener("message", function(from, to, text, message) {
-		console.log("[" + to + "] " + from + ": " + text);
+	bot.addListener("message", function(_from, to, text, message) {
+		console.log("[" + to + "] " + _from + ": " + text);
 	});
 
 	bot.addListener("error", function(error) {
