@@ -45,7 +45,7 @@ module.exports = {
 
   // Lookup if a user (by nick) is ignored. Not meant for programmatic use.
   isIgnored: function(nick, respond) {
-    _isIgnoredBool(nick, 'null', function (ignored) {
+    module.exports._isIgnoredBool(nick, 'null', function (ignored) {
       if (ignored) {
         respond('User ' + nick + ' is currently ignored');
       } else {
