@@ -13,7 +13,7 @@ module.exports = {
     } else if (opts.args[0] == 'del') {
       module.exports.unignoreUser(opts.args[1], respond);
     } else if (opts.args[0] == 'check') {
-      module.exports.isIgnored(opts.args[1], opts.args[2], respond);
+      module.exports.isIgnored(opts.args[1], respond);
     }
   },
 
@@ -43,43 +43,29 @@ module.exports = {
     }
   },
 
-  isIgnored: function(nick, host, respond) {
-    db.executeQuery({
-      text: "SELECT * FROM ignored_users WHERE nick = $1 OR host = $2",
-      values: [nick, host]
-    }, function (result) {
-      if (result.rows[0] && result.rows[0]['nick'] === nick) {
-        respond('User ' + nick + ' is currently being ignored');
+  // Lookup if a user (by nick) is ignored. Not meant for programmatic use.
+  isIgnored: function(nick, respond) {
+    _isIgnoredBool(nick, 'null', function (ignored) {
+      if (ignored) {
+        respond('User ' + nick + ' is currently ignored');
       } else {
         respond('User ' + nick + ' is NOT currently ignored');
       }
     });
   },
 
-  // isIgnoredNick: function(nick, cb) {
-  //   db.executeQuery({
-  //     text: "SELECT * FROM ignored_users WHERE nick = $1",
-  //     values: [nick]
-  //   }, function(result) {
-  //     if (result.rows[0] && result.rows[0]['nick'] == nick) {
-  //       cb(true);
-  //     } else {
-  //       cb(false);
-  //     }
-  //   });
-  // },
-  //
-  // isIgnoredHost: function(host, cb) {
-  //   db.executeQuery({
-  //     text: "SELECT * FROM ignored_users WHERE host = $1",
-  //     values: [host]
-  //   }, function(result) {
-  //     if (result.rows[0] && result.rows[0]['host'] == host) {
-  //       cb(true);
-  //     } else {
-  //       cb(false);
-  //     }
-  //   });
-  // }
+  // Used to check if an incoming message is from an ignored user
+  _isIgnoredBool: function (nick, host, cb) {
+    dbb.executeQuery({
+      text: "SELECT * FROM ignored_users WHERE nick = $1 OR host = $2",
+      values: [nick, host]
+    }, function (result) {
+      if (result.rows[0] && result.rows[0]['nick'] === nick) {
+        cb(true);
+      } else {
+        cb(false);
+      }
+    });
+  }
 
 };

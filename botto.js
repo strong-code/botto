@@ -15,7 +15,7 @@ var bot = new irc.Client(config.server, config.botName, {
 // Register all our message listeners (either observers or commands)
 bot.addListener("message", function(_from, to, text, msg) {
 
-  ignore.isIgnored(_from, msg.host, function(ignored) {
+  ignore._isIgnoredBool(_from, msg.host, function(ignored) {
     if (ignored) {
       // do nothing
     } else {
