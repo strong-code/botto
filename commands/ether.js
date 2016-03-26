@@ -14,7 +14,8 @@ module.exports = {
       var btc     = results['BTC_ETH']['last'].slice(0, 7);
       var btc_usd = results['USDT_BTC']['last'].slice(0, 7);
       var eth_vol = parseFloat(results['BTC_ETH']['last']);
-      var eth_usd = parseFloat(btc) * parseFloat(btc_usd);
+      var eth_usd = Math.round(parseFloat(btc) * parseFloat(btc_usd) * 10) / 100;
+
 
       return respond('$' + eth_usd);
     });
