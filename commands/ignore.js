@@ -49,9 +49,9 @@ module.exports = {
       values: [nick, host]
     }, function (result) {
       if (result.rows[0] && result.rows[0]['nick'] === nick) {
-        cb(true);
+        respond('User ' + nick + ' is currently being ignored');
       } else {
-        cb (false);
+        respond('User ' + nick + ' is NOT currently ignored');
       }
     });
   },
