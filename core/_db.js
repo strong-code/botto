@@ -1,4 +1,5 @@
 var pg = require('pg');
+var config = require('./config.js').db;
 
 module.exports = {
 
@@ -21,7 +22,7 @@ module.exports = {
   }
 };
 
-var dbUrl = process.env.DATABSE_URL || 'postgres://localhost:5432/botto';
+var dbUrl = process.env.DATABSE_URL || 'postgres://' + config.username + ':' + config.password + '@localhost:5432/botto';
 
 /*
  * This is intended to be a private command that can be used to set up the
