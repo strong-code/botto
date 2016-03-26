@@ -48,7 +48,7 @@ module.exports = {
       text: "SELECT * FROM ignored_users WHERE nick = $1 OR host = $2",
       values: [nick, host]
     }, function (result) {
-      if (results.rows[0] && result.rows[0]['nick'] === nick) {
+      if (result.rows[0] && result.rows[0]['nick'] === nick) {
         cb(true);
       } else {
         cb (false);
