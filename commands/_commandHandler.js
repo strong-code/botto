@@ -25,8 +25,10 @@ var admin = require("../core/admin.js");
     * hot-swapping of code if something in a module needs to be changed.
     */
    function publicCommands(opts) {
-     if (fs.existsSync('./commands/' + opts.command + '.js')) {
-       require('./' + opts.command).call(opts, function(response) {
+     var command = respondsTo(opts.command);
+
+     if (fs.existsSync('./commands/' + command + '.js')) {
+       require('./' + command).call(opts, function(response) {
          bot.say(receiver, response);
        });
      }
@@ -45,6 +47,24 @@ var admin = require("../core/admin.js");
      }
    }
  };
+
+// Returns aliased value if a module would respond to a command
+// Used for aliasing commands to modules that have a different name
+// i.e. calling !eth for ether.js
+function respondsTo(command) {
+  var respondsTo = undefined;
+
+  if (fs.existsSync('./commands/' + command + '.js')) {
+    respondsTo = command;
+  } else {
+    var alias = require('./_aliases').aliases[command];
+    if (typeof alias !== undefined) {
+      respondsTo = alias;
+    }
+  }
+
+  return respondsTo;
+}
 
 // Helper function to stuff params into an `opts` hash
  function makeOptions(bot, from, to, text, message) {
