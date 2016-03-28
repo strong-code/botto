@@ -20,6 +20,7 @@ module.exports = {
         delete require.cache[require.resolve('../core/'+moduleName)];
       } else {
         bot.say(opts.to, "Module \'" + moduleName + "\' not found");
+        return;
       }
 
       bot.say(opts.to, "Reloaded " + moduleName);
