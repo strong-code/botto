@@ -16,9 +16,7 @@ var bot = new irc.Client(config.server, config.botName, {
 bot.addListener("message", function(_from, to, text, msg) {
 
   ignore._isIgnoredBool(_from, msg.host, function(ignored) {
-    if (ignored) {
-      // do nothing
-    } else {
+    if (!ignored) {
       // Delegate explicit commands starting with a !bang to the handler
     	commandHandler(bot, _from, to, text, msg);
     	// Delegate observables (keywords, mentions, etc) to the handler
