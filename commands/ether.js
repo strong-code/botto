@@ -3,8 +3,14 @@ var needle = require('needle');
 module.exports = {
 
   call: function(opts, respond) {
-    var url = 'https://poloniex.com/public?command=returnTicker';
+    if (opts.args[0] == '') {
+      module.exports.getPrice(respond);
+    } else if (opts.args[0] == 'val') {
+      module.exports.
+    }
+  },
 
+  getPrice: function(respond) {
     needle.get(url, options, function(err, response) {
       if (err) {
         return respond('Error fetching price. API might be down');
@@ -19,9 +25,27 @@ module.exports = {
 
       return respond('$' + eth_usd);
     });
+  },
+
+  getValue: function(amount, respond) {
+    needle.get(url, options, function(err, response) {
+      if (err) {
+        return respond('Error fetching price. API might be down');
+      }
+
+      var results = response.body;
+      var btc     = results['BTC_ETH']['last'].slice(0, 7);
+      var btc_usd = results['USDT_BTC']['last'].slice(0, 7);
+      var eth_usd = Math.round(parseFloat(btc) * parseFloat(btc_usd) * 100) / 100;
+      var usd_val = Math.round((parseFloat(eth_usd) * amount) * 100) / 100;
+
+      return respond('$' + usd_val);
+    });
   }
 
 };
+
+var url = 'https://poloniex.com/public?command=returnTicker';
 
 var options = {
   follow: 3,
