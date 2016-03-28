@@ -6,7 +6,7 @@ module.exports = {
     if (opts.args[0] == '') {
       module.exports.getPrice(respond);
     } else if (opts.args[0] == 'val') {
-      module.exports.
+      module.exports.getValue(opts.args[1], respond)
     }
   },
 
@@ -37,7 +37,7 @@ module.exports = {
       var btc     = results['BTC_ETH']['last'].slice(0, 7);
       var btc_usd = results['USDT_BTC']['last'].slice(0, 7);
       var eth_usd = Math.round(parseFloat(btc) * parseFloat(btc_usd) * 100) / 100;
-      var usd_val = Math.round((parseFloat(eth_usd) * amount) * 100) / 100;
+      var usd_val = Math.round(parseFloat(eth_usd) * parseFloat(amount) * 100) / 100;
 
       return respond('$' + usd_val);
     });
