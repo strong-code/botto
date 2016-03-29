@@ -13,11 +13,11 @@ var admin = require("../core/admin.js");
    var privateCommands = {}
 
    privateCommands.reload = function(bot, opts) {
-     require("../core/reload.js").call(bot, opts);
+     return require("../core/reload.js").call(bot, opts);
    }
 
    privateCommands.irc = function(bot, opts) {
-     require("../core/irc.js").call(bot, opts);
+     return require("../core/irc.js").call(bot, opts);
    }
 
    /*
@@ -29,7 +29,7 @@ var admin = require("../core/admin.js");
 
      if (fs.existsSync('./commands/' + command + '.js')) {
        require('./' + command).call(opts, function(response) {
-         bot.say(receiver, response);
+         return bot.say(receiver, response);
        });
      }
    }
