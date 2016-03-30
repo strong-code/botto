@@ -8,7 +8,7 @@ var fs = require('fs');
  * no real logic beyond that (besides very light parsing).
  */
 
-module.exports = function(bot, from, to, text, message) {
+module.exports = {
 
   route: function(bot, from, to, text, message) {
     var opts = {
