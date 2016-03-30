@@ -8,30 +8,34 @@ var fs = require('fs');
  * no real logic beyond that (besides very light parsing).
  */
 
- module.exports = function(bot, from, to, text, message) {
+module.exports = function(bot, from, to, text, message) {
 
-   var opts = {
-     from: from,
-     to: to,
-     text: text,
-     raw: message
-   }
+  route: function(bot, from, to, text, message) {
+    var opts = {
+      from: from,
+      to: to,
+      text: text,
+      raw: message
+    }
 
-   if (opts.text && opts.text[0] != '!') {
+    if (opts.text && opts.text[0] != '!') {
 
-     // It's a private message, so respond to the sender
-     var receiver = opts.from;
+      // It's a private message, so respond to the sender
+      var receiver = opts.from;
 
-     // It's a a public, channel message
-     if (to[0] == '#') {
-       receiver = opts.to;
-     }
+      // It's a a public, channel message
+      if (to[0] == '#') {
+        receiver = opts.to;
+      }
 
-     // Check our observers for anything that may trigger a response
-     fs.readdirSync('./observers/').forEach(function(file) {
-       require('../observers/'+file).call(opts, function(response) {
-         return bot.say(receiver, response);
-       });
-     });
-   }
- }
+      // Check our observers for anything that may trigger a response
+      fs.readdirSync('./observers/').forEach(function(file) {
+        require('../observers/'+file).call(opts, function(response) {
+          return bot.say(receiver, response);
+        });
+      });
+    }
+
+  }
+
+};

@@ -18,9 +18,9 @@ bot.addListener("message", function(_from, to, text, msg) {
   ignore._isIgnoredBool(_from, msg.host, function(ignored) {
     if (!ignored) {
       // Delegate explicit commands starting with a !bang to the handler
-    	commandHandler(bot, _from, to, text, msg);
+    	commandHandler.route(bot, _from, to, text, msg);
     	// Delegate observables (keywords, mentions, etc) to the handler
-    	observerHandler(bot, _from, to, text, msg);
+    	observerHandler.route(bot, _from, to, text, msg);
     }
   });
 

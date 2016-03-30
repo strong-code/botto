@@ -7,46 +7,49 @@ var admin = require("../core/admin.js");
  * command logic other than delegation and some (light) parsing.
  */
 
- module.exports = function(bot, from, to, text, message) {
+module.exports = {
 
-   // A cache for all our "private" commands (bot-admin or internal use only)
-   var privateCommands = {}
+  route: function(bot, from, to, text, message) {
+    if (text && text[0] == '!') {
+      var opts = makeOptions(bot, from, to, text, message);
+      var receiver = to;
 
-   privateCommands.reload = function(bot, opts) {
-     return require("../core/reload.js").call(bot, opts);
-   }
+      if (typeof privateCommands[opts.command] === 'function') {
+        if (admin.isAdmin(opts.from, opts.to)) {
+          return privateCommands[opts.command](bot, opts);
+        }
+      } else {
+        return publicCommands(opts);
+      }
+    }
+  }
+  
+};
 
-   privateCommands.irc = function(bot, opts) {
-     return require("../core/irc.js").call(bot, opts);
-   }
+// A cache for all our "private" commands (bot-admin or internal use only)
+var privateCommands = {}
 
-   /*
-    * Dynamically require and look up our triggers/commands, allowing for
-    * hot-swapping of code if something in a module needs to be changed.
-    */
-   function publicCommands(opts) {
-     var command = respondsTo(opts.command);
+privateCommands.reload = function(bot, opts) {
+ return require("../core/reload.js").call(bot, opts);
+}
 
-     if (fs.existsSync('./commands/' + command + '.js')) {
-       require('./' + command).call(opts, function(response) {
-         return bot.say(receiver, response);
-       });
-     }
-   }
+privateCommands.irc = function(bot, opts) {
+ return require("../core/irc.js").call(bot, opts);
+}
 
-   if (text && text[0] == '!') {
-     var opts = makeOptions(bot, from, to, text, message);
-     var receiver = to;
+/*
+* Dynamically require and look up our triggers/commands, allowing for
+* hot-swapping of code if something in a module needs to be changed.
+*/
+function publicCommands(opts) {
+  var command = respondsTo(opts.command);
 
-     if (typeof privateCommands[opts.command] === 'function') {
-       if (admin.isAdmin(opts.from, opts.to)) {
-        privateCommands[opts.command](bot, opts);
-       }
-     } else {
-       publicCommands(opts);
-     }
-   }
- };
+  if (fs.existsSync('./commands/' + command + '.js')) {
+    require('./' + command).call(opts, function(response) {
+      return bot.say(receiver, response);
+    });
+  }
+}
 
 // Returns aliased value if a module would respond to a command
 // Used for aliasing commands to modules that have a different name
@@ -67,14 +70,14 @@ function respondsTo(command) {
 }
 
 // Helper function to stuff params into an `opts` hash
- function makeOptions(bot, from, to, text, message) {
-   var opts = {
-     from: from,
-     to: to,
-     command: String(text.split(' ')[0]).replace('!', '').trim(),
-     args: text.substring(String(text.split(' ')[0]).length).trim().split(' '),
-     raw: message
-   };
+function makeOptions(bot, from, to, text, message) {
+  var opts = {
+    from: from,
+    to: to,
+    command: String(text.split(' ')[0]).replace('!', '').trim(),
+    args: text.substring(String(text.split(' ')[0]).length).trim().split(' '),
+    raw: message
+  };
 
-   return opts;
- }
+  return opts;
+}
