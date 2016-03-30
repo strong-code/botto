@@ -46,7 +46,7 @@ function publicCommands(bot, opts) {
 
   if (fs.existsSync('./commands/' + command + '.js')) {
     require('./' + command).call(opts, function(response) {
-      return bot.say(receiver, response);
+      return bot.say(opts.to, response);
     });
   }
 }
