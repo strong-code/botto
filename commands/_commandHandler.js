@@ -19,11 +19,11 @@ module.exports = {
           return privateCommands[opts.command](bot, opts);
         }
       } else {
-        return publicCommands(opts);
+        return publicCommands(bot, opts);
       }
     }
   }
-  
+
 };
 
 // A cache for all our "private" commands (bot-admin or internal use only)
@@ -41,7 +41,7 @@ privateCommands.irc = function(bot, opts) {
 * Dynamically require and look up our triggers/commands, allowing for
 * hot-swapping of code if something in a module needs to be changed.
 */
-function publicCommands(opts) {
+function publicCommands(bot, opts) {
   var command = respondsTo(opts.command);
 
   if (fs.existsSync('./commands/' + command + '.js')) {
