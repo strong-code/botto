@@ -30,12 +30,14 @@ module.exports = {
 
       // Check our observers for anything that may trigger a response
       fs.readdirSync('./observers/').forEach(function(file) {
-        require('../observers/'+file).call(opts, function(response) {
-          return bot.say(receiver, response);
-        });
+        var observer = require('../observers/'+file);
+        if (observer && typeof observer.call === 'function') {
+          observer.call(opts, function(response) {
+            return bot.say(receiver, response);
+          });
+        }
       });
     }
-
   }
 
 };
