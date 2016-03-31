@@ -44,3 +44,8 @@ Attempt to reload the specified module from disk, pulling in any code changes.
 join: join a specified #channel
 part: leave a specified #channel
 say: say <args> to the specified target (!irc say user123 hey man :))
+
+!git pull
+Pull in latest git changes for current branch. This allows you to push new module
+changes to git, pull them in while the bot is still online and hot-swap the code
+with !reload all without interruption to bot service.
