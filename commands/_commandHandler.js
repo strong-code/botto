@@ -12,7 +12,6 @@ module.exports = {
   route: function(bot, from, to, text, message) {
     if (text && text[0] == '!') {
       var opts = makeOptions(bot, from, to, text, message);
-      var receiver = to;
 
       if (typeof privateCommands[opts.command] === 'function') {
         if (admin.isAdmin(opts.from, opts.to)) {
@@ -37,6 +36,10 @@ privateCommands.irc = function(bot, opts) {
  return require("../core/irc.js").call(bot, opts);
 }
 
+privateCommands.git = function(bot, opts) {
+  return require("../core/git.js").call(bot, opts);
+}
+
 /*
 * Dynamically require and look up our triggers/commands, allowing for
 * hot-swapping of code if something in a module needs to be changed.
@@ -45,9 +48,13 @@ function publicCommands(bot, opts) {
   var command = respondsTo(opts.command);
 
   if (fs.existsSync('./commands/' + command + '.js')) {
-    require('./' + command).call(opts, function(response) {
-      return bot.say(opts.to, response);
-    });
+    try {
+      require('./' + command).call(opts, function(response) {
+        return bot.say(opts.to, response);
+      });
+    } catch (e) {
+      return bot.say(opts.to, e.message + "; Check logs for more info");
+    }
   }
 }
 

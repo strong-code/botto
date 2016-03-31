@@ -32,9 +32,13 @@ module.exports = {
       fs.readdirSync('./observers/').forEach(function(file) {
         var observer = require('../observers/'+file);
         if (observer && typeof observer.call === 'function') {
-          observer.call(opts, function(response) {
-            return bot.say(receiver, response);
-          });
+          try {
+            observer.call(opts, function(response) {
+              return bot.say(receiver, response);
+            });
+          } catch (e) {
+            return bot.say(receiver, e.message + "; Check logs for more info");
+          }
         }
       });
     }
