@@ -33,8 +33,8 @@ ADMIN COMMANDS
 ------------------------
 
 !ignore < add | del | check > <usename>
-del: Add a user to the ignored users table. Their commands will be ignored by the bot.
-add: Remove a user from the ignored users table. They can interact with the bot again.
+add: Add a user to the ignored users table. Their commands will be ignored by the bot.
+del: Remove a user from the ignored users table. They can interact with the bot again.
 check: Check if a user is currently banned.
 
 !reload <module>
