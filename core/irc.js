@@ -5,28 +5,21 @@ module.exports = {
     if (opts.args) {
       switch (opts.args[0]) {
         case 'join':
-          module.exports.join(bot, opts);
-          break;
+          return module.exports.join(bot, opts);
         case 'part':
-          module.exports.part(bot, opts);
-          break;
+          return module.exports.part(bot, opts);
         case 'say':
-          module.exports.say(bot, opts);
-          break;
+          return module.exports.say(bot, opts);
         case 'action':
-          module.exports.action(bot, opts);
-          break;
+          return module.exports.action(bot, opts);
         case 'notice':
-          module.exports.notice(bot, opts);
-          break;
+          return module.exports.notice(bot, opts);
         case 'ctcp':
-          module.exports.ctcp(bot, opts);
-          break;
+          return module.exports.ctcp(bot, opts);
         case 'cycle':
-          module.exports.cycle(bot, opts);
-          break;
+          return module.exports.cycle(bot, opts);
         case 'raw':
-          module.exports.raw(bot, opts);
+          return module.exports.raw(bot, opts);
       }
     }
   },
@@ -35,9 +28,9 @@ module.exports = {
     var chan = opts.args[1];
 
     if (chan) {
-      bot.join(chan)
+      return bot.join(chan)
     } else {
-      bot.say(opts.to, "No channel specified");
+      return bot.say(opts.to, "No channel specified");
     }
   },
 
@@ -46,9 +39,9 @@ module.exports = {
 
     if (chan) {
       var msg = opts.args.length > 2 ? opts.args.slice(2).join(' ') : "cya nerds";
-      bot.part(chan, msg);
+      return bot.part(chan, msg);
     } else {
-      bot.say(opts.to, "No channel specified");
+      return bot.say(opts.to, "No channel specified");
     }
   },
 
@@ -57,9 +50,9 @@ module.exports = {
     var message = opts.args.slice(2).join(' ');
 
     if (receiver && message) {
-      bot.say(receiver, message);
+      return bot.say(receiver, message);
     } else {
-      bot.say(opts.to, "Not enough parameters specified. Usage is !irc say <receiver> <message>");
+      return bot.say(opts.to, "Not enough parameters specified. Usage is !irc say <receiver> <message>");
     }
   },
 
@@ -68,9 +61,9 @@ module.exports = {
     var action = opts.args.slice(2).join(' ');
 
     if (receiver && action) {
-      bot.action(receiver, action);
+      return bot.action(receiver, action);
     } else {
-      bot.say(opts.to, "Not enough parameters specified. Usage is !irc action <receiver> <message>");
+      return bot.say(opts.to, "Not enough parameters specified. Usage is !irc action <receiver> <message>");
     }
   },
 
@@ -79,9 +72,9 @@ module.exports = {
     var message = opts.args.slice(2).join(' ');
 
     if (receiver && message) {
-      bot.notice(receiver, message);
+      return bot.notice(receiver, message);
     } else {
-      bot.say(opts.to, "Not enough parameters specified. Usage is !irc notice <receiver> <message>");
+      return bot.say(opts.to, "Not enough parameters specified. Usage is !irc notice <receiver> <message>");
     }
   },
 
@@ -91,9 +84,9 @@ module.exports = {
     var text = opts.args.slice(3).join(' ');
 
     if (receiver && type) {
-      bot.ctcp(receiver, type, text);
+      return bot.ctcp(receiver, type, text);
     } else {
-      bot.say(opts.to, "Not enough parameters specified. Usage is !irc ctcp <receiver> <message>");
+      return bot.say(opts.to, "Not enough parameters specified. Usage is !irc ctcp <receiver> <message>");
     }
   },
 
@@ -101,18 +94,18 @@ module.exports = {
     var chan = opts.args[1];
 
     if (chan) {
-      bot.part(chan);
-      bot.join(chan);
+      return bot.part(chan);
+      return bot.join(chan);
     } else {
-      bot.say(opts.to, "No channel specified");
+      return bot.say(opts.to, "No channel specified");
     }
   },
 
   raw: function(bot, opts) {
     if (opts.args[1]) {
-      bot.send(opts.args.join(' '));
+      return bot.send(opts.args.join(' '));
     } else {
-      bot.say(opts.to, "No channel specified");
+      return bot.say(opts.to, "No channel specified");
     }
   }
 
