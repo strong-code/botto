@@ -7,14 +7,26 @@ module.exports = {
 
   call: function(bot, opts) {
     if (opts.args.length === 0) {
-      return bot.say(opts.to, "Invalid usage. See !help")
+      return bot.say(opts.to, "Invalid usage. See !help");
     } else if (opts.args[0] === "pull") {
-      return module.exports.pull(bot, opts)
+      return module.exports.pull(bot, opts);
+    } else if (opts.args[0] === "status") {
+      return module.exports.status(bot, opts);
     }
   },
 
   pull: function (bot, opts) {
     exec('git pull', function (err, stdout, stderr) {
+      if (err) {
+        return bot.say(opts.to, err.message + "; Check logs for more info");
+      }
+
+      return bot.say(opts.to, stdout);
+    });
+  },
+
+  status: function (bot, opts) {
+    exec('git status -sb', function (err, stdout, stderr) {
       if (err) {
         return bot.say(opts.to, err.message + "; Check logs for more info");
       }
