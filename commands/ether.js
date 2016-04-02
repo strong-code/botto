@@ -27,7 +27,7 @@ module.exports = {
       if (eth_usd > lastCheck) {
         message = '^ $' + eth_usd;
       } else {
-        message = ' v $' + eth_usd
+        message = 'v $' + eth_usd
       }
 
       lastCheck = eth_usd;
