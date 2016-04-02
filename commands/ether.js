@@ -25,9 +25,9 @@ module.exports = {
       var message;
 
       if (eth_usd > lastCheck) {
-        message = '^ $' + eth_usd;
+        message = 'Upwards movement ^  | $' + eth_usd;
       } else {
-        message = 'v $' + eth_usd
+        message = 'Downwards movement v | $' + eth_usd
       }
 
       lastCheck = eth_usd;
