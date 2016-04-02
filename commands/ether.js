@@ -1,4 +1,5 @@
 var needle = require('needle');
+var lastCheck = 0;
 
 module.exports = {
 
@@ -21,9 +22,16 @@ module.exports = {
       var btc_usd = results['USDT_BTC']['last'].slice(0, 7);
       var eth_vol = parseFloat(results['BTC_ETH']['last']);
       var eth_usd = Math.round(parseFloat(btc) * parseFloat(btc_usd) * 100) / 100;
+      var message;
 
+      if (eth_usd > lastCheck) {
+        message = '^ $' + eth_usd;
+      } else {
+        message = ' v $' + eth_usd
+      }
 
-      return respond('$' + eth_usd);
+      lastCheck   = eth_usd;
+      return respond('$' + message);
     });
   },
 
