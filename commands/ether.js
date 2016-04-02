@@ -30,8 +30,8 @@ module.exports = {
         message = ' v $' + eth_usd
       }
 
-      lastCheck   = eth_usd;
-      return respond('$' + message);
+      lastCheck = eth_usd;
+      return respond(message);
     });
   },
 
