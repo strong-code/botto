@@ -3,6 +3,7 @@
 
 module.exports = {
   aliases: {
-    'eth': 'ether'
+    'eth': 'ether',
+    'g': 'google'
   }
 }
