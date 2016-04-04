@@ -18,7 +18,7 @@ module.exports = {
       if (err) {
         return respond(err.message + '; Check logs for details');
       }
-      var conditions = res.body['weather']['main'];
+      var conditions = res.body['weather'][0]['description'];
       var temp       = res.body['main']['temp']
       var name       = res.body['name'];
 
