@@ -19,7 +19,7 @@ module.exports = {
         return respond("Error retrieving search results");
       } else {
         var results = module.exports.getSearchResults(response.body);
-        if (typeof results !== undefined) {
+        if (typeof results[0] !== undefined) {
           respond("[Google] " + results[0].title + " - " + results[0].url);
         }
       }
