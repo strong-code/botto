@@ -19,6 +19,8 @@ Get current value of Ether in US Dollars
 !eth val <amount>
 Get current value of a specific number of Ether in US Dollars
 
+!weather <city>
+Get current weather conditions of a city
 ------------------------
 Observers
 ------------------------
