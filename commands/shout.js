@@ -4,23 +4,26 @@ module.exports = {
 
   call: function(opts, respond) {
     var forNick;
-    if (opts.args[1]) {
-      forNick = opts.args[1];
+    if (opts.args[0]) {
+      return module.exports.getShoutForNick(opts.args[0], respond);
+    } else {
+      return module.exports.getShout(respond);
     }
-    return module.exports.getShout(forNick, respond);
   },
 
-  getShout: function(forNick, respond) {
-    var queryText;
-    if (typeof forNick !== undefined) {
-      queryText = "SELECT * FROM shouts WHERE nick like '%$1%'";
-    } else {
-      queryText = "SELECT * FROM shouts ORDER BY RANDOM() LIMIT 1";
-    }
+  getShout: function(respond) {
+    return db.executeQuery(
+      "SELECT * FROM shouts ORDER BY RANDOM() LIMIT 1", function (result) {
+        if (result.rows && result.rows[0]) {
+          return respond(result.rows[0]['message']);
+        }
+    });
+  },
 
+  getShoutForNick: function(nick, respond) {
     return db.executeQuery({
-      text: queryText,
-      values: [forNick]
+      text: "SELECT * FROM shouts WHERE nick like '%$1%'",
+      values: [nick]
     }, function (result) {
       if (result.rows && result.rows[0]) {
         return respond(result.rows[0]['message']);
