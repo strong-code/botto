@@ -3,8 +3,7 @@ var db = require('../core/_db.js');
 module.exports = {
 
   call: function(opts, respond) {
-    var forNick;
-    if (opts.args[0]) {
+    if (opts.args[0].lenght >= 1) {
       return module.exports.getShoutForNick(opts.args[0], respond);
     } else {
       return module.exports.getShout(respond);
@@ -22,7 +21,7 @@ module.exports = {
 
   getShoutForNick: function(nick, respond) {
     return db.executeQuery({
-      text: "SELECT * FROM shouts WHERE nick like '%$1%'",
+      text: "SELECT * FROM shouts WHERE nick = $1",
       values: [nick]
     }, function (result) {
       if (result.rows && result.rows[0]) {
