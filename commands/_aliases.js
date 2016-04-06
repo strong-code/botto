@@ -4,6 +4,7 @@
 module.exports = {
   aliases: {
     'eth': 'ether',
-    'g': 'google'
+    'g': 'google',
+    'w': 'weather'
   }
 }

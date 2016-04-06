@@ -11,7 +11,7 @@ module.exports = {
     if (opts.args[0] == 'add') {
       module.exports.ignoreUser(opts.args[1], opts.args[2], opts.from, opts.to, respond);
     } else if (opts.args[0] == 'del') {
-      module.exports.unignoreUser(opts.args[1], respond);
+      module.exports.unignoreUser(opts.from, opts.args[1], opts.to, respond);
     } else if (opts.args[0] == 'check') {
       module.exports.isIgnored(opts.args[1], respond);
     }
@@ -30,7 +30,7 @@ module.exports = {
     }
   },
 
-  unignoreUser: function(nick, channel, respond) {
+  unignoreUser: function(requester, nick, channel, respond) {
     if (!admin.isAdmin(requester, channel)) {
       return;
     } else {
