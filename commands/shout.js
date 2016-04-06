@@ -3,7 +3,7 @@ var db = require('../core/_db.js');
 module.exports = {
 
   call: function(opts, respond) {
-    if (opts.args[0].lenght >= 1) {
+    if (opts.args[0].length) {
       return module.exports.getShoutForNick(opts.args[0], respond);
     } else {
       return module.exports.getShout(respond);
