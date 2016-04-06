@@ -21,7 +21,7 @@ module.exports = {
 
   getShoutForNick: function(nick, respond) {
     return db.executeQuery({
-      text: "SELECT * FROM shouts WHERE nick = $1",
+      text: "SELECT * FROM shouts WHERE nick = $1 ORDER BY RANDOM() LIMIT 1",
       values: [nick]
     }, function (result) {
       if (result.rows && result.rows[0]) {
