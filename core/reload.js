@@ -29,7 +29,7 @@ module.exports = {
         return bot.say(opts.to, "Module \'" + moduleName + "\' not found");
       }
 
-      return bot.say(opts.to, "Reloaded " + moduleName + " (" numReloaded + " total)");
+      return bot.say(opts.to, "Reloaded " + moduleName + " (" + numReloaded + " total)");
     } catch (e) {
       console.error(e);
       return bot.say(opts.to, e.message);
