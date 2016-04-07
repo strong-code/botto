@@ -10,24 +10,29 @@ module.exports = {
   call: function(bot, opts) {
 
     var moduleName = opts.args[0];
+    var numReloaded = 0;
 
     try {
       if (fs.existsSync('./observers/'+moduleName+'.js')) {
         delete require.cache[require.resolve('../observers/'+moduleName)];
-      } else if (fs.existsSync('./commands/'+moduleName+'.js')) {
+        numReloaded += 1;
+      }
+      if (fs.existsSync('./commands/'+moduleName+'.js')) {
         delete require.cache[require.resolve('../commands/'+moduleName)];
-      } else if (fs.existsSync('./core/'+moduleName+'.js')) {
+        numReloaded += 1;
+      }
+      if (fs.existsSync('./core/'+moduleName+'.js')) {
         delete require.cache[require.resolve('../core/'+moduleName)];
-      } else {
-        bot.say(opts.to, "Module \'" + moduleName + "\' not found");
-        return;
+        numReloaded += 1;
+      }
+      if (numReloaded === 0) {
+        return bot.say(opts.to, "Module \'" + moduleName + "\' not found");
       }
 
-      bot.say(opts.to, "Reloaded " + moduleName);
+      return bot.say(opts.to, "Reloaded " + moduleName + " (" numReloaded + " total)");
     } catch (e) {
-      console.error("Error while attempting to reload " + moduleName);
       console.error(e);
-      bot.say(opts.to, e.message);
+      return bot.say(opts.to, e.message);
     }
   }
 };
