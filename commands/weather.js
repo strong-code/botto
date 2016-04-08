@@ -1,5 +1,6 @@
 var weather = require('../config.js').weather;
 var needle  = require('needle');
+var _       = require('lodash');
 
 module.exports = {
 
@@ -12,7 +13,7 @@ module.exports = {
   },
 
   getWeather: function(opts, respond) {
-    var city      = opts.args[0];
+    var city      = _parseCity(opts);
     var formedUrl = baseUrl + 'q=' + city + '&appid=' + weather.apiKey + "&units=imperial";
     needle.get(formedUrl, options, function(err, res) {
       if (err) {
@@ -25,6 +26,11 @@ module.exports = {
       return respond('Current conditions for ' + name + ': currently ' + conditions +
         ' at ' + temp + ' degrees');
     });
+  },
+
+  _parseCity: function(opts) {
+    var args = _.drop(opts.args);
+    return _.join(args, '%20');
   }
 };
 
