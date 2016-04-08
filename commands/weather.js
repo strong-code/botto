@@ -13,7 +13,7 @@ module.exports = {
   },
 
   getWeather: function(opts, respond) {
-    var city      = _parseCity(opts);
+    var city      = _.join(_.drop(opts.args), '%20');
     var formedUrl = baseUrl + 'q=' + city + '&appid=' + weather.apiKey + "&units=imperial";
     needle.get(formedUrl, options, function(err, res) {
       if (err) {
