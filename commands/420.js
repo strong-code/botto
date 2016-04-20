@@ -5,7 +5,7 @@ module.exports = {
 
   call: function(opts, respond) {
     if (opts.args[0] === '') {
-      return response(_.sample(quotes));
+      return respond(_.sample(quotes));
     } else if (opts.args[0] === 'add') {
       var quote = _.drop(opts.args);
       quote.push(_.join(quote, ' '));
