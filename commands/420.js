@@ -11,7 +11,7 @@ module.exports = {
       quote.push(_.join(quote, ' '));
       return respond('Fuckin sick ass quote dude I def added that shit');
     }
-  }
+  },
 
   quotes: [
     'sometimes smokin, sometimes tokin but NEVER jokin',
@@ -27,6 +27,6 @@ module.exports = {
     'u do ganja rite ??',
     'jesus = dank',
     'fuk i think im too hi call 911'
-  ];
+  ]
 
 };
