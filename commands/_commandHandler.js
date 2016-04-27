@@ -40,7 +40,7 @@ privateCommands.git = function(bot, opts) {
   return require('../core/git.js').call(bot, opts);
 }
 
-privatCommands.restart = function(bot, opts) {
+privateCommands.restart = function(bot, opts) {
   return require('../core/restart.js').call(bot, opts);
 }
 
