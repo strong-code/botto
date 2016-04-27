@@ -22,7 +22,7 @@ module.exports = {
         if (results[0] && results[0].title && results[0].url) {
           return respond("[Google] " + results[0].title + " - " + results[0].url);
         } else {
-          return response("Couldn't find anything :-/");
+          return respond("Couldn't find anything :-/");
         }
       }
     });
