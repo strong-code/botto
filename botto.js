@@ -12,6 +12,12 @@ var bot = new irc.Client(config.server, config.botName, {
   channels: config.channels
 });
 
+if (config.debug) {
+  bot.addListener("message", function(_from, to, text, message) {
+    console.log("[" + to + "] " + _from + ": " + text);
+  });
+}
+
 // Register all our message listeners (either observers or commands)
 bot.addListener("message", function(_from, to, text, msg) {
 
@@ -26,12 +32,6 @@ bot.addListener("message", function(_from, to, text, msg) {
 
 });
 
-if (config.debug) {
-	bot.addListener("message", function(_from, to, text, message) {
-		console.log("[" + to + "] " + _from + ": " + text);
-	});
-
-	bot.addListener("error", function(error) {
-		console.log("[ERROR] ", error);
-	});
-}
+bot.addListener("error", function(error) {
+  console.log("[ERROR] ", error);
+});
