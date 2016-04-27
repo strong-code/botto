@@ -29,15 +29,19 @@ module.exports = {
 var privateCommands = {}
 
 privateCommands.reload = function(bot, opts) {
- return require("../core/reload.js").call(bot, opts);
+ return require('../core/reload.js').call(bot, opts);
 }
 
 privateCommands.irc = function(bot, opts) {
- return require("../core/irc.js").call(bot, opts);
+ return require('../core/irc.js').call(bot, opts);
 }
 
 privateCommands.git = function(bot, opts) {
-  return require("../core/git.js").call(bot, opts);
+  return require('../core/git.js').call(bot, opts);
+}
+
+privatCommands.restart = function(bot, opts) {
+  return require('../core/restart.js').call(bot, opts);
 }
 
 /*
