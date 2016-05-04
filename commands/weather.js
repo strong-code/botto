@@ -23,7 +23,7 @@ module.exports = {
       var temp       = res.body['main']['temp']
       var name       = res.body['name'];
 
-      return respond('Current conditions for ' + name + ': currently ' + conditions +
+      return respond('Weather conditions for ' + name + ': currently ' + conditions +
         ' at ' + temp + ' degrees');
     });
   },
