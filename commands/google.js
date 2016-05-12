@@ -5,6 +5,7 @@ var admins = require ('../core/admin.js');
 module.exports = {
 
   call: function(opts, respond) {
+    return respond('Disabled for now');
     if (opts.args[0] == '') {
       respond("Usage is !google <query>");
     } else {
@@ -19,7 +20,7 @@ module.exports = {
         return respond("Error retrieving search results");
       } else {
         var results = module.exports.getSearchResults(response.body);
-        if (results[0] && results[0].title && results[0].url) {
+        if (results[0] && result[0].url && results[0].title) {
           return respond("[Google] " + results[0].title + " - " + results[0].url);
         } else {
           return respond("Couldn't find anything :-/");

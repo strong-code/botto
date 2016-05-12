@@ -3,7 +3,7 @@ var exec = require('child_process').exec;
 module.exports = {
 
   call: function(opts, respond) {
-    exec("cat ./help.txt | curl -F 'sprunge=<-' http://sprunge.us", function(error, stdout, stderr) {
+    exec("cat ./scripts/help.txt | curl -F 'sprunge=<-' http://sprunge.us", function(error, stdout, stderr) {
       if (error) {
         console.error(error);
       } else {
