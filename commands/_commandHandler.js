@@ -50,9 +50,9 @@ privateCommands.restart = function(bot, opts) {
 * hot-swapping of code if something in a module needs to be changed.
 */
 function publicCommands(bot, opts) {
-  if (fs.existsSync('./commands/' + command + '.js')) {
+  if (fs.existsSync('./commands/' + opts.command + '.js')) {
     try {
-      require('./' + command).call(opts, function(response) {
+      require('./' + opts.command).call(opts, function(response) {
         return bot.say(opts.to, response);
       });
     } catch (e) {
