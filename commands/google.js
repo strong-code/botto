@@ -4,8 +4,10 @@ var admins = require ('../core/admin.js');
 
 module.exports = {
 
+  disabled: false,
+
   call: function(opts, respond) {
-    return respond('Disabled for now');
+    if (module.exports.disabled) { return; }
     if (opts.args[0] == '') {
       respond("Usage is !google <query>");
     } else {
@@ -18,6 +20,9 @@ module.exports = {
     needle.get(searchUrl+query, options, function(err, response) {
       if (err) {
         return respond("Error retrieving search results");
+      } else if (response.statusCode == 503) {
+        module.exports.disabled = true;
+        return respond("Spam filter triggered, disabling module. Reload to enable");
       } else {
         var results = module.exports.getSearchResults(response.body);
         if (results[0] && result[0].url && results[0].title) {
