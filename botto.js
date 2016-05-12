@@ -1,4 +1,4 @@
-var config = require('./config.js').core;
+var config = require('./config.js').core.default;
 var fs = require('fs');
 var irc = require('irc');
 var commandHandler = require('./commands/_commandHandler.js');
@@ -8,6 +8,10 @@ var ignore = require('./commands/ignore.js');
 /*
  * Initiate the bot and the observers
  */
+if (process.argv[0] === 'test') {
+  config = config.core.test;
+}
+
 var bot = new irc.Client(config.server, config.botName, {
   channels: config.channels
 });
@@ -20,7 +24,7 @@ if (config.debug) {
 
 // Register all our message listeners (either observers or commands)
 bot.addListener("message", function(_from, to, text, msg) {
-  
+
   ignore._isIgnoredBool(_from, msg.host, function(ignored) {
     if (!ignored) {
       // Delegate explicit commands starting with a !bang to the handler

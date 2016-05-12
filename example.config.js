@@ -1,9 +1,18 @@
 exports.core = {
-	channels: ["#channel"],
-	server: "server.address.here",
-	botName: "ABotName",
-  password: "BotPassword",
-  debug: false
+	default: {
+		channels: ["#channel"],
+		server: "server.address.here",
+		botName: "ABotName",
+		password: "BotPassword",
+		debug: false
+	},
+	test: {
+		channels: ["#channel"],
+		server: "server.address.here",
+		botName: "ABotName",
+		password: "BotPassword",
+		debug: false
+	}
 };
 
 exports.admin = {
