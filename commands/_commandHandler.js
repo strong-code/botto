@@ -12,6 +12,7 @@ module.exports = {
   route: function(bot, from, to, text, message) {
     if (text && text[0] == '!') {
       var opts = makeOptions(bot, from, to, text, message);
+      var command = respondsTo(opts.command);
 
       if (typeof privateCommands[opts.command] === 'function') {
         if (admin.isAdmin(opts.from, opts.to)) {
@@ -49,8 +50,6 @@ privateCommands.restart = function(bot, opts) {
 * hot-swapping of code if something in a module needs to be changed.
 */
 function publicCommands(bot, opts) {
-  var command = respondsTo(opts.command);
-
   if (fs.existsSync('./commands/' + command + '.js')) {
     try {
       require('./' + command).call(opts, function(response) {
