@@ -12,7 +12,7 @@ module.exports = {
   route: function(bot, from, to, text, message) {
     if (text && text[0] == '!') {
       var opts = makeOptions(bot, from, to, text, message);
-      var command = respondsTo(opts.command);
+      opts.command = respondsTo(opts.command);
 
       if (typeof privateCommands[opts.command] === 'function') {
         if (admin.isAdmin(opts.from, opts.to)) {
@@ -65,18 +65,11 @@ function publicCommands(bot, opts) {
 // Used for aliasing commands to modules that have a different name
 // i.e. calling !eth for ether.js
 function respondsTo(command) {
-  var respondsTo = undefined;
-
-  if (fs.existsSync('./commands/' + command + '.js')) {
-    respondsTo = command;
-  } else {
-    var alias = require('./_aliases').aliases[command];
-    if (typeof alias !== undefined) {
-      respondsTo = alias;
-    }
+  var alias = require('./_aliases').aliases[command];
+  if (typeof alias !== undefined) {
+    return alias;
   }
-
-  return respondsTo;
+  return command;
 }
 
 // Helper function to stuff params into an `opts` hash
