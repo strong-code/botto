@@ -39,3 +39,13 @@ CREATE TABLE IF NOT EXISTS ignored_users (
   banned_by VARCHAR(55) NOT NULL,
   date_added DATE NOT NULL
 );
+
+-- Definition for message table
+CREATE TABLE IF NOT EXISTS tells (
+  id SERIAL UNIQUE PRIMARY KEY,
+  from VARCHAR(55) NOT NULL,
+  to VARCHAR(55) NOT NULL,
+  message TEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  sent BOOLEAN DEFAULT FALSE
+);
