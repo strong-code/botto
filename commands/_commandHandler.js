@@ -66,7 +66,7 @@ function publicCommands(bot, opts) {
 // i.e. calling !eth for ether.js
 function respondsTo(command) {
   var alias = require('./_aliases').aliases[command];
-  if (typeof alias !== undefined) {
+  if (typeof alias !== 'undefined') {
     return alias;
   }
   return command;
