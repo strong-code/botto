@@ -1,5 +1,6 @@
 var sys = require('sys');
 var exec = require('child_process').exec;
+var _ = require('lodash');
 var logPath = '~/irclogs/Rizon';
 
 module.exports = {
