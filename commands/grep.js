@@ -9,22 +9,29 @@ module.exports = {
       return responsd('You must provide a query to grep')
     } else {
       var query = _.join(opts.args);
-      return respond(grep(query));
+      return grep(query, respond);
     }
   },
 
-  grep: function (query, channel) {
+  grep: function (query, channel, respond) {
     var path = logPath + "/" + channel;
-    return exec("grep -R \"" + query + "\" " + path, function (err, stdout, stderr) {
+    var cmd = "grep -R \"" + query + "\" " + path;
+    return exec(cmd, function (err, stdout, stderr) {
       if (err) {
-        return err;
+        return respond('[ERROR]: ' + err);
       }
-      return module.exports.upload(stdout);
-    })
+      return module.exports.upload(stdout, respond);
+    });
   },
 
-  upload: function (results) {
-    // TODO figure out the best way to paste & serve
+  upload: function (results, respond) {
+    var cmd = "echo \"" + results + "\" | nc termbin.com 9999";
+    return exec(cmd, function (err, stdout, stderr) {
+      if (err) {
+        return respond('[ERROR]: ' + err);
+      }
+      return respond('Search results: ' + stdout);
+    });
   }
 
 };
