@@ -9,7 +9,7 @@ module.exports = {
     if (opts.args.length < 1) {
       return responsd('You must provide a query to grep')
     } else {
-      var query = _.join(opts.args);
+      var query = _.join(opts.args, " ");
       return module.exports.grep(query, opts.to, respond);
     }
   },
@@ -20,6 +20,9 @@ module.exports = {
     return exec(cmd, function (err, stdout, stderr) {
       if (err) {
         return respond('[ERROR]: ' + err);
+      }
+      if (stdout === '') {
+        return respond('No results found');
       }
       return respond('Search results: ' + stdout);
     });
