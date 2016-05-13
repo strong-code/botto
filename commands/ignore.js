@@ -1,5 +1,6 @@
 var db = require('../core/_db.js');
 var admin = require('../core/admin.js');
+var _  = require('lodash');
 
 module.exports = {
 
@@ -14,7 +15,20 @@ module.exports = {
       module.exports.unignoreUser(opts.from, opts.args[1], opts.to, respond);
     } else if (opts.args[0] == 'check') {
       module.exports.isIgnored(opts.args[1], respond);
+    } else if (opts.args[0] == 'list') {
+      module.exports.listIgnored(respond);
     }
+  },
+
+  listIgnored: function(respond) {
+    return db.executeQuery({
+      text: "SELECT nick FROM ignored_users"
+    }, function (result) {
+      var ignoredUsers = _.map(result.rows, function (row) {
+        return row['nick'];
+      });
+      return respond("Currently ignored users: " + _.join(ignoredUsers, ', '));
+    });
   },
 
   ignoreUser: function(nick, host, requester, channel, respond) {
