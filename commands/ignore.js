@@ -5,19 +5,17 @@ var _  = require('lodash');
 module.exports = {
 
   call: function(opts, respond) {
-    if (opts.args.length < 2) {
-      return respond("Syntax is !ignore <add | del | check> <user> <host>");
-    }
-
     if (opts.args[0] == 'add') {
-      module.exports.ignoreUser(opts.args[1], opts.args[2], opts.from, opts.to, respond);
+      return module.exports.ignoreUser(opts.args[1], opts.args[2], opts.from, opts.to, respond);
     } else if (opts.args[0] == 'del') {
-      module.exports.unignoreUser(opts.from, opts.args[1], opts.to, respond);
+      return module.exports.unignoreUser(opts.from, opts.args[1], opts.to, respond);
     } else if (opts.args[0] == 'check') {
-      module.exports.isIgnored(opts.args[1], respond);
+      return module.exports.isIgnored(opts.args[1], respond);
     } else if (opts.args[0] == 'list') {
-      module.exports.listIgnored(respond);
-    }
+      return module.exports.listIgnored(respond);
+    } else {
+      return respond("Syntax is !ignore <add | del | check> <user> <host>");
+   }
   },
 
   listIgnored: function(respond) {
