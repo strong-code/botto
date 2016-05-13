@@ -21,6 +21,15 @@ Get current value of a specific number of Ether in US Dollars
 
 !weather <city>
 Get current weather conditions of a city
+
+!shout
+Get a random shout quote
+
+!shout <nick>
+Get a random shout quote for a specified nick
+
+!grep <query>
+Return all instances of <query> found in log files for the current channel
 ------------------------
 Observers
 ------------------------
@@ -29,6 +38,9 @@ URL: Any URL posted in the channel will have its page title echoed back
 SHOUT: Any all-uppercase string over 3 characters will be responded to with a
 random shout quote, as well as store that shout in the database for future use.
 Duplicates are ignored.
+
+EPIC: The word "epic" will spew an unintelligible collection of bullshit. Do not
+try this.
 
 ------------------------
 ADMIN COMMANDS
@@ -39,15 +51,23 @@ add: Add a user to the ignored users table. Their commands will be ignored by th
 del: Remove a user from the ignored users table. They can interact with the bot again.
 check: Check if a user is currently banned.
 
+!ignore list
+List all currently ignored nicknames
+
 !reload <module>
 Attempt to reload the specified module from disk, pulling in any code changes.
+
+!restart
+Do a hard restart of the entire botto process. This will exec the `./run.sh` script
+and replace the currently running process. Helpful for resetting state and/or connections.
 
 !irc < join | part | say> <args>
 join: join a specified #channel
 part: leave a specified #channel
 say: say <args> to the specified target (!irc say user123 hey man :))
 
-!git pull
-Pull in latest git changes for current branch. This allows you to push new module
+!git <pull | status>
+pull: Pull in latest git changes for current branch. This allows you to push new module
 changes to git, pull them in while the bot is still online and hot-swap the code
 with !reload all without interruption to bot service.
+status: Get current branch status.
