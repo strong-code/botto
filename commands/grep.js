@@ -10,7 +10,7 @@ module.exports = {
       return responsd('You must provide a query to grep')
     } else {
       var query = _.join(opts.args);
-      return module.exports.grep(query, respond);
+      return module.exports.grep(query, opts.to, respond);
     }
   },
 
