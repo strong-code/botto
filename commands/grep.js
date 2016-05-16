@@ -21,7 +21,7 @@ module.exports = {
       if (err) {
         return respond('[ERROR]: ' + err);
       }
-      if (stdout === '') {
+      if (stdout === '' || stdout == 'Use netcat') {
         return respond('No results found');
       }
       return respond('Search results: ' + stdout);
