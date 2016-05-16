@@ -25,7 +25,7 @@ module.exports = {
         return respond("Spam filter triggered, disabling module. Reload to enable");
       } else {
         var results = module.exports.getSearchResults(response.body);
-        if (results[0] && result[0].url && results[0].title) {
+        if (results && results[0] && results[0].title) {
           return respond("[Google] " + results[0].title + " - " + results[0].url);
         } else {
           return respond("Couldn't find anything :-/");
