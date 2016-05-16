@@ -9,7 +9,7 @@ module.exports = {
     if (opts.args.length < 1) {
       return respond('You must provide a query to grep')
     } else {
-      var query = _.join(opts.args, " ");
+      var query = _.join(opts.args, " ").replace(/[^a-z0-9\s+]+/gi, '');
       return module.exports.grep(query, opts.to, respond);
     }
   },
