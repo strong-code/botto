@@ -13,7 +13,7 @@ module.exports = {
   },
 
   addReply: function (opts, nick, respond) {
-    var args = _.join(opts.args, ' ');
+    var args = _.join(opts, ' ');
     var data = _.split(args, ' <reply> ');
     var trigger = data[0];
     var reply = data[1];
