@@ -36,3 +36,7 @@ exports.twitter = {
 	access_token_secret: "",
 	app_only_auth: false
 };
+
+exports.giphy = {
+	apiKey = ""
+};
