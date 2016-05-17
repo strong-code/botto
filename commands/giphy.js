@@ -9,7 +9,7 @@ module.exports = {
       return respond('Usage is !giphy <query>');
     } else {
       var query = _.join(opts.args, '+');
-      return getResults(query, opts.from, respond);
+      return module.exports.getResults(query, opts.from, respond);
     }
   },
 
