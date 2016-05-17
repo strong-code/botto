@@ -1,5 +1,6 @@
 var db = require('../core/_db.js');
-var admin = require('../core/admin.js')
+var admin = require('../core/admin.js');
+var _ = require('lodash');
 
 module.exports = {
 
