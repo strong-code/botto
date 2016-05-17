@@ -1,6 +1,6 @@
 var _ = require('lodash');
 var needle = require('needle');
-var giphyApiKey = require('../config.js').giphy
+var giphy = require('../config.js').giphy
 
 module.exports = {
 
@@ -14,13 +14,13 @@ module.exports = {
   },
 
   getResults: function (query, _from, respond) {
-    var url = baseUrl + query + '&api_key=' + giphyApiKey + '&limit=100';
+    var url = baseUrl + query + '&api_key=' + giphy.apiKey + '&limit=100';
     return needle.get(url, options, function (err, response) {
       if (err) {
         return respond('Error fetching results, API might be down');
       }
       var gifData = response.body.data[_.random(0, 99)];
-      return respond('made this dank meme 4 u ' + _from + ': ' + giftData.bitly_url);
+      return respond('made this dank meme 4 u ' + _from + ': ' + gifData.bitly_url);
     });
   }
 
