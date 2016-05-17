@@ -30,6 +30,13 @@ Get a random shout quote for a specified nick
 
 !grep <query>
 Return all instances of <query> found in log files for the current channel
+
+!giphy <query>
+Return a random gif that matches your query
+
+!reply add foo <reply> bar
+Add a reply 'bar' for trigger 'foo'. The <reply> is literal and must be used as
+a separator for the trigger and response
 ------------------------
 Observers
 ------------------------
