@@ -48,12 +48,13 @@ module.exports = {
   listDisabled: function (respond) {
     return db.executeQuery({
       text: 'SELECT added_by AS creator, trigger, reply AS response FROM replies WHERE enabled = false'
-    }, function (res) {
-      if (res.rows.length > 0) {
-        res = _.map(res.rows, function (row) {
-          return row.trigger + ' | ' + row.response + ' (Added by ' + row.creator + ')';
+    }, function (result) {
+      if (result.rows.length > 0) {
+        var response = 'CURRENTLY DISABLED TRIGGERS: \n trigger | response';
+         _.each(result.rows, function (row) {
+          response = response + '\n' + row.trigger + ' | ' + row.response + ' (Added by ' + row.creator + ')';
         });
-        var cmd = "" + res + " | nc termbin.com 9999";
+        var cmd = "echo \"" + response + "\"" + " | nc termbin.com 9999";
 
         return exec(cmd, function (err, stdout, stderr) {
           if (err || stdout === 'User netcat.') {
