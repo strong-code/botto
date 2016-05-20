@@ -8,7 +8,7 @@ module.exports = {
       text: 'SELECT * FROM replies WHERE trigger=$1 ORDER BY RANDOM() LIMIT 1',
       values: [opts.text]
     }, function (result) {
-      if (result.rows[0] && results.rows[0]['enabled'] === true) {
+      if (result.rows[0] && result.rows[0]['enabled'] === true) {
         module.exports.last = result.rows[0];
         return respond(result.rows[0]['reply']);
       }

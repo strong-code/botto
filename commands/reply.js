@@ -37,7 +37,7 @@ module.exports = {
       return respond('I\'m not sure what the last reply was');
     } else {
       return db.executeQuery({
-        text: 'UPDATE replies SET enabled = true WHERE id=$1',
+        text: 'UPDATE replies SET enabled = false WHERE id=$1',
         values: [lastReply['id']]
       }, function (res) {
         return respond('Trigger disabled');
