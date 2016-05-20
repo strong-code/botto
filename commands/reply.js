@@ -2,6 +2,8 @@ var db = require('../core/_db.js');
 var admin = require('../core/admin.js');
 var _ = require('lodash');
 var lastReply = require('../observers/reply.js').last;
+var sys = require('sys');
+var exec = require('child_process').exec;
 
 module.exports = {
 
@@ -10,6 +12,8 @@ module.exports = {
       return module.exports.addReply(_.drop(opts.args), opts.from, respond);
     } else if (opts.args[0] === 'stop' && admin.isAdmin(opts.from, opts.to)) {
       return module.exports.disable(respond);
+    } else if (_.join(opts.args, ' ') === 'list disabled') {
+      return module.exports.listDisabled(respond);
     }
   },
 
@@ -18,7 +22,7 @@ module.exports = {
     var data    = _.split(args, ' <reply> ');
     var trigger = data[0];
     var reply   = data[1];
-    
+
     return db.executeQuery({
       text: 'INSERT INTO replies (added_by, trigger, reply, enabled, date_added) ' +
         'VALUES ($1, $2, $3, $4, $5)',
@@ -39,6 +43,20 @@ module.exports = {
         return respond('Trigger disabled');
       });
     }
+  },
+
+  listDisabled: function (respond) {
+    return db.executeQuery({
+      text: 'SELECT added_by AS creator, trigger, reply AS response FROM replies WHERE enabled = false'
+    }, function (res) {
+      var cmd = "" + res + " | nc termbin.com 9999";
+      return exec(cmd, function (err, stdout, stderr) {
+        if (err) {
+          return respond('[ERROR] ' + err);
+        }
+        return respond('Disabled triggers: ' + stdout);
+      });
+    });
   }
 
 };
