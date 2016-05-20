@@ -13,7 +13,9 @@ module.exports = {
     } else if (opts.args[0] === 'stop' && admin.isAdmin(opts.from, opts.to)) {
       return module.exports.disable(respond);
     } else if (_.join(opts.args, ' ') === 'list disabled') {
-      return module.exports.listDisabled(respond);
+      return module.exports.list(respond, false);
+    } else if (_.join(opts.args, ' ') === 'list enabled') {
+      return module.exports.list(respond, true);
     }
   },
 
@@ -45,12 +47,14 @@ module.exports = {
     }
   },
 
-  listDisabled: function (respond) {
+  list: function (respond, enabled) {
     return db.executeQuery({
-      text: 'SELECT added_by AS creator, trigger, reply AS response FROM replies WHERE enabled = false'
+      text: 'SELECT added_by AS creator, trigger, reply AS response FROM replies WHERE enabled=$1',
+      values: [enabled]
     }, function (result) {
       if (result.rows.length > 0) {
-        var response = 'CURRENTLY DISABLED TRIGGERS: \n trigger | response';
+        var response = (enabled ? 'CURRENTLY ENABLED TRIGGERS' : 'CURRENTLY DISABLED TRIGGERS');
+        var response = response + '\nTRIGGER | RESPONSE';
          _.each(result.rows, function (row) {
           response = response + '\n' + row.trigger + ' | ' + row.response + ' (Added by ' + row.creator + ')';
         });
