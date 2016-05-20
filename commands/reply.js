@@ -64,7 +64,7 @@ module.exports = {
           if (err || stdout === 'User netcat.') {
             return respond('Something went wrong');
           }
-          return respond('Disabled triggers: ' + stdout);
+          return respond(stdout);
         });
       }
     });
