@@ -49,13 +49,19 @@ module.exports = {
     return db.executeQuery({
       text: 'SELECT added_by AS creator, trigger, reply AS response FROM replies WHERE enabled = false'
     }, function (res) {
-      var cmd = "" + res + " | nc termbin.com 9999";
-      return exec(cmd, function (err, stdout, stderr) {
-        if (err) {
-          return respond('[ERROR] ' + err);
-        }
-        return respond('Disabled triggers: ' + stdout);
-      });
+      if (res.rows.length > 0) {
+        res = _.map(res.rows, function (row) {
+          return row.trigger + ' | ' + row.response + ' (Added by ' + row.creator + ')';
+        });
+        var cmd = "" + res + " | nc termbin.com 9999";
+
+        return exec(cmd, function (err, stdout, stderr) {
+          if (err || stdout === 'User netcat.') {
+            return respond('Something went wrong');
+          }
+          return respond('Disabled triggers: ' + stdout);
+        });
+      }
     });
   }
 
