@@ -20,6 +20,9 @@ module.exports = {
         return respond('Error fetching results, API might be down');
       }
       var gifData = response.body.data[_.random(0, response.body.data.length)];
+      if (gifData === undefined) {
+        return respond('couldnt find a dank enough meme 4 that one');
+      }
       return respond('made this dank meme 4 u ' + _from + ': ' + gifData.bitly_url);
     });
   }
