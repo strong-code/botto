@@ -19,6 +19,8 @@ exports.admin = {
 	"#channel": ["AdminUsername"]
 };
 
+exports.globalAdmins = ['GlobalAdminUsername'];
+
 exports.db = {
 	username: 'postgres-username',
 	password: 'postgres-password'
