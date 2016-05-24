@@ -20,3 +20,5 @@ child.on('exit:code', function (code) {
   var msg = 'Exited child process at ' + now.toISOString() + ' with code ' +  code;
   return fs.appendFile('./forever.log', msg, function (err) {});
 });
+
+child.start();
