@@ -11,8 +11,8 @@ module.exports = {
 
   // List all admins for a specified channel
   listAdmins: function(channel) {
-    if (config.admins[channel]) {
-      return "Admins for " + channel + ": " + config.admins[channel].join(', ');
+    if (config.admin[channel]) {
+      return "Admins for " + channel + ": " + config.admin[channel].join(', ');
     }
     return "No administrators specified for " + channel;
   },
@@ -20,8 +20,8 @@ module.exports = {
   isAdmin: function(user, channel) {
     if (_.includes(config.globalAdmins, user)) {
       return true;
-    } else if (config.admins[channel]) {
-      return _.includes(config.admins[channel], user);
+    } else if (config.admin[channel]) {
+      return _.includes(config.admin[channel], user);
     }
     return false;
   }
