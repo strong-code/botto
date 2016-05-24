@@ -24,7 +24,8 @@
     "needle": "~0.10.0",
     "cheerio": "~0.19.0",
     "lodash": "~4.8.2",
-    "kexec": "~2.0.2"
+    "kexec": "~2.0.2",
+    "forever-monitor": "~1.7.0"
   },
   "engines": {
     "node": ">=4.0.0"
