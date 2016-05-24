@@ -1,5 +1,6 @@
 var needle = require('needle');
 var cheerio = require('cheerio');
+var _ = require('lodash');
 
 module.exports = {
 
@@ -36,7 +37,10 @@ module.exports = {
 
   parseTitle: function(html) {
     var $ = cheerio.load(html);
-    return $('head > title').text().trim().replace(/[\r\n\t]/g, " ");
+    var title = $('head > title').text().trim();
+    title = _.truncate(title, {length: 80});
+    title = title.replace(/[\r\n\t]/g, " ");
+    return title;
   }
 };
 
@@ -46,8 +50,8 @@ var regex = new RegExp(expression);
 
 // HTTP client options
 var options = {
-    follow: 3,
-    open_timeout: 5000,
+    follow: 2,
+    open_timeout: 4000,
     headers: {
       'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1677.0 Safari/537.36"
     }
