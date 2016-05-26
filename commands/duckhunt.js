@@ -10,6 +10,9 @@ module.exports = {
   shootable: false,
 
   startGame: function (respond) {
+    if (module.exports.shootable) {
+      return respond('The game has already started! Type \'bang\' when you see the duck to shoot him');
+    }
     respond('Respond with \'bang\' when you see the duck to shoot him');
     var delay = (Math.random() * 10000) + 10;
     setTimeout(function () {
