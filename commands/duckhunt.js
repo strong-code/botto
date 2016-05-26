@@ -7,14 +7,19 @@ module.exports = {
     }
   },
 
+  inGame: false,
+
   shootable: false,
 
   startGame: function (respond) {
-    if (module.exports.shootable) {
+    if (module.exports.inGame) {
       return respond('The game has already started! Type \'bang\' when you see the duck to shoot him');
     }
+
     respond('Respond with \'bang\' when you see the duck to shoot him');
-    var delay = (Math.random() * 10000) + 10;
+    module.exports.inGame = true;
+    var delay = (Math.random() * 10000) + 20;
+
     setTimeout(function () {
       module.exports.shootable = true;
       return respond(duckling);
@@ -25,6 +30,7 @@ module.exports = {
     if (!module.exports.shootable) {
       return;
     }
+    module.exports.inGame = false;
     module.exports.shootable = false;
     return respond('You killed the duck! ' + nick + ' wins this round');
   }
