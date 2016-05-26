@@ -10,6 +10,7 @@ module.exports = {
   inGame: false,
 
   startGame: function (respond) {
+    respond('Respond with \'bang\' when you see the duck to shoot him');
     var delay = Math.random() * 10000;
     module.exports.inGame = true;
     setTimeout(function () {
@@ -33,5 +34,5 @@ var duckling =
 'QUACK    )/   ,\n' +
 '        /(____/\\\n' +
 '       /        )\n' +
-'        `  =~~/\n' +
-'        `---Y-\'\n';
+'         `  =~~/\n' +
+'         `---Y-\'\n';
