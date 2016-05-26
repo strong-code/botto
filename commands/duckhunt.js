@@ -7,22 +7,22 @@ module.exports = {
     }
   },
 
-  inGame: false,
+  shootable: false,
 
   startGame: function (respond) {
     respond('Respond with \'bang\' when you see the duck to shoot him');
     var delay = (Math.random() * 10000) + 10;
-    module.exports.inGame = true;
     setTimeout(function () {
+      module.exports.shootable = true;
       return respond(duckling);
     }, delay);
   },
 
   handleShot: function (nick, respond) {
-    if (!module.exports.inGame) {
+    if (!module.exports.shootable) {
       return;
     }
-    module.exports.inGame = false;
+    module.exports.shootable = false;
     return respond('You killed the duck! ' + nick + ' wins this round');
   }
 
