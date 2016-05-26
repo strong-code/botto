@@ -11,7 +11,7 @@ module.exports = {
 
   startGame: function (respond) {
     respond('Respond with \'bang\' when you see the duck to shoot him');
-    var delay = Math.random() * 10000;
+    var delay = (Math.random() * 10000) + 10;
     module.exports.inGame = true;
     setTimeout(function () {
       return respond(duckling);
