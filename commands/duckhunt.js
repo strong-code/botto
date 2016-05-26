@@ -10,10 +10,11 @@ module.exports = {
   inGame: false,
 
   startGame: function (respond) {
+    var delay = Math.random() * 10000;
     module.exports.inGame = true;
     setTimeout(function () {
       return respond(duckling);
-    }, 2000);
+    }, delay);
   },
 
   handleShot: function (nick, respond) {
@@ -27,12 +28,10 @@ module.exports = {
 };
 
 var duckling =
-
 '         __\n' +
 'QUACK  >(\' )\'\n' +
 'QUACK    )/   ,\n' +
 '        /(____/\\\n' +
 '       /        )\n' +
 '        `  =~~/\n' +
-'        `---Y-\'\n' +
-'       -----~~\'----\n';
+'        `---Y-\'\n';
