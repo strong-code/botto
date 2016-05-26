@@ -3,7 +3,7 @@ module.exports = {
 
   call: function (opts, respond) {
     if (opts.args[0] == 'start') {
-      return modules.exports.startGame(respond);
+      return module.exports.startGame(respond);
     }
   },
 
