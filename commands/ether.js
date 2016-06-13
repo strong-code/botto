@@ -21,7 +21,9 @@ module.exports = {
       var eth_usd = results['USDT_ETH']['last'].slice(0, 5);
       var message;
 
-      if (eth_usd > lastCheck) {
+      if (eth_usd == lastCheck) {
+        message = 'No change | $' + eth_usd;
+      } else if (eth_usd > lastCheck) {
         message = 'Upwards movement ^  | $' + eth_usd;
       } else {
         message = 'Downwards movement v | $' + eth_usd
