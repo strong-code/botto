@@ -18,13 +18,12 @@ module.exports = {
       }
 
       var results = response.body;
-      var btc     = results['BTC_ETH']['last'].slice(0, 7);
-      var btc_usd = results['USDT_BTC']['last'].slice(0, 7);
-      var eth_vol = parseFloat(results['BTC_ETH']['last']);
-      var eth_usd = Math.round(parseFloat(btc) * parseFloat(btc_usd) * 100) / 100;
+      var eth_usd = results['USDT_ETH']['last'].slice(0, 5);
       var message;
 
-      if (eth_usd > lastCheck) {
+      if (eth_usd == lastCheck) {
+        message = 'No change | $' + eth_usd;
+      } else if (eth_usd > lastCheck) {
         message = 'Upwards movement ^  | $' + eth_usd;
       } else {
         message = 'Downwards movement v | $' + eth_usd
@@ -42,9 +41,7 @@ module.exports = {
       }
 
       var results = response.body;
-      var btc     = results['BTC_ETH']['last'].slice(0, 7);
-      var btc_usd = results['USDT_BTC']['last'].slice(0, 7);
-      var eth_usd = Math.round(parseFloat(btc) * parseFloat(btc_usd) * 100) / 100;
+      var eth_usd = results['USDT_ETH']['last'].slice(0, 5); 
       var usd_val = Math.round(parseFloat(eth_usd) * parseFloat(amount) * 100) / 100;
 
       return respond('$' + usd_val);
@@ -57,7 +54,7 @@ var url = 'https://poloniex.com/public?command=returnTicker';
 
 var options = {
   follow: 3,
-  open_timeout: 5000,
+  open_timeout: 20000,
   headers: {
     'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1677.0 Safari/537.36"
   }

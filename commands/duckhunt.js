@@ -18,7 +18,7 @@ module.exports = {
 
     respond('Respond with \'bang\' when you see the duck to shoot him');
     module.exports.inGame = true;
-    var delay = (Math.random() * 10000) + 20;
+    var delay = (Math.random() * 10000) + (Math.floor(Math.random() * 60));
 
     setTimeout(function () {
       module.exports.shootable = true;
