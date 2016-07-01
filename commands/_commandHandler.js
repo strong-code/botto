@@ -1,5 +1,7 @@
-var fs = require("fs");
-var admin = require("../core/admin.js");
+const fs = require('fs');
+const admin = require('../core/admin.js');
+const _ = require('lodash');
+
 /*
  * Command handler responsible for routing commands. These include admin only
  * commands as well as any-user commands. Admin/internal functionality is denoted
@@ -14,9 +16,9 @@ module.exports = {
       var opts = makeOptions(bot, from, to, text, message);
       opts.command = respondsTo(opts.command);
 
-      if (typeof privateCommands[opts.command] === 'function') {
+      if (_.include(fs.readdirSync('../core'), opts.command+'.js') {
         if (admin.isAdmin(opts.from, opts.to)) {
-          return privateCommands[opts.command](bot, opts);
+          return require('../core/'+opts.command).call(bot, opts);
         }
       } else {
         return publicCommands(bot, opts);
@@ -25,25 +27,6 @@ module.exports = {
   }
 
 };
-
-// A cache for all our "private" commands (bot-admin or internal use only)
-var privateCommands = {}
-
-privateCommands.reload = function(bot, opts) {
- return require('../core/reload.js').call(bot, opts);
-}
-
-privateCommands.irc = function(bot, opts) {
- return require('../core/irc.js').call(bot, opts);
-}
-
-privateCommands.git = function(bot, opts) {
-  return require('../core/git.js').call(bot, opts);
-}
-
-privateCommands.restart = function(bot, opts) {
-  return require('../core/restart.js').call(bot, opts);
-}
 
 /*
 * Dynamically require and look up our triggers/commands, allowing for
