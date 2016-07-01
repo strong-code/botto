@@ -16,7 +16,7 @@ module.exports = {
       var opts = makeOptions(bot, from, to, text, message);
       opts.command = respondsTo(opts.command);
 
-      if (_.include(fs.readdirSync('../core'), opts.command+'.js') {
+      if (_.includes(fs.readdirSync('core/'), opts.command+'.js')) {
         if (admin.isAdmin(opts.from, opts.to)) {
           return require('../core/'+opts.command).call(bot, opts);
         }
