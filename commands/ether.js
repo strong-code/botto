@@ -18,7 +18,7 @@ module.exports = {
       }
 
       var results = response.body;
-      var eth_usd = results['USDT_ETH']['last'].slice(0, 5);
+      var eth_usd = parseFloat(results['USDT_ETH']['last']).toFixed(2);
       var message;
 
       if (eth_usd == lastCheck) {
@@ -41,8 +41,8 @@ module.exports = {
       }
 
       var results = response.body;
-      var eth_usd = results['USDT_ETH']['last'].slice(0, 5); 
-      var usd_val = Math.round(parseFloat(eth_usd) * parseFloat(amount) * 100) / 100;
+      var eth_usd = results['USDT_ETH']['last'];
+      var usd_val = (parseFloat(eth_usd) * parseFloat(amount)).toFixed(2) 
 
       return respond('$' + usd_val);
     });
