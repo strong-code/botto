@@ -9,7 +9,8 @@ module.exports  = {
   },
 
   getHealth: function() {
-    const uptime = moment.duration(process.uptime()).humanize();
+    console.log(process.uptime())
+    const uptime = moment.duration(process.uptime(), 'seconds').humanize();
     const memory = process.memoryUsage();
     // Only available in node 6.1+, which breaks pg module...
     //const cpu    = process.cpuUsage();
