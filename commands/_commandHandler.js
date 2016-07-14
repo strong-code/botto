@@ -13,7 +13,7 @@ module.exports = {
 
   route: function(bot, from, to, text, message) {
     if (text && text[0] == '!') {
-      var opts = makeOptions(bot, from, to, text, message);
+      let opts = makeOptions(bot, from, to, text, message);
       opts.command = respondsTo(opts.command);
 
       if (_.includes(fs.readdirSync('core/'), opts.command+'.js')) {
@@ -48,7 +48,7 @@ function publicCommands(bot, opts) {
 // Used for aliasing commands to modules that have a different name
 // i.e. calling !eth for ether.js
 function respondsTo(command) {
-  var alias = require('./_aliases').aliases[command];
+  const alias = require('./_aliases').aliases[command];
   if (typeof alias !== 'undefined') {
     return alias;
   }
@@ -57,13 +57,11 @@ function respondsTo(command) {
 
 // Helper function to stuff params into an `opts` hash
 function makeOptions(bot, from, to, text, message) {
-  var opts = {
+  return {
     from: from,
     to: to,
     command: String(text.split(' ')[0]).replace('!', '').trim(),
     args: text.substring(String(text.split(' ')[0]).length).trim().split(' '),
     raw: message
   };
-
-  return opts;
 }

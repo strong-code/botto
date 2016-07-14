@@ -1,5 +1,5 @@
-var needle = require('needle');
-var lastCheck = 0;
+const needle = require('needle');
+let lastCheck = 0;
 
 module.exports = {
 
@@ -42,7 +42,7 @@ module.exports = {
 
       var results = response.body;
       var eth_usd = results['USDT_ETH']['last'];
-      var usd_val = (parseFloat(eth_usd) * parseFloat(amount)).toFixed(2) 
+      var usd_val = (parseFloat(eth_usd) * parseFloat(amount)).toFixed(2)
 
       return respond('$' + usd_val);
     });

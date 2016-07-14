@@ -1,4 +1,4 @@
-var exec = require('child_process').exec
+const exec = require('child_process').exec
 /*
  * IRC-triggerable git commands for pulling in new changes
  */

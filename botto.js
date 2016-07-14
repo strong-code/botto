@@ -1,9 +1,9 @@
-var config = require('./config.js').core.default;
-var fs = require('fs');
-var irc = require('irc');
-var commandHandler = require('./commands/_commandHandler.js');
-var observerHandler = require('./observers/_observerHandler.js')
-var ignore = require('./commands/ignore.js');
+let config = require('./config.js').core.default;
+const fs = require('fs');
+const irc = require('irc');
+const commandHandler = require('./commands/_commandHandler.js');
+const observerHandler = require('./observers/_observerHandler.js')
+const ignore = require('./commands/ignore.js');
 
 /*
  * Initiate the bot and the observers
@@ -12,7 +12,7 @@ if (process.argv[0] === 'test') {
   config = config.core.test;
 }
 
-var bot = new irc.Client(config.server, config.botName, {
+const bot = new irc.Client(config.server, config.botName, {
   channels: config.channels
 });
 

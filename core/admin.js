@@ -1,5 +1,5 @@
-var config = require("../config.js");
-var _ = require('lodash');
+const config = require("../config.js");
+const _ = require('lodash');
 
 /*
  * Determine if a supplied user (by nickname) is an admin for the bot as defined

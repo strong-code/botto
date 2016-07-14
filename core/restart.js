@@ -1,4 +1,4 @@
-var kexec = require('kexec');
+const kexec = require('kexec');
 
 module.exports = {
 

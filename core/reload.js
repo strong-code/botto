@@ -1,4 +1,4 @@
-var fs = require('fs');
+const fs = require('fs');
 
 /*
  * A module for reloading (other) modules. This will purge a named module
@@ -9,8 +9,8 @@ module.exports = {
 
   call: function(bot, opts) {
 
-    var moduleName = opts.args[0];
-    var numReloaded = 0;
+    const moduleName = opts.args[0];
+    let numReloaded = 0;
 
     try {
       if (fs.existsSync('./observers/'+moduleName+'.js')) {
