@@ -4,7 +4,7 @@ const fs = require('fs');
 const irc = require('irc');
 const commandHandler = require('./commands/_commandHandler.js');
 const observerHandler = require('./observers/_observerHandler.js')
-const ignore = require('./commands/ignore.js');
+const ignore = require('./core/ignore.js');
 const _ = require('lodash');
 
 /*
