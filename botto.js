@@ -1,22 +1,23 @@
-let config = require('./config.js').core.default;
+const _config = require('./config.js').core;
+const config = (process.argv[2] === 'test' ? _config.test : _config.default);
 const fs = require('fs');
 const irc = require('irc');
 const commandHandler = require('./commands/_commandHandler.js');
 const observerHandler = require('./observers/_observerHandler.js')
 const ignore = require('./commands/ignore.js');
+const _ = require('lodash');
 
 /*
  * Initiate the bot and the observers
  */
-if (process.argv[0] === 'test') {
-  config = config.core.test;
-}
 
 const bot = new irc.Client(config.server, config.botName, {
   channels: config.channels
 });
 
 if (config.debug) {
+  const chans = _.join(config.channels, ', ');
+  console.log('Starting ' + config.botName + ' and joining: ' + chans);
   bot.addListener("message", function(_from, to, text, message) {
     console.log("[" + to + "] " + _from + ": " + text);
   });
