@@ -35,16 +35,12 @@ module.exports = {
 
   ignoreUser: function (bot, requester, target, chan) {
     return bot.whois(target, (data) => {
-      if (_.includes(data.channels, chan)) {
-        return db.executeQuery({
-          text: 'INSERT INTO ignored_users (nick, host, banned_by, date_added) VALUES ($1, $2, $3, $4)',
-          values: [target, data.host, requester, new Date().toISOString()]
-        }, () => {
-          return bot.say(chan, 'Ignoring user: ' + target + '. Bot privilege has been revoked');
-        });
-      } else {
-        return bot.say(chan, 'No user found with nick \'' + target + '\' in ' + chan);
-      }
+      return db.executeQuery({
+        text: 'INSERT INTO ignored_users (nick, host, banned_by, date_added) VALUES ($1, $2, $3, $4)',
+        values: [target, data.host, requester, new Date().toISOString()]
+      }, () => {
+        return bot.say(chan, 'Ignoring user: ' + target + '. Bot privilege has been revoked');
+      });
     });
   },
 
