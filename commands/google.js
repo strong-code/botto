@@ -11,7 +11,7 @@ module.exports = {
     if (opts.args[0] == '') {
       respond("Usage is !google <query>");
     } else {
-      query = opts.args.join('+');
+      const query = opts.args.join('+');
       respond(module.exports.makeSearch(query, respond));
     }
   },
