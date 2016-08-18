@@ -6,6 +6,7 @@ const commandHandler = require('./commands/_commandHandler.js');
 const observerHandler = require('./observers/_observerHandler.js')
 const ignore = require('./core/ignore.js');
 const _ = require('lodash');
+const markov = require('./observers/markov.js');
 
 /*
  * Initiate the bot and the observers
@@ -40,3 +41,5 @@ bot.addListener("message", function(_from, to, text, msg) {
 bot.addListener("error", function(error) {
   console.log("[ERROR] ", error);
 });
+
+markov.warmCache();

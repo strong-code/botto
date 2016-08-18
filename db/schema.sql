@@ -49,3 +49,12 @@ CREATE TABLE IF NOT EXISTS tells (
   created_at TIMESTAMP NOT NULL,
   sent BOOLEAN DEFAULT FALSE
 );
+
+-- Definition for points table
+CREATE TABLE IF NOT EXISTS points (
+  id SERIAL UNIQUE PRIMARY KEY,
+  given_by VARCHAR(55) NOT NULL,
+  nick VARCHAR(55) NOT NULL,
+  reason TEXT,
+  created_at TIMESTAMP NOT NULL
+);

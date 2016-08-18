@@ -21,12 +21,14 @@
     "forever-monitor": "~1.7.0",
     "irc": "~0.4.0",
     "kexec": "~2.0.2",
+    "line-reader": "^0.4.0",
     "lodash": "~4.8.2",
     "log4js": "~0.6.0",
     "moment": "^2.14.1",
     "needle": "~0.10.0",
     "pg": "~4.4.3",
-    "twit": "~2.1.1"
+    "twit": "~2.1.1",
+    "walk": "^2.3.9"
   },
   "engines": {
     "node": "4.4.7"
