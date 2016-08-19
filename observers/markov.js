@@ -7,13 +7,13 @@ module.exports = {
   call: function (opts, respond) {
     const text = opts.text.split(' ');    
     if (_.includes(text, 'botto')) {
-      return module.exports.generate(respond);
+      return module.exports.generate(_.sample(text), respond);
     }  
   },
 
-  generate: function (respond) {
+  generate: function (seed, respond) {
     let chainLength = _.random(5, 15);
-    let chain = ['man'];
+    let chain = [seed];
 
     while (chain.length < chainLength) {
       const cand = _.sample(cache[_.takeRight(chain)])
@@ -34,7 +34,7 @@ module.exports = {
     cache = {};
     const execFile = require('child_process').execFile;
 
-    execFile('find', ['/root/irclogs/Rizon/#lifting/2016'], (err, stdout, stderr) => {
+    execFile('find', ['/root/irclogs/Rizon/#lifting/'], (err, stdout, stderr) => {
       let files = stdout.split('\n');
       files = _.filter(files, (f) => {
         return _.endsWith(f, '.log');
@@ -54,11 +54,17 @@ module.exports = {
         let words = parts.slice(2);
         
         for (var i = 0; i < words.length; i++) {
-          let curWord  = words[i];
+          let curWord  = words[i].trim();
           let nextWord = words[i+1];
 
+          if (nextWord) {
+            nextWord = nextWord.trim();
+          }
+
           if (cache[curWord]) {
-            cache[curWord].push(nextWord);
+            if (nextWord) {
+              cache[curWord].push(nextWord);
+            }
           } else {
             cache[curWord] = [];
           }
@@ -68,9 +74,9 @@ module.exports = {
 
     linereader.on('close', () => {
       if (!files.length || files.length === 0) {
-        cache = _.filter(cache, (obj) => {
-          return obj.length !== 0 && !_.includes(obj, undefined) && !_.includes(obj, 'undefined');
-        });
+        //cache = _.filter(cache, (obj) => {
+        //  return obj.length !== 0 && !_.includes(obj, undefined) && !_.includes(obj, 'undefined');
+        //});
         console.log(cache)
         console.log('Cache has been warmed')
         isWarmed = true;
