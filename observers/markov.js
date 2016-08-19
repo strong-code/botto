@@ -1,8 +1,8 @@
 const walk       = require('walk');
 const linereader = require('line-reader')
 const _          = require('lodash');
-
-let cache = {};
+let isWarmed     = false;
+let cache        = {};
 
 module.exports = {
 
@@ -13,7 +13,7 @@ module.exports = {
   warmCache = function () {
     cache = {};
     const walker = walk.walk('./irclogs/Rizon/2016', { followLinks: false });
-    const files  = [];
+    let files = [];
 
     walker.on('file', (root, stat, next) => {
       if (stat.type === 'file' && _.endsWith(stat.name, '.log')) {
@@ -23,29 +23,41 @@ module.exports = {
     });
 
     walker.on('end', () => {
-      _.each(files, (file) => {
-        linereader.eachLine(file, (line, last) => {
-          let parts = line.split(' ');
-            if (parts[1].slice(-1) === ':') {
-              let words = parts.slice(2);
+      readLines(files);
+    });
+  },
 
-              for (i = 0; i < words.length; i++) {
-                let curWord  = words[i];
-                let nextWord = words[i+1];
+  readLines: function (files) {
+    const linereader = require('readline').createInterface({
+      input: require('fs').createReadStream(files.shift());
+    });
 
-                if (cache[curWord]) {
-                  cache[curWord].push(nextWord);
-                } else {
-                  cache[curWord] = [];
-                }
-              }
-            }
-          if (last) { return false; }
-        });
-      });
+    linreader.on('line', (line) => {
+      let parts = line.split(' ');
+      if (parts[1].slice(-1) === ':') {
+        let words = parts.slice(2);
 
-      console.log('Cache is warm!')
-      console.log(cache)
+        for (i = 0; i < words.length; i++) {
+          let curWord  = words[i];
+          let nextWord = words[i+1];
+
+          if (cache[curWord]) {
+            cache[curWord].push(nextWord);
+          } else {
+            cache[curWord] = [];
+          }
+        }
+      }
+    });
+
+    linereader.on('close', () => {
+      if (!files.length || files.length === 0) {
+        console.log('Cache has been warmed')
+        console.log(cache)
+        isWarmed = true;
+        return;
+      }
+      return module.exports.readLines(files);
     });
   }
 
