@@ -12,15 +12,18 @@ module.exports = {
   },
 
   generate: function (seed, respond) {
-    let chainLength = _.random(5, 15);
+    const minLength = _.random(2, 5);
     let chain = [seed];
 
-    while (chain.length < chainLength) {
+    while (true) {
       const cand = _.sample(cache[_.takeRight(chain)])
       console.log('plucked cand: ' + cand);
       if (cand) {
         chain.push(cand);
       } else {
+        if (chain.length > minLength) {
+          break;
+        }
         let randKey = _.sample(_.keys(cache));
         chain.push(_.sample(cache[randKey]));
       }
