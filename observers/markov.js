@@ -7,7 +7,11 @@ module.exports = {
   call: function (opts, respond) {
     const text = opts.text.split(' ');    
     if (_.includes(text, 'botto')) {
-      return module.exports.generate(_.sample(text), respond);
+      let seed = _.sample(text);
+      if (text.length > 1) {
+        seed = _.sample(_.tail(text));
+      }
+      return module.exports.generate(seed, respond);
     }  
   },
 
@@ -65,9 +69,7 @@ module.exports = {
           }
 
           if (cache[curWord]) {
-            if (nextWord) {
-              cache[curWord].push(nextWord);
-            }
+            cache[curWord].push(nextWord);
           } else {
             cache[curWord] = [];
           }
