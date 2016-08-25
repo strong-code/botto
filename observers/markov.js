@@ -16,7 +16,7 @@ module.exports = {
   },
 
   generate: function (seed, respond) {
-    const minLength = _.random(2, 5);
+    const minLength = _.random(2, 15);
     let chain = [seed];
 
     while (true) {
@@ -41,7 +41,7 @@ module.exports = {
     cache = {};
     const execFile = require('child_process').execFile;
 
-    execFile('find', ['/root/irclogs/Rizon/#lifting/'], (err, stdout, stderr) => {
+    execFile('find', ['/root/irclogs/Rizon/'], (err, stdout, stderr) => {
       let files = stdout.split('\n');
       files = _.filter(files, (f) => {
         return _.endsWith(f, '.log');
@@ -69,7 +69,11 @@ module.exports = {
           }
 
           if (cache[curWord]) {
-            cache[curWord].push(nextWord);
+            try {
+             cache[curWord].push(nextWord);
+            } catch (e) {
+              console.log('skipping \'' + nextWord + '\' during cache warmup');
+            }
           } else {
             cache[curWord] = [];
           }
@@ -79,10 +83,6 @@ module.exports = {
 
     linereader.on('close', () => {
       if (!files.length || files.length === 0) {
-        //cache = _.filter(cache, (obj) => {
-        //  return obj.length !== 0 && !_.includes(obj, undefined) && !_.includes(obj, 'undefined');
-        //});
-        console.log(cache)
         console.log('Cache has been warmed')
         isWarmed = true;
         return;
