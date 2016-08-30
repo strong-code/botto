@@ -42,3 +42,7 @@ exports.twitter = {
 exports.giphy = {
 	apiKey = ""
 };
+
+exports.google = {
+  cx = ""
+};

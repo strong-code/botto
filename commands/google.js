@@ -1,6 +1,7 @@
-var needle = require('needle');
-var cheerio = require('cheerio');
-var admins = require ('../core/admin.js');
+const needle  = require('needle');
+const cheerio = require('cheerio');
+const admins  = require ('../core/admin.js');
+const cx      = require('../config.js').google.cx;
 
 module.exports = {
 
@@ -60,7 +61,7 @@ module.exports = {
 };
 
 // Base google search URL
-var searchUrl = "https://www.google.com/search?q="
+var searchUrl = 'https://cse.google.com/cse.js?cx=' + cx;
 
 // HTTP client options
 var options = {
