@@ -7,7 +7,7 @@ module.exports = {
   call: function(opts, respond) {
     const text = opts.text.split(' ');
     if (_.includes(text, 'botto') && text[0] !== '!bottoreply') {
-      return getResponse(respond);
+      //return getResponse(respond);
     }
   },
 
