@@ -1,6 +1,7 @@
 # Botto
 
-A social IRC bot built on node.js
+A very advanced robot
+![botto](./ss.png)
 
 # Usage
 
