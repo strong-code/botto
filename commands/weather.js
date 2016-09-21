@@ -1,6 +1,6 @@
-var weather = require('../config.js').weather;
-var needle  = require('needle');
-var _       = require('lodash');
+const weather = require('../config.js').weather;
+const needle  = require('needle');
+const _       = require('lodash');
 
 module.exports = {
 
@@ -13,18 +13,23 @@ module.exports = {
   },
 
   getWeather: function(opts, respond) {
-    var city      = _.join(opts.args, '%20');
-    var formedUrl = baseUrl + 'q=' + city + '&appid=' + weather.apiKey + "&units=imperial";
+    const city      = _.join(opts.args, '%20');
+    const formedUrl = baseUrl + 'q=' + city + '&appid=' + weather.apiKey + "&units=imperial";
     needle.get(formedUrl, options, function(err, res) {
       if (err) {
         return respond(err.message + '; Check logs for details');
       }
-      var conditions = res.body['weather'][0]['description'];
-      var temp       = res.body['main']['temp']
-      var name       = res.body['name'];
 
-      return respond('Weather conditions for ' + name + ': currently ' + conditions +
-        ' at ' + temp + ' degrees');
+      if (res.body['weather'] && res.body['weather'][0]) {
+        const conditions = res.body['weather'][0]['description'];
+        const temp       = res.body['main']['temp']
+        const name       = res.body['name'];
+
+        return respond('Weather conditions for ' + name + ': currently ' + conditions +
+          ' at ' + temp + ' degrees');
+      }
+      
+      return respond('Could not find weather conditions for ' + city);
     });
   },
 
