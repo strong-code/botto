@@ -23,13 +23,16 @@ module.exports = {
       const cand = _.sample(cache[_.takeRight(chain)])
       console.log('plucked cand: ' + cand);
       if (cand) {
-        chain.push(cand);
+        chain.push(cand.trim());
       } else {
         if (chain.length > minLength) {
           break;
         }
         let randKey = _.sample(_.keys(cache));
-        chain.push(_.sample(cache[randKey]));
+        const randCand = _.sample(cache[randKey]);
+        if (randCand) {
+          chain.push(randCand.trim());
+        }
       }
     }
 
@@ -41,7 +44,7 @@ module.exports = {
     cache = {};
     const execFile = require('child_process').execFile;
 
-    execFile('find', ['/root/irclogs/Rizon/'], (err, stdout, stderr) => {
+    execFile('find', ['/root/irclogs/Rizon/#lifting/'], (err, stdout, stderr) => {
       let files = stdout.split('\n');
       files = _.filter(files, (f) => {
         return _.endsWith(f, '.log');
