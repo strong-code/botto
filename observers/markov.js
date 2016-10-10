@@ -4,7 +4,7 @@ let cache        = {};
 
 module.exports = {
 
-  call: function (opts, respond) {
+  _call: function (opts, respond) {
     const text = opts.text.split(' ');    
     if (_.includes(text, 'botto')) {
       let seed = _.sample(text);

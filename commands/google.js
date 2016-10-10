@@ -18,7 +18,9 @@ module.exports = {
   },
 
   makeSearch: function(query, respond) {
-    needle.get(searchUrl+query, options, function(err, response) {
+    const queryString = searchUrl + query + '&start=0&sort=&cx=' + cx;
+    console.log('searching with: ' + queryString);
+    needle.get(queryString, options, function(err, response) {
       if (err) {
         return respond("Error retrieving search results");
       } else if (response.statusCode == 503) {
@@ -36,6 +38,7 @@ module.exports = {
   },
 
   getSearchResults: function(html) {
+    console.log(html)
     try {
       var $ = cheerio.load(html);
       var results = [];
@@ -61,7 +64,9 @@ module.exports = {
 };
 
 // Base google search URL
-var searchUrl = 'https://cse.google.com/cse.js?cx=' + cx;
+//var searchUrl = 'https://cse.google.com/cse.js?cx=' + cx;
+const searchUrl = 'https://cse.google.com/cse?oe=utf8&ie=utf8&source=uds&q=';
+//test&start=0&sort=&cx=' + cx + '#gsc.tab=0&gsc.q=test&gsc.page=1';
 
 // HTTP client options
 var options = {

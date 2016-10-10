@@ -42,4 +42,4 @@ bot.addListener("error", function(error) {
   console.log("[ERROR] ", error);
 });
 
-markov.warmCache();
+//markov.warmCache();
