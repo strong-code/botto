@@ -39,6 +39,7 @@ function publicCommands(bot, opts) {
         return bot.say(opts.to, response);
       });
     } catch (e) {
+      console.error(e.stack);
       return bot.say(opts.to, e.message + "; Check logs for more info");
     }
   }
