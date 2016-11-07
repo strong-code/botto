@@ -10,12 +10,17 @@ const _ = require('lodash');
 module.exports = {
 
   // List all admins for a specified channel
-  listAdmins: function(channel) {
-    if (config.admin[channel]) {
-      return "Admins for " + channel + ": " + config.admin[channel].join(', ');
-    }
-    return "No administrators specified for " + channel;
+  call: function(bot, opts) {
+    let admins = "No administrators specified for " + opts.to;
+    const globalAdmins = config.globalAdmins.join(', ');
+
+    if (config.admin[opts.to]) {
+      admins = "Admins for " + opts.to + ": " + config.admin[opts.to].join(', ');
+    };
+    
+    return bot.say(opts.to, admins + ". Global admins: " + globalAdmins);    
   },
+
   // Check if a user is an admin for a specified channel
   isAdmin: function(user, channel) {
     if (_.includes(config.globalAdmins, user)) {
