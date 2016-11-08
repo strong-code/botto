@@ -76,3 +76,8 @@ module.exports = function(opts, respond) {
   }
 };
 ```
+
+### DB Schema
+Enter psql prompt with `psql -d botto`.
+
+Import the schema (from psql) with `\i db/schema.sql`. Old tables will be skipped.

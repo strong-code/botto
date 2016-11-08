@@ -58,3 +58,12 @@ CREATE TABLE IF NOT EXISTS points (
   reason TEXT,
   created_at TIMESTAMP NOT NULL
 );
+
+-- Definition for last.fm 'now playing' table
+CREATE TABLE IF NOT EXISTS last_fm_users (
+  id SERIAL UNIQUE PRIMARY KEY,
+  last_fm_username VARCHAR(255) NOT NULL,
+  irc_nick VARCHAR(55) NOT NULL,
+  created_at TIMESTAMP NOT NULL
+);
+

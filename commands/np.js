@@ -1,32 +1,61 @@
 const apiKey = require('../config.js').lastfm.apiKey;
 const needle = require('needle');
 const _      = require('lodash');
+const db     = require ('../core/_db.js');
 
 module.exports = {
   
   call: function(opts, respond) {
-    if (opts.args[0] == '') {
-      respond('Usage is !np <username>');
+    if (opts.args[0] == 'add') {
+      return module.exports.registerUser(opts.args[1], opts.from, respond);
     } else {
-      const username = opts.args[0];
-      respond(module.exports.nowPlaying(username, respond));
+      return module.exports.nowPlaying(opts.from, respond);
     }
   },
 
-  nowPlaying: function(username, respond) {
-    const url = 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + username + '&api_key=' + apiKey + ' +&format=json&nowplaying=true';
-    needle.get(url, options, function(err, response) {
+  nowPlaying: function(ircNick, respond) {
+    return module.exports.getUser(ircNick, (err, username) => {
       if (err) {
-        console.error(err.message);
-        return respond('Error fetching current track for user ' + username);
+        return respond('No last.fm username registered for ' + ircNick);
       }
+      const url = 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + username + '&api_key=' + apiKey + ' +&format=json&nowplaying=true';
+      needle.get(url, options, (err, response) => {
+        if (err) {
+          console.error(err.message);
+          return respond('Error fetching current track for user ' + username);
+        }
 
-      const nowPlaying = response.body['recenttracks']['track'][0];
-      const artist     = nowPlaying['artist']['#text'];
-      const track      = nowPlaying['name'];
-      const album      = nowPlaying['album']['#text'];
+        const nowPlaying = response.body['recenttracks']['track'][0];
+        const artist     = nowPlaying['artist']['#text'];
+        const track      = nowPlaying['name'];
+        const album      = nowPlaying['album']['#text'];
 
-      return respond(username + ' is listening to ' + track + ' by ' + artist + ' off of ' + album);
+        return respond(username + ' is listening to ' + track + ' by ' + artist + ' off of ' + album);
+      });
+    });
+  },
+
+  registerUser: function(lastFmNick, ircNick, respond) {
+    return db.executeQuery({
+      text: "INSERT INTO last_fm_users (last_fm_username, irc_nick, created_at) VALUES ($1, $2, $3)",
+      values: [lastFmNick, ircNick, new Date().toISOString()]
+    }, () => {
+      return respond('Registered ' + lastFmNick);
+    });
+  },
+
+  getUser: function(username, cb) {
+    return db.executeQuery({
+      text: "SELECT last_fm_username FROM last_fm_users WHERE irc_nick = $1",
+      values: [username]
+    }, (result) => {
+      let err, nick;
+      if (!result || !result.rows[0]) {
+        err = {message: 'No such user'};
+      } else {
+        nick = result.rows[0]['last_fm_username'];
+      }
+      cb(err, nick);
     });
   }
 }
