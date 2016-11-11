@@ -1,4 +1,5 @@
 const needle = require('needle');
+const colors = require('irc').colors;
 let lastCheck = 0;
 
 module.exports = {
@@ -22,11 +23,11 @@ module.exports = {
       var message;
 
       if (eth_usd == lastCheck) {
-        message = 'No change | $' + eth_usd;
+        message = '$' + eth_usd;
       } else if (eth_usd > lastCheck) {
-        message = 'Upwards movement ^  | $' + eth_usd;
+        message = colors.wrap('dark_green', '$' + eth_usd);
       } else {
-        message = 'Downwards movement v | $' + eth_usd
+        message = colors.wrap('dark_red', '$' + eth_usd);
       }
 
       lastCheck = eth_usd;

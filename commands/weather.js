@@ -1,5 +1,6 @@
 const weather = require('../config.js').weather;
 const needle  = require('needle');
+const colors  = require('irc').colors;
 const _       = require('lodash');
 
 module.exports = {
@@ -26,11 +27,23 @@ module.exports = {
         const name       = res.body['name'];
 
         return respond('Weather conditions for ' + name + ': currently ' + conditions +
-          ' at ' + temp + ' degrees');
+          ' at ' + module.exports.colorizeTemp(temp) + ' degrees');
       }
       
       return respond('Could not find weather conditions for ' + city);
     });
+  },
+
+  colorizeTemp: function(temp) {
+    let color;
+    if (temp <= 65) {
+      color ='cyan';
+    } else if (temp > 65 && temp <= 80) {
+      color = 'dark_green';
+    } else {
+      color = 'dark_red';
+    }
+    return colors.wrap(color, temp);
   },
 
   _parseCity: function(opts) {
