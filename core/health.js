@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const colors = require('irc').colors;
 const moment = require('moment');
 
 module.exports  = {
@@ -9,13 +10,22 @@ module.exports  = {
   },
 
   getHealth: function() {
-    console.log(process.uptime())
-    const uptime = moment.duration(process.uptime(), 'seconds').humanize();
-    const memory = process.memoryUsage();
-    // Only available in node 6.1+, which breaks pg module...
-    //const cpu    = process.cpuUsage();
+    const uptime  = colors.wrap('dark_green', moment.duration(process.uptime(), 'seconds').humanize());
+    const memory  = module.exports.getMemory();
+    const version = colors.wrap('dark_green', process.version);
 
-    return `Uptime: ${uptime} | Memory [rss] ${Math.round(Number(memory.rss/1024) * 10) / 10} Kb [heapTotal] ${Math.round(Number(memory.heapTotal/1024) * 10) / 10} Kb [heapUsed] ${Math.round(Number(memory.heapUsed/1024) * 10) / 10} Kb`;
+    return `Uptime: ${uptime} | Memory ${memory}Mb | Node ${version}`;
+  },
+
+  getMemory: function() {
+    const memory = process.memoryUsage().rss / 1024576;
+    let c = 'dark_green';
+
+    if (memory > 35) {
+      c = 'dark_red';
+    }
+    
+    return colors.wrap(c, Math.round(Number(memory)));
   }
 
 };

@@ -3,24 +3,8 @@ module.exports = {
   // Routing logic
   call: function(bot, opts) {
     if (opts.args) {
-      switch (opts.args[0]) {
-        case 'join':
-          return module.exports.join(bot, opts);
-        case 'part':
-          return module.exports.part(bot, opts);
-        case 'say':
-          return module.exports.say(bot, opts);
-        case 'action':
-          return module.exports.action(bot, opts);
-        case 'notice':
-          return module.exports.notice(bot, opts);
-        case 'ctcp':
-          return module.exports.ctcp(bot, opts);
-        case 'cycle':
-          return module.exports.cycle(bot, opts);
-        case 'raw':
-          return module.exports.raw(bot, opts);
-      }
+      let fn = module.exports[opts.args[0]];
+      return fn(bot, opts);
     }
   },
 
