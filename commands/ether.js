@@ -25,9 +25,9 @@ module.exports = {
       if (eth_usd == lastCheck) {
         message = '$' + eth_usd;
       } else if (eth_usd > lastCheck) {
-        message = colors.wrap('dark_green', '$' + eth_usd);
+        message = colors.wrap('dark_green', '$' + eth_usd + ' ↑');
       } else {
-        message = colors.wrap('dark_red', '$' + eth_usd);
+        message = colors.wrap('dark_red', '$' + eth_usd + ' ↓');
       }
 
       lastCheck = eth_usd;

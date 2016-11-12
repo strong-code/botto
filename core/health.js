@@ -13,8 +13,9 @@ module.exports  = {
     const uptime  = colors.wrap('dark_green', moment.duration(process.uptime(), 'seconds').humanize());
     const memory  = module.exports.getMemory();
     const version = colors.wrap('dark_green', process.version);
+    const modules = colors.wrap('dark_green', module.exports.getModules());
 
-    return `Uptime: ${uptime} | Memory ${memory}Mb | Node ${version}`;
+    return `Uptime ${uptime} | Memory ${memory}Mb | Modules ${modules} | Node ${version}`;
   },
 
   getMemory: function() {
@@ -26,6 +27,12 @@ module.exports  = {
     }
     
     return colors.wrap(c, Math.round(Number(memory)));
+  },
+
+  getModules: function() {
+    return _.filter(require.cache, (v, k) => {
+      return !_.includes(k, 'node_modules');
+    }).length;
   }
 
 };
