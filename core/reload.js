@@ -8,7 +8,6 @@ const fs = require('fs');
 module.exports = {
 
   call: function(bot, opts) {
-
     const moduleName = opts.args[0];
     let numReloaded = 0;
 
