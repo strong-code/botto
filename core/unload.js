@@ -11,8 +11,10 @@ module.exports = {
         _.each(dirs, (dir) => {
           let path = dir + moduleName + '.js';
           fs.access(path, fs.constants.R_OK, (err) => {
-            delete require.cache[require.resolve('../'+dir+moduleName)];
-            return bot.say(opts.to, 'Module ' + moduleName + ' unloaded');
+            if (!err) {
+              delete require.cache[require.resolve('../'+dir+moduleName)];
+              return bot.say(opts.to, 'Module ' + moduleName + ' unloaded');
+            }
           });
         });
       } catch (e) {
