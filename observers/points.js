@@ -6,6 +6,10 @@ module.exports = {
   call: function(opts, respond) {
     let check = opts.text.split(' ')[0];
     const target = check.slice(0, -2);
+    
+    if (target == opts.from) {
+      return respond('mate...');
+    }
 
     if (_.endsWith(check, '++')) {
       return module.exports.addPoint(target, respond);
