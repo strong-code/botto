@@ -53,10 +53,8 @@ CREATE TABLE IF NOT EXISTS tells (
 -- Definition for points table
 CREATE TABLE IF NOT EXISTS points (
   id SERIAL UNIQUE PRIMARY KEY,
-  given_by VARCHAR(55) NOT NULL,
-  nick VARCHAR(55) NOT NULL,
-  reason TEXT,
-  created_at TIMESTAMP NOT NULL
+  score SMALLINT NOT NULL,
+  nick VARCHAR(55) NOT NULL
 );
 
 -- Definition for last.fm 'now playing' table
