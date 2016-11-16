@@ -26,20 +26,23 @@ if (config.debug) {
 
 // Register all our message listeners (either observers or commands)
 bot.addListener("message", function(_from, to, text, msg) {
-
-  ignore._isIgnoredBool(_from, msg.host, function(ignored) {
-    if (!ignored) {
-      // Delegate explicit commands starting with a !bang to the handler
-    	commandHandler.route(bot, _from, to, text, msg);
-    	// Delegate observables (keywords, mentions, etc) to the handler
-    	observerHandler.route(bot, _from, to, text, msg);
-    }
-  });
-
+  try {
+    ignore._isIgnoredBool(_from, msg.host, function(ignored) {
+      if (!ignored) {
+        // Delegate explicit commands starting with a !bang to the handler
+        commandHandler.route(bot, _from, to, text, msg);
+        // Delegate observables (keywords, mentions, etc) to the handler
+        observerHandler.route(bot, _from, to, text, msg);
+      }
+    });
+  } catch (e) {
+    console.error(e.message);
+    bot.say(opts.to, e.message + '; Check logs for more info');
+  }
 });
 
 bot.addListener("error", function(error) {
-  console.log("[ERROR] ", error);
+  console.error("[ERROR] ", error.message);
 });
 
 //markov.warmCache();

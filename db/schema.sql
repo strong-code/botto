@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS ignored_users (
 -- Definition for message table
 CREATE TABLE IF NOT EXISTS tells (
   id SERIAL UNIQUE PRIMARY KEY,
+  chan VARCHAR(55) NOT NULL,
   sender VARCHAR(55) NOT NULL,
   receiver VARCHAR(55) NOT NULL,
   message TEXT NOT NULL,
