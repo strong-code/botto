@@ -43,6 +43,10 @@ a separator for the trigger and response.
 Begins a game of duckhunt, in which the "duck" will randomly appear in the channel,
 and the first person to write 'bang' after it appears wins the round.
 
+!tell <nick> <message>
+This will store a message for <nick> until the next time they talk. Helpful if you need
+to tell someone something but they are offline.
+
 ------------------------
 OBSERVERS
 ------------------------
@@ -55,7 +59,7 @@ Duplicates are ignored.
 EPIC: The word "epic" will spew an unintelligible collection of bullshit. Do not
 try this.
 
-botto: he shows his face.
+tell: If you have a message waiting for you, botto will ping you and display the message once you talk.
 
 ------------------------
 ADMIN/CORE COMMANDS
@@ -71,6 +75,9 @@ List all currently ignored nicknames.
 
 !reload <module>
 Attempt to reload the specified module from disk, pulling in any code changes.
+
+!unload <module>
+Remove module from the require.cache. Helpful for debugging or dropping memory usage.
 
 !restart
 Do a hard restart of the entire botto process. This will exec the `./run.sh` script
