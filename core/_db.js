@@ -1,28 +1,41 @@
-var pg = require('pg');
-var config = require('./../config.js').db;
+const pg = require('pg');
+const _config = require('./../config.js').db;
 
 module.exports = {
-
-  // Execute a supplied string query or prepared statement and return result in callback
-  executeQuery: function(queryString, cb) {
-    var client = new pg.Client(dbUrl);
-
-    client.connect(function(err) {
+  
+  executeQuery: function (queryString, cb) {
+    pool.connect((err, client, release) => {
       if (err) {
-        return console.error('Error connecting to postgres', err);
+        console.error('Error connecting to postgres', err);
+        return cb(err);
       }
-      client.query(queryString, function(err, result) {
+
+      client.query(queryString, (err, result) => {
+        release();
+
         if (err) {
-          return console.log('Error executing query', err);
+          console.error('Error executing query', err);
+          return cb(err);
         }
-        cb(result);
-        client.end();
+
+        return cb(result);
       });
     });
   }
+
 };
 
-var dbUrl = process.env.DATABSE_URL || 'postgres://' + config.username + ':' + config.password + '@localhost:5432/botto';
+const config = {
+  user: _config.username,
+  database: 'botto',
+  password: _config.password,
+  host: 'localhost',
+  port: 5432,
+  max: 10,
+  idleTimeoutMillis: 30000
+};
+
+const pool = new pg.Pool(config);
 
 /*
  * This is intended to be a private command that can be used to set up the
