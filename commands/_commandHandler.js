@@ -21,6 +21,7 @@ module.exports = {
           return require('../core/'+opts.command).call(bot, opts);
         }
       } else {
+        console.log('[INFO] ' + opts.from + ' issued command ' + opts.command + ' to ' + opts.to);
         return publicCommands(bot, opts);
       }
     }

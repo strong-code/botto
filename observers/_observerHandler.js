@@ -34,6 +34,7 @@ module.exports = {
         if (observer && typeof observer.call === 'function') {
           try {
             observer.call(opts, function(response) {
+              console.log('[INFO] Triggered observer ' + file.slice(0, -3) + ' in ' + receiver);
               return bot.say(receiver, response);
             });
           } catch (e) {
