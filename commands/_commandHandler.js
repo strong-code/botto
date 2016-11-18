@@ -1,5 +1,6 @@
 const fs = require('fs');
 const admin = require('../core/admin.js');
+const logger = require('../core/logger.js');
 const _ = require('lodash');
 
 /*
@@ -21,7 +22,9 @@ module.exports = {
           return require('../core/'+opts.command).call(bot, opts);
         }
       } else {
-        console.log('[INFO] ' + opts.from + ' issued command ' + opts.command + ' to ' + opts.to);
+        //console.log('[INFO] ' + opts.from + ' issued  !' + opts.command + ' to ' + opts.to);
+        let _msg = 'issued !' + opts.command;
+        logger.log(opts.from, opts.to, _msg);
         return publicCommands(bot, opts);
       }
     }
@@ -40,7 +43,7 @@ function publicCommands(bot, opts) {
         return bot.say(opts.to, response);
       });
     } catch (e) {
-      console.error(e.stack);
+      logger.error(opts.from, opts.to, e);
       return bot.say(opts.to, e.message + "; Check logs for more info");
     }
   }

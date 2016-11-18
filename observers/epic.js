@@ -8,7 +8,7 @@ module.exports = {
         if (err) {
           return;
         }
-        return respond(data);
+        //return respond(data);
       });
     }
   }
