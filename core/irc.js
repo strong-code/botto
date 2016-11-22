@@ -4,7 +4,18 @@ module.exports = {
   call: function(bot, opts) {
     if (opts.args) {
       let fn = module.exports[opts.args[0]];
-      return fn(bot, opts);
+      if (fn) {
+        return fn(bot, opts);
+      }
+    }
+  },
+
+  nick: function(bot, opts) {
+    var nick = opts.args[1];
+    if (nick) {
+      return bot.send('raw NICK ' + nick);
+    } else {
+      return bot.say(opts.to, "No nick specified");
     }
   },
 

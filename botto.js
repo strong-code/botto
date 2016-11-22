@@ -35,12 +35,12 @@ bot.addListener("message", function(_from, to, text, msg) {
       }
     });
   } catch (e) {
-    console.error(e.message);
+    console.error(e);
     bot.say(opts.to, e.message + '; Check logs for more info');
   }
 });
 
-bot.addListener("error", function(error) {
-  console.error("[ERROR] ", error.message);
+bot.addListener("error", function(err) {
+  console.error("[ERROR] ", err);
 });
 

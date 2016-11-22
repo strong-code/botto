@@ -45,4 +45,4 @@ setInterval(() => {
       });
     }
   });
-}, 30000); //Every 30 seconds
+}, 5000); //Every 30 seconds
