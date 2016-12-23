@@ -1,48 +1,32 @@
 const db = require('../core/_db.js');
 const _  = require('lodash');
-let nickCache = [];
+let msgCache = {};
 
 module.exports = {
 
   call: function(opts, respond) {
-    if (_.includes(nickCache, opts.from)) {
+    if (_.includes(_.keys(msgCache), opts.from)) {
       return module.exports.sendMessage(opts.from, opts.to, respond);
     }
   },
 
+  msgCache: msgCache,
+
   sendMessage: function(receiver, chan, respond) {
-    return db.executeQuery({
-      text: 'SELECT * FROM tells WHERE receiver = $1 AND chan = $2 AND sent = false',
-      values: [receiver, chan]
-    }, (result) => {
-      if (result.rows) {
-        _.map(result.rows, (row) => {
-          let msg = receiver + ', ' + row['sender'] + ' says: ' + row['message'];
-          respond(msg);
-          return module.exports.markSent(row['id']);
-        });
-      }
+    const msg = msgCache[receiver];
+    delete msgCache[receiver];
+    return module.exports.markSent(receiver, msg.msg, () => {
+      return respond(receiver + ', ' + msg.sender + ' says: ' + msg.msg);
     });
   },
 
-  markSent: function(rowId) {
+  markSent: function(receiver, msg, cb) {
     return db.executeQuery({
-      text: 'UPDATE tells SET sent = true WHERE id = $1',
-      values: [rowId]
+      text: 'UPDATE tells SET sent = true WHERE receiver = $1 AND message = $2',
+      values: [receiver, msg]
     }, () => {
-      return console.log(rowId + ' tell marked as sent');
+      console.log('Tell marked as sent');
+      return cb();
     });
   }
 };
-
-setInterval(() => {
-  return db.executeQuery({
-    text: 'SELECT receiver FROM tells WHERE sent = false',
-  }, (result) => {
-    if (result.rows) {
-      nickCache = _.map(result.rows, (row) => {
-        return row['receiver'];
-      });
-    }
-  });
-}, 5000); //Every 30 seconds

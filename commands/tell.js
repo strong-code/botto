@@ -1,5 +1,6 @@
 const db = require('../core/_db.js');
 const _  = require('lodash');
+const msgCache = require('../observers/tell').msgCache;
 
 module.exports = {
 
@@ -13,11 +14,22 @@ module.exports = {
   },
 
   saveMessage: function(chan, sender, receiver, msg, respond) {
+    module.exports.toCache(chan, sender, receiver, msg);
+    module.exports.toDisk(chan, sender, receiver, msg);
+    return respond('Message saved. I will tell ' + receiver + ' next time they are around.');
+  },
+
+  toCache: function(chan, sender, receiver, msg) {
+    msgCache[receiver] = {chan: chan, sender: sender, msg: msg};
+  },
+
+  toDisk: function(chan, sender, receiver, msg) {
     return db.executeQuery({
       text: 'INSERT INTO tells (chan, sender, receiver, message, created_at) VALUES ($1, $2, $3, $4, $5)',
       values: [chan, sender, receiver, msg, new Date().toISOString()]
     }, () => {
-      return respond('Message saved. I will tell ' + receiver + ' next time they are around.');
+      console.log('message saved to disk');
+      //return respond('Message saved. I will tell ' + receiver + ' next time they are around.');
     });
   }
 
