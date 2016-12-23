@@ -1,5 +1,6 @@
 const needle = require('needle');
 const _ = require('lodash');
+const colors = require('irc').colors;
 
 module.exports = {
   
@@ -21,11 +22,11 @@ module.exports = {
       const status = res.body['status_code'];
 
       if (status === 1) {
-        return respond(domain + ' is up (response time: ' + res.body['response_time'] + ' seconds)');
+        return respond(colors.wrap('dark_green', domain) + ' is up (response time: ' + res.body['response_time'] + ' seconds)');
       } else if (status === 2) {
-        return respond(domain + ' is currently offline');
+        return respond(colors.wrap('dark_red', domain) + ' is currently offline');
       } else {
-        return respond(domain + ' is not a valid domain');
+        return respond(colors.wrap('dark_red', domain) + ' is not a valid domain');
       }
     });
   }
