@@ -1,7 +1,7 @@
 const fs = require('fs');
-const admin = require('../core/admin.js');
-const logger = require('../core/logger.js');
-const _ = require('lodash');
+const admin     = require('../core/admin.js');
+const logger    = require('../core/logger.js');
+const _         = require('lodash');
 
 /*
  * Command handler responsible for routing commands. These include admin only
@@ -9,7 +9,6 @@ const _ = require('lodash');
  * as _file.js. This module is essentially a routing layer and should contain no
  * command logic other than delegation and some (light) parsing.
  */
-
 module.exports = {
 
   route: function(bot, from, to, text, message) {
@@ -17,18 +16,37 @@ module.exports = {
       let opts = makeOptions(bot, from, to, text, message);
       opts.command = respondsTo(opts.command);
 
+      if (_.includes(module.exports.unmounted[opts.to], opts.command)) {
+        return;
+      }
+
       if (_.includes(fs.readdirSync('core/'), opts.command+'.js')) {
         if (admin.isAdmin(opts.from, opts.to)) {
           return require('../core/'+opts.command).call(bot, opts);
         }
       } else {
-        //console.log('[INFO] ' + opts.from + ' issued  !' + opts.command + ' to ' + opts.to);
         let _msg = 'issued !' + opts.command;
         logger.log(opts.from, opts.to, _msg);
         return publicCommands(bot, opts);
       }
     }
-  }
+  },
+
+  unmount: function(to, command) {
+    if (module.exports.unmounted[to]) {
+      module.exports.unmounted[to].push(command);
+    } else {
+      module.exports.unmounted[to] = [command];
+    }
+  },
+
+  mount: function(to, command) {
+    return _.remove(module.exports.unmounted[to], (el) => {
+      return command === el;
+    });
+  },
+
+  unmounted: {}
 
 };
 
