@@ -1,6 +1,6 @@
 const needle = require('needle');
 const colors = require('irc').colors;
-let lastCheck = 0;
+let lastCheck = 0.00;
 
 module.exports = {
 
@@ -18,16 +18,17 @@ module.exports = {
         return respond('Error fetching price. API might be down');
       }
 
-      var results = response.body;
-      var eth_usd = parseFloat(results['USDT_ETH']['last']).toFixed(2);
-      var message;
-
-      if (eth_usd == lastCheck) {
-        message = '$' + eth_usd;
+      const results = response.body;
+      const eth_usd = parseFloat(results['USDT_ETH']['last']);
+      const last    = parseFloat(lastCheck);
+      let message;
+      
+      if (eth_usd === lastCheck) {
+        message = '$' + eth_usd.toFixed(2);
       } else if (eth_usd > lastCheck) {
-        message = colors.wrap('dark_green', '$' + eth_usd + ' ↑');
+        message = colors.wrap('dark_green', '$' + eth_usd.toFixed(2) + ' ↑');
       } else {
-        message = colors.wrap('dark_red', '$' + eth_usd + ' ↓');
+        message = colors.wrap('dark_red', '$' + eth_usd.toFixed(2) + ' ↓');
       }
 
       lastCheck = eth_usd;
@@ -41,9 +42,9 @@ module.exports = {
         return respond('Error fetching price. API might be down');
       }
 
-      var results = response.body;
-      var eth_usd = results['USDT_ETH']['last'];
-      var usd_val = (parseFloat(eth_usd) * parseFloat(amount)).toFixed(2)
+      const results = response.body;
+      const eth_usd = results['USDT_ETH']['last'];
+      const usd_val = (parseFloat(eth_usd) * parseFloat(amount)).toFixed(2)
 
       return respond('$' + usd_val);
     });
