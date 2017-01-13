@@ -1,4 +1,4 @@
-var fs = require('fs');
+const fs = require('fs');
 
 /*
  * Observer handler responsible for routing "observables". An observable is
@@ -11,7 +11,7 @@ var fs = require('fs');
 module.exports = {
 
   route: function(bot, from, to, text, message) {
-    var opts = {
+    const opts = {
       from: from,
       to: to,
       text: text,
@@ -21,25 +21,32 @@ module.exports = {
     if (opts.text && opts.text[0] != '!') {
 
       // It's a private message, so respond to the sender
-      var receiver = opts.from;
+      let receiver = opts.from;
 
       // It's a a public, channel message
       if (to[0] == '#') {
         receiver = opts.to;
       }
 
+      const tryCalling = function (observer) {
+        try {
+          observer.call(opts, (response) => {
+            return bot.say(receiver, response);
+          });
+        } catch (e) {
+          return bot.say(receiver, e.message + "; Check logs for more info");
+        }
+      }
+
+      const isCallable = function (file, observer) {
+        return file.slice(-3) === '.js' && typeof observer.call === 'function'
+      }
+
       // Check our observers for anything that may trigger a response
-      fs.readdirSync('./observers/').forEach(function(file) {
-        var observer = require('../observers/'+file);
-        if (observer && typeof observer.call === 'function') {
-          try {
-            observer.call(opts, function(response) {
-              console.log('[INFO] Triggered observer ' + file.slice(0, -3) + ' in ' + receiver);
-              return bot.say(receiver, response);
-            });
-          } catch (e) {
-            return bot.say(receiver, e.message + "; Check logs for more info");
-          }
+      fs.readdirSync('./observers/').forEach((file) => {
+        let observer = require('../observers/'+file);
+        if (isCallable(file, observer)) {
+          return tryCalling(observer);
         }
       });
     }
