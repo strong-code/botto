@@ -27,7 +27,7 @@ exports.db = {
 };
 
 exports.weather = {
-	apiKey = ""
+	apiKey: ""
 };
 
 // Holy shit why does this library use snake_case for variable names
@@ -40,9 +40,9 @@ exports.twitter = {
 };
 
 exports.giphy = {
-	apiKey = ""
+	apiKey: ""
 };
 
 exports.google = {
-  cx = ""
+  cx: ""
 };
