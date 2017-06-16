@@ -29,7 +29,7 @@ module.exports = {
       const ignoredUsers = _.map(result.rows, function (row) {
         return row['nick'];
       });
-      return bot.say(chan, 'Currently ignored users: ' + _.join(ignoredUsers, ', '));
+      return bot.say(chan, 'BAD USERS LIST: ' + _.join(ignoredUsers, ', '));
     });
   },
 
