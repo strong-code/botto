@@ -24,7 +24,7 @@ module.exports = {
       const upper = res.body.list.length - 1;
       const item = res.body.list[_.random(0, upper)]
       if (item) {
-        return respond(phrase + ': ' + item.definition.replace(/\r?\n/g, '') + '. Example: ' + item.example.replace(/\r?\n/g, ''));
+        return respond(phrase + ': ' + item.definition + '. Example: ' + item.example);
       }
 
       return respond('No definition found for: ' + phrase);
