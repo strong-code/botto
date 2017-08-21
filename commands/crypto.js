@@ -29,7 +29,7 @@ module.exports = {
         return respond(`Could not find any information for coin '${coin}'`);
       }
 
-      return respond(`1 ${_coin.symbol} (${_coin.name}) = $${_coin.price_usd} | Hourly: ${_coin.percent_change_1h}% Daily: ${_coin.percent_change_24h}% Weekly: ${_coin.percent_change_7d}%`)
+      return respond(`1 ${_coin.symbol} (${_coin.name}) = $${_coin.price_usd} | Hourly: ${_coin.percent_change_1h}% | Daily: ${_coin.percent_change_24h}% | Weekly: ${_coin.percent_change_7d}%`)
     });
   }
 
