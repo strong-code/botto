@@ -6,6 +6,7 @@ module.exports = {
     'g': 'google',
     'w': 'weather',
     'r': 'reload',
-    'gif': 'giphy'
+    'gif': 'giphy',
+    'c': 'crypto'
   }
 }
