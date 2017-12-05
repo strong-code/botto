@@ -7,7 +7,7 @@
     "test": "echo \">testing\" && exit 1"
   },
   "author": {
-    "name": "Colin L.",
+    "name": "Colin",
     "url": "http://strongco.de"
   },
   "repository": {

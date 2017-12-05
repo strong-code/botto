@@ -1,11 +1,12 @@
-var db = require('../core/_db.js');
+const db = require('../core/_db.js');
+const moment = require('moment');
 
 module.exports = {
 
   call: function(opts, respond) {
     const last = module.exports.lastShout;
     if (opts.text == 'who said that' && last) {
-      return respond(last['nick'] + " said that in " + last['chan'] + " on " + last['date_spoken'])
+      return respond(last['nick'] + " said that in " + last['chan'] + " on " + moment(last['date_spoken']).format("dddd, MMMM Do YYYY"))
     }
     // Store only all uppercase quotes longer than 3 chars
     if (opts.text.length > 3 && opts.text == opts.text.toUpperCase()) {

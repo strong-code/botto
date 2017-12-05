@@ -4,7 +4,7 @@ var _  = require('lodash');
 module.exports = {
 
   call: function (opts, respond) {
-    if (opts.text === 'who said that') {
+    if (opts.text === 'who added that') {
       return module.exports.who(respond);
     } else {
       db.executeQuery({
