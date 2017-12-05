@@ -3,8 +3,9 @@ var db = require('../core/_db.js');
 module.exports = {
 
   call: function(opts, respond) {
-    if (opts.text == 'who said that' && lastShout) {
-      return respond(lastShout['nick'] + " said that in " + lastShout['chan'] + " on " + lastShout['date_spoken'])
+    const last = module.exports.lastShout;
+    if (opts.text == 'who said that' && last) {
+      return respond(last['nick'] + " said that in " + last['chan'] + " on " + last['date_spoken'])
     }
     // Store only all uppercase quotes longer than 3 chars
     if (opts.text.length > 3 && opts.text == opts.text.toUpperCase()) {
@@ -27,7 +28,7 @@ module.exports = {
   getShout: function(respond) {
     db.executeQuery('SELECT * FROM shouts ORDER BY RANDOM() LIMIT 1', function(result) {
       if (result.rows && result.rows[0]) {
-        lastShout = result.rows[0];
+        module.exports.lastShout = result.rows[0];
         respond(result.rows[0]['message']);
       }
     });
