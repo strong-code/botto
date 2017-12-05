@@ -31,5 +31,5 @@ module.exports = {
         respond(result.rows[0]['message']);
       }
     });
-  },
+  }
 };
