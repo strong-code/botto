@@ -1,6 +1,6 @@
 const needle   = require('needle');
 const _        = require('lodash');
-const BASE_URL = 'http://api.coinmarketcap.com/v1/ticker/';
+const BASE_URL = 'http://api.coinmarketcap.com/v1/ticker/?limit=0';
 
 module.exports = {
 
