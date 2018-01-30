@@ -6,12 +6,13 @@ module.exports = {
   // !stock <stock>
   call: function(opts, respond) {
     let stock = opts.args[0];
-    if (stock ==''){
+    if (stock == '') {
       return respond('Usage is !stock <stock>');
     }
 
     return module.exports.stockInfo(stock, respond);
   },
+  
   stockInfo: function(stock, respond){
     stock = _.toLower(stock);
     return needle.get(BASE_URL+'?q='+stock+'&output=json', httpOpts, (err, res, body) => {
@@ -20,7 +21,7 @@ module.exports = {
       }
 
       const _stock = JSON.parse(body.substring(3))[0]; // ugly
-      return respond(`1 ${_stock.symbol} (${_stock.name}) = $${_stock.l} {_stock.c}%`)
+      return respond(`$${_stock.symbol} (${_stock.name}) trading at $${_stock.l} {_stock.c}%`)
     });
   }
 };
