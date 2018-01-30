@@ -7,6 +7,7 @@ module.exports = {
     'w': 'weather',
     'r': 'reload',
     'gif': 'giphy',
-    'c': 'crypto'
+    'c': 'crypto',
+    's': 'stock'
   }
 }
