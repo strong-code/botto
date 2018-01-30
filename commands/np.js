@@ -16,7 +16,7 @@ module.exports = {
   nowPlaying: function(ircNick, respond) {
     return module.exports.getUser(ircNick, (err, username) => {
       if (err) {
-        return respond('No last.fm username registered for ' + ircNick);
+        return respond('No last.fm username registered for ' + ircNick + '. Use !np add <username> to register');
       }
       const url = 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + username + '&api_key=' + apiKey + ' +&format=json&nowplaying=true';
       needle.get(url, options, (err, response) => {
