@@ -6,7 +6,7 @@ module.exports = {
   // !stock <stock>
   call: function(opts, respond) {
     let stock = opts.args[0];
-    if (stock == ''){
+    if (stock === ''){
       return respond('Usage is !stock <stock>');
     }
 
@@ -17,7 +17,11 @@ module.exports = {
     stock = _.toLower(stock);
     return needle.get(BASE_URL+'?q='+stock+'&output=json', httpOpts, (err, res, body) => {
       if (err) {
-        return 'Error fetching data from Google Finance';
+        return respond('Error fetching data from Google Finance');
+      }
+
+      if (typeof body == 'object') { // this API is retarded. Objet == invalid res
+        return respond(`Unable to find information for ticker symbol ${stock}`)
       }
 
       const _stock = JSON.parse(body.substring(3))[0] // drop invalid data
