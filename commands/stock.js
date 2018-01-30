@@ -25,7 +25,7 @@ module.exports = {
       }
 
       const _stock = JSON.parse(body.substring(3))[0] // drop invalid data
-      return respond(`$${_stock.symbol} (${_stock.name}) = $${_stock.l} ${_stock.c}%`)
+      return respond(`$${_stock.symbol} (${_stock.name}) = $${_stock.l} (${_stock.cp}%)`)
     });
   }
 };
