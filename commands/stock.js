@@ -25,7 +25,6 @@ module.exports = {
         return respond(`$${_stock.symbol} (${_stock.name}) = $${_stock.l} (${_stock.cp}%)`)
       } catch (e) {
         console.log(e)
-      } finally {
         return respond(`Unable to find information for ticker symbol ${stock}. Check logs for more info`)
       }
     });
