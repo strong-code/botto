@@ -20,12 +20,14 @@ module.exports = {
         return respond('Error fetching data from Google Finance');
       }
 
-      if (typeof body == 'object') { // this API is retarded. Objet == invalid res
-        return respond(`Unable to find information for ticker symbol ${stock}`)
+      try {
+        const _stock = JSON.parse(body.substring(3))[0] // drop invalid data
+        return respond(`$${_stock.symbol} (${_stock.name}) = $${_stock.l} (${_stock.cp}%)`)
+      } catch (e) {
+        console.log(e)
+      } finally {
+        return respond(`Unable to find information for ticker symbol ${stock}. Check logs for more info`)
       }
-
-      const _stock = JSON.parse(body.substring(3))[0] // drop invalid data
-      return respond(`$${_stock.symbol} (${_stock.name}) = $${_stock.l} (${_stock.cp}%)`)
     });
   }
 };
