@@ -43,4 +43,3 @@ bot.addListener("message", function(_from, to, text, msg) {
 bot.addListener("error", function(err) {
   console.error("[ERROR] ", err);
 });
-
