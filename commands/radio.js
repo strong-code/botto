@@ -1,3 +1,5 @@
+const ytdl = require('ytdl-core')
+const fs = require('fs')
 const RedisSMQ = require('rsmq')
 const radioQueue = new RedisSMQ({ ns: 'botto' })
 
@@ -9,15 +11,28 @@ module.exports = {
     }
   },
 
-  add: function(msg) {
-    radioQueue.sendMessage({ qname: 'radio', message: msg }, (err, res) => {
-      if (res) {
-        console.log('New track added: ' + msg)
-      } else (
-        console.log(err.message)
-      )
+  add: function(url) {
+    ytdl.getInfo(url, { filter: 'audioonly'}, (err, info) => {
+      if (err) { throw err }
+      console.log(`[RADIO] Downloading song: ${info.title}`)
+
+      const download = ytdl.downloadFromInfo(info, { filter: 'audioonly'})
+      const fp = `${info.title}.mp3`
+      download.pipe(fs.createWriteStream(fp))
+
+      download.on('end', () => {
+        console.log(`[RADIO] Finished downloading: ${info.title}`)
+        radioQueue.sendMessage({ qname: 'radio', message: fp }, (err, res) => {
+          if (res) {
+            console.log(`[RADIO] Track added to queue: ${info.title}`)
+          } else (
+            console.log(err.message)
+          )
+        })
+      })
     })
   }
+
 }
 
 radioQueue.createQueue({ qname: 'radio' }, (err, res) => {
@@ -28,4 +43,4 @@ radioQueue.createQueue({ qname: 'radio' }, (err, res) => {
   }
 })
 
-module.exports.add()
+module.exports.add('https://www.youtube.com/watch?v=H7HmzwI67ec')
