@@ -27,7 +27,7 @@ module.exports = {
         const name       = res.body['name'];
 
         return respond('Weather conditions for ' + name + ': currently ' + conditions +
-          ' at ' + module.exports.colorizeTemp(temp) + ' degrees');
+          ' at ' + temp + ' degrees');
       }
       
       return respond('Could not find weather conditions for ' + city);

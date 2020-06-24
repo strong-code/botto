@@ -25,8 +25,6 @@ module.exports = {
           return require('../core/'+opts.command).call(bot, opts);
         }
       } else {
-        let _msg = 'issued !' + opts.command;
-        logger.log(opts.from, opts.to, _msg);
         return publicCommands(bot, opts);
       }
     }
