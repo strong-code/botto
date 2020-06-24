@@ -1,6 +1,9 @@
-var needle = require('needle');
-var cheerio = require('cheerio');
-var _ = require('lodash');
+const needle = require('needle');
+const cheerio = require('cheerio');
+const parser = require('url')
+const qs = require('querystring')
+const _ = require('lodash');
+const API_KEY = require('../config.js').youtube.apiKey
 
 module.exports = {
 
@@ -8,12 +11,16 @@ module.exports = {
     var match = opts.text.match(regex);
 
     if (match) {
-      var url = match[0].trim();
+      const url = parser.parse(match[0].trim())
 
-      if (module.exports.isImage(url)) {
+      if (module.exports.isImage(url.href)) {
         return;
+      } else if (url.hostname === 'www.youtube.com') {
+        module.exports.parseYoutube(url, opts, (info) => {
+          return respond(info)
+        })
       } else {
-        module.exports.parsePage(url, opts, respond);
+        module.exports.parsePage(url.href, opts, respond);
       }
     }
   },
@@ -23,6 +30,25 @@ module.exports = {
       return true;
     }
     return false;
+  },
+  
+  parseYoutube: function(url, opts, cb) {
+    const videoID = qs.parse(url.query).v
+    const apiUrl  = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoID}&key=${API_KEY}`
+
+    needle.get(apiUrl, options, (err, res) => {
+      if (err) {
+        console.log(err)
+        return respond('Unable to parse details for YouTube video ID ' + videoId)
+      } else {
+        const data = res.body.items[0]
+        const views = Number(data.statistics.viewCount).toLocaleString()
+        const likes = Number(data.statistics.likeCount).toLocaleString()
+        const dislikes = Number(data.statistics.dislikeCount).toLocaleString()
+        const info = `[YouTube] "${data.snippet.title}" by ${data.snippet.channelTitle} | ${views} views | ${likes} likes - ${dislikes} dislikes`
+        return cb(info)
+      }
+    })
   },
 
   parsePage: function(url, opts, respond) {

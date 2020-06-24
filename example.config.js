@@ -30,6 +30,10 @@ exports.weather = {
 	apiKey: ""
 };
 
+exports.youtube = {
+  apiKey: ""
+}
+
 // Holy shit why does this library use snake_case for variable names
 exports.twitter = {
 	consumer_key: "",

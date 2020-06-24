@@ -28,15 +28,18 @@ bot.addListener("message", function(_from, to, text, msg) {
   try {
     ignore._isIgnoredBool(_from, msg.host, function(ignored) {
       if (!ignored) {
-        // Delegate explicit commands starting with a !bang to the handler
-        commandHandler.route(bot, _from, to, text, msg);
-        // Delegate observables (keywords, mentions, etc) to the handler
-        observerHandler.route(bot, _from, to, text, msg);
+        if (text[0] === '!') {
+          // Delegate explicit commands starting with a !bang to the handler
+          commandHandler.route(bot, _from, to, text, msg);
+        } else {
+          // Delegate observables (keywords, mentions, etc) to the handler
+          observerHandler.route(bot, _from, to, text, msg);
+        }
       }
     });
   } catch (e) {
     console.error(e);
-    bot.say(opts.to, e.message + '; Check logs for more info');
+    bot.say(to, e.message + '; Check logs for more info');
   }
 });
 

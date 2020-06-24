@@ -38,15 +38,13 @@ module.exports = {
         }
       }
 
-      const isCallable = function (file, observer) {
-        return file.slice(-3) === '.js' && typeof observer.call === 'function'
-      }
-
       // Check our observers for anything that may trigger a response
       fs.readdirSync('./observers/').forEach((file) => {
-        let observer = require('../observers/'+file);
-        if (isCallable(file, observer)) {
-          return tryCalling(observer);
+        if (file.slice(-3) === '.js') {
+          let observer = require('../observers/'+file);
+          if (typeof observer.call === 'function') {
+            return tryCalling(observer);
+          }
         }
       });
     }
