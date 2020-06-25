@@ -1,6 +1,22 @@
 const db = require('../core/_db.js');
 const _  = require('lodash');
-let msgCache = {};
+const msgCache = {};
+
+(function () {
+  return db.executeQuery('SELECT * FROM tells WHERE sent = false', res => {
+    if (res.rows && res.rows[0]) {
+      _.forEach(res.rows, (row) => {
+        msgCache[row['receiver']] = {
+          chan: row['chan'], 
+          sender: row['sender'], 
+          receiver: row['receiver'], 
+          msg: row['message']
+        } 
+      })
+    }
+    console.log(`Tell message cache warmed with ${res.rows.length} tells`)
+  })
+})()
 
 module.exports = {
 
