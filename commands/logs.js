@@ -17,8 +17,11 @@ module.exports = {
       if (err) {
         return cb(err.message)
       }
-      console.log(`Log out uploaded to: ${res.body.path}`)
-      cb(res.body.path)
+      if (!res.body.path) {
+        return cb(`Error while uploading output to API: ${logs.api}`)
+      }
+      console.log(`Log output uploaded to: ${res.body.path}`)
+      return cb(res.body.path)
     })
   },
 
