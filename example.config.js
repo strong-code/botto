@@ -34,6 +34,11 @@ exports.youtube = {
   apiKey: ""
 }
 
+exports.logs = {
+  path: "/path/to/botto.log",
+  api: "localhost:8080/api/paste"
+}
+
 // Holy shit why does this library use snake_case for variable names
 exports.twitter = {
 	consumer_key: "",
