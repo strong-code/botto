@@ -9,28 +9,38 @@ module.exports = {
     if (opts.args[0] === '') {
       return respond('Must provide city');
     } else {
-      return module.exports.getWeather(opts, respond);
+      return module.exports.getWeather(opts, (response) => {
+        return respond(response)
+      });
     }
   },
 
-  getWeather: function(opts, respond) {
+  getWeather: function(opts, cb) {
     const city      = _.join(opts.args, '%20');
     const formedUrl = baseUrl + 'q=' + city + '&appid=' + weather.apiKey + "&units=imperial";
+
     needle.get(formedUrl, options, function(err, res) {
       if (err) {
-        return respond(err.message + '; Check logs for details');
+        return cb(err.message + '; Check logs for details');
+      }
+      if (res.body.cod != 200) {
+        return cb(`[HTTP ${res.body.cod}] ${res.body.message}`)
       }
 
-      if (res.body['weather'] && res.body['weather'][0]) {
-        const conditions = res.body['weather'][0]['description'];
-        const temp       = res.body['main']['temp']
-        const name       = res.body['name'];
+      if (res.body.cod === 200) {
+        const main = res.body['main']
+        const wind = res.body['wind']
+        const desc = res.body['weather'][0]
 
-        return respond('Weather conditions for ' + name + ': currently ' + conditions +
-          ' at ' + temp + ' degrees');
+        const reply = 
+          `${res.body['name']}: currently ${main['temp']}° with  ${desc['description']} | `+
+          `Feels like ${main['feels_like']}° | `+
+          `High of ${main['temp_max']}°, low of ${main['temp_min']}° | `+
+          `Wind speed of ${wind['speed']} mph | Humidity at ${main['humidity']}%`
+        return cb(reply)
       }
       
-      return respond('Could not find weather conditions for ' + city);
+      return cb('Could not find weather conditions for ' + _.join(opts.args, ' '));
     });
   },
 
