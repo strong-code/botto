@@ -28,9 +28,11 @@ module.exports = {
         receiver = opts.to;
       }
 
-      const tryCalling = function (observer) {
+      const tryCalling = function (observer, module, opts) {
         try {
           observer.call(opts, (response) => {
+            let mod = module.slice(0,-3).toUpperCase()
+            console.log(`>> [${mod}] observer triggered in ${opts.to} by ${opts.from}`)
             return bot.say(receiver, response);
           });
         } catch (e) {
@@ -39,11 +41,11 @@ module.exports = {
       }
 
       // Check our observers for anything that may trigger a response
-      fs.readdirSync('./observers/').forEach((file) => {
+      fs.readdirSync('./observers/').forEach(file => {
         if (file.slice(-3) === '.js') {
           let observer = require('../observers/'+file);
           if (typeof observer.call === 'function') {
-            return tryCalling(observer);
+            return tryCalling(observer, file, opts);
           }
         }
       });

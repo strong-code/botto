@@ -22,7 +22,9 @@ module.exports = {
 
       if (_.includes(fs.readdirSync('core/'), opts.command+'.js')) {
         if (admin.isAdmin(opts.from, opts.to)) {
-          return require('../core/'+opts.command).call(bot, opts);
+          let module = require('../core/'+opts.command)
+          console.log(`>> [${opts.command.toUpperCase()}] module triggered in ${opts.to} by ${opts.from}`)
+          return module.call(bot, opts);
         }
       } else {
         return publicCommands(bot, opts);
@@ -55,11 +57,13 @@ module.exports = {
 function publicCommands(bot, opts) {
   if (fs.existsSync('./commands/' + opts.command + '.js')) {
     try {
-      require('./' + opts.command).call(opts, function(response) {
+      let module = require('./' + opts.command)
+      module.call(opts, (response) => {
+        console.log(`>> [${opts.command.toUpperCase()}] module triggered in ${opts.to} by ${opts.from}`)
         return bot.say(opts.to, response);
       });
     } catch (e) {
-      logger.error(opts.from, opts.to, e);
+      console.error(opts.from, opts.to, e);
       return bot.say(opts.to, e.message + "; Check logs for more info");
     }
   }
