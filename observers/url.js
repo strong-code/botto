@@ -26,10 +26,12 @@ module.exports = {
   },
 
   isImage: function(url) {
-    if (url.slice(-3) == 'jpg' || url.slice(-3) == 'png' || url.slice(-3) == 'gif') {
-      return true;
+    const ignorable = ['jpg', 'png', 'gif', 'webm', 'jpeg', 'mp3', 'mp4']
+    const ending = _.last(url.split('.'))
+    if (ignorable.indexOf(ending) > 0) { 
+      return true
     }
-    return false;
+    return false
   },
   
   parseYoutube: function(url, opts, cb) {
