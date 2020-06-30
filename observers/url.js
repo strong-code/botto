@@ -22,7 +22,7 @@ module.exports = {
       } else if (url.hostname === 'www.youtube.com') {
         module.exports.parseYoutube(url, opts, (info) => respond(info))
       } else {
-        module.exports.parsePage(url.href, opts, respond);
+        module.exports.parsePage(url.href, opts, (info) => respond(info));
       }
     }
   },
@@ -38,8 +38,14 @@ module.exports = {
 
   parseReddit: function(url, opts, cb) {
     const r = new snoowrap(config.reddit)
-    let thread = url.path.split('/')[4]
+    const parts = url.path.split('/')
 
+    // It's not a reddit thread, use general parser
+    if (parts[3] != 'comments') {
+      return module.exports.parsePage(url.href, opts, cb)
+    }
+
+    let thread = url.path.split('/')[4]
     return r.getSubmission(thread).fetch().then(t => {
       const date = new Date(t.created*1000).toLocaleString().split(' ')[0].slice(0,-1)
       const info = `${t.subreddit_name_prefixed}: "${t.title}" posted by u/${t.author.name} on ${date} `+
@@ -69,12 +75,12 @@ module.exports = {
     })
   },
 
-  parsePage: function(url, opts, respond) {
+  parsePage: function(url, opts, cb) {
     needle.get(url, options, function(err, response) {
       if (err) {
         return console.log(err);
       } else {
-        respond("[URL] " + module.exports.parseTitle(response.body));
+        return cb("[URL] " + module.exports.parseTitle(response.body));
       }
     });
   },
