@@ -29,3 +29,4 @@ node_modules/
 # Config
 config.js
 *.swp
+package-lock.json
