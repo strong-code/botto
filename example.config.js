@@ -30,13 +30,22 @@ exports.weather = {
 	apiKey: ""
 };
 
-exports.youtube = {
-  apiKey: ""
-}
-
 exports.logs = {
   path: "/path/to/botto.log",
   api: "localhost:8080/api/paste"
+}
+
+exports.url = {
+  youtube: {
+    apiKey: ""
+  },
+  reddit: {
+    userAgent: "",
+    clientId: "",
+    clientSecret: "",
+    username: "",
+    password: ""
+  }
 }
 
 // Holy shit why does this library use snake_case for variable names

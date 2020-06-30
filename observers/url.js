@@ -3,7 +3,8 @@ const cheerio = require('cheerio');
 const parser = require('url')
 const qs = require('querystring')
 const _ = require('lodash');
-const API_KEY = require('../config.js').youtube.apiKey
+const config = require('../config.js').url
+const snoowrap = require('snoowrap')
 
 module.exports = {
 
@@ -13,12 +14,13 @@ module.exports = {
     if (match) {
       const url = parser.parse(match[0].trim())
 
+      //TODO: have a special matching functions for special case parsers
       if (module.exports.isImage(url.href)) {
         return;
+      } else if (url.hostname.indexOf('reddit.com') > -1) {
+        module.exports.parseReddit(url, opts, (info) => respond(info))
       } else if (url.hostname === 'www.youtube.com') {
-        module.exports.parseYoutube(url, opts, (info) => {
-          return respond(info)
-        })
+        module.exports.parseYoutube(url, opts, (info) => respond(info))
       } else {
         module.exports.parsePage(url.href, opts, respond);
       }
@@ -33,9 +35,22 @@ module.exports = {
     }
     return false
   },
+
+  parseReddit: function(url, opts, cb) {
+    const r = new snoowrap(config.reddit)
+    let thread = url.path.split('/')[4]
+
+    return r.getSubmission(thread).fetch().then(t => {
+      const date = new Date(t.created*1000).toLocaleString().split(' ')[0].slice(0,-1)
+      const info = `${t.subreddit_name_prefixed}: "${t.title}" posted by u/${t.author.name} on ${date} `+
+        `| ${t.ups}↑ - ${t.downs}↓` 
+      return cb(info)
+    })
+  },
   
   parseYoutube: function(url, opts, cb) {
     const videoID = qs.parse(url.query).v
+    const API_KEY = config.youtube.apiKey
     const apiUrl  = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoID}&key=${API_KEY}`
 
     needle.get(apiUrl, options, (err, res) => {
@@ -47,7 +62,8 @@ module.exports = {
         const views = Number(data.statistics.viewCount).toLocaleString()
         const likes = Number(data.statistics.likeCount).toLocaleString()
         const dislikes = Number(data.statistics.dislikeCount).toLocaleString()
-        const info = `[YouTube] "${data.snippet.title}" by ${data.snippet.channelTitle} | ${views} views | ${likes} likes - ${dislikes} dislikes`
+        const info = `[YouTube] "${data.snippet.title}" by ${data.snippet.channelTitle} `
+        +`| ${views} views | ${likes} ↑ - ${dislikes} ↓`
         return cb(info)
       }
     })
