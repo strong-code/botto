@@ -38,12 +38,12 @@ bot.addListener("message", function(_from, to, text, msg) {
       }
     });
   } catch (e) {
-    console.error(e);
-    bot.say(to, e.message + '; Check logs for more info');
+    console.log(e);
+    bot.say(to, 'Something went wrong, check !logs for more info');
   }
 });
 
 bot.addListener("error", function(err) {
-  console.error("[ERROR] ", err);
+  console.log("[ERROR] ", err);
 });
 
