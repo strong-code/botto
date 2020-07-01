@@ -6,11 +6,13 @@ const exec = require('child_process').exec
 module.exports = {
 
   call: function(bot, opts) {
-    if (opts.args.length === 0) {
-      return bot.say(opts.to, "Invalid usage. See !help");
-    } else if (opts.args[0] === "pull") {
+    const cmd = opts.args[0]
+
+    if (!cmd) {
+      return bot.say(opts.to, 'Must provide a command');
+    } else if (cmd === "pull") {
       return module.exports.pull(bot, opts);
-    } else if (opts.args[0] === "status") {
+    } else if (cmd === "status") {
       return module.exports.status(bot, opts);
     }
   },
@@ -20,7 +22,6 @@ module.exports = {
       if (err) {
         return bot.say(opts.to, err.message + "; Check logs for more info");
       }
-
       return bot.say(opts.to, stdout);
     });
   },
