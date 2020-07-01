@@ -13,13 +13,14 @@ module.exports = {
 
     if (match) {
       const url = parser.parse(match[0].trim())
+      if (!url.hostname) { url.hostname = url.href } // hacky but whatever
 
       //TODO: have a special matching functions for special case parsers
       if (module.exports.isImage(url.href)) {
         return;
       } else if (url.hostname.indexOf('reddit.com') > -1) {
         module.exports.parseReddit(url, opts, (info) => respond(info))
-      } else if (url.hostname === 'www.youtube.com') {
+      } else if (url.hostname.indexOf('youtube.com') > -1) {
         module.exports.parseYoutube(url, opts, (info) => respond(info))
       } else {
         module.exports.parsePage(url.href, opts, (info) => respond(info));
