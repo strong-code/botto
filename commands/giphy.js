@@ -1,38 +1,39 @@
-var _ = require('lodash');
-var needle = require('needle');
-var giphy = require('../config.js').giphy
+const _ = require('lodash');
+const needle = require('needle');
+const giphy = require('../config.js').giphy
 
 module.exports = {
 
   call: function (opts, respond) {
     if (opts.args.length < 1) {
-      return respond('Usage is !giphy <query>');
+      respond('Usage is !giphy <query>');
     } else {
-      var query = _.join(opts.args, '+');
-      return module.exports.getResults(query, opts.from, respond);
+      const query = _.join(opts.args, '+');
+      module.exports.getResults(query, opts.from, (info) => respond(info));
     }
   },
 
-  getResults: function (query, _from, respond) {
-    var url = baseUrl + query + '&api_key=' + giphy.apiKey + '&limit=100';
+  getResults: function (query, _from, cb) {
+    const url = baseUrl + query + '&api_key=' + giphy.apiKey + '&limit=100';
     return needle.get(url, options, function (err, response) {
-      if (err) {
-        return respond('Error fetching results, API might be down');
+      if (err || response.statusCode != 200) {
+        const errMsg = `[${response.statusCode}] ${response.body.message}` || 'API might be down'
+        return cb(errMsg)
       }
-      var gifData = response.body.data[_.random(0, response.body.data.length)];
-      if (gifData === undefined) {
-        return respond('couldnt find a dank enough meme 4 that one');
+      if (response.body.data.length === 0) {
+        return cb('couldnt find a dank enough meme 4 that one');
       }
-      return respond('made this dank meme 4 u ' + _from + ': ' + gifData.bitly_url);
+      const gifData = response.body.data[_.random(0, response.body.data.length)];
+      return cb('made this dank meme 4 u ' + _from + ': ' + gifData.bitly_url);
     });
   }
 
 };
 
-var baseUrl = 'http://api.giphy.com/v1/gifs/search?q=';
+const baseUrl = 'http://api.giphy.com/v1/gifs/search?q=';
 
 // HTTP client options
-var options = {
+const options = {
   follow: 3,
   open_timeout: 5000,
   headers: {
