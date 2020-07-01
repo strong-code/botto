@@ -1,11 +1,12 @@
-const kexec = require('kexec');
-const sys = require('sys');
-const exec = require('child_process').exec;
+const _ = require('lodash')
 
 module.exports = {
 
   call: function (bot, opts) {
-    //return kexec('./run.sh');
-    return process.exitCode = 1;
+    _.forEach(bot.chans, (chan) => {
+      bot.part(chan.key, 'brb')
+    })
+    // https://nodejs.org/api/process.html#process_process_exitcode
+    return process.exitCode = 1
   }
 }
