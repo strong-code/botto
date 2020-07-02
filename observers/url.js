@@ -31,7 +31,7 @@ module.exports = {
   isImage: function(url) {
     const ignorable = ['jpg', 'png', 'gif', 'webm', 'jpeg', 'mp3', 'mp4']
     const ending = _.last(url.split('.'))
-    if (ignorable.indexOf(ending) > 0) { 
+    if (ignorable.indexOf(ending) > -1) { 
       return true
     }
     return false
