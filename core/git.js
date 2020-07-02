@@ -37,7 +37,7 @@ module.exports = {
           delete require.cache[require.resolve('../'+f)] 
         })
 
-        let updateMsg = `${modules.length} modules updated [${updated.length} total}. Full output: `
+        let updateMsg = `${modules.length} modules updated [${updated.length} files total]. Full output: `
 
         needle.post(LOGS_API, `text=${stdout}`, {}, (err, res) => {
           if (err) {
