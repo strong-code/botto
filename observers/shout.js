@@ -21,8 +21,12 @@ module.exports = {
     db.executeQuery({
       text: "INSERT INTO shouts (nick, chan, message, date_spoken) VALUES ($1, $2, $3, $4)",
       values: [opts.from, opts.to, opts.text, new Date().toISOString()]
-    }, function() {
-      console.log("[" + opts.to + "] Shout quote from " + opts.from + " stored.");
+    }, function(err) {
+      if (err) {
+        console.log(`Error storing shout quote: ${err.message}`)
+      } else {
+        console.log("[" + opts.to + "] Shout quote from " + opts.from + " stored.");
+      }
     });
   },
 
@@ -34,4 +38,4 @@ module.exports = {
       }
     });
   }
-};
+
