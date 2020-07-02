@@ -23,7 +23,7 @@ module.exports = {
       values: [opts.from, opts.to, opts.text, new Date().toISOString()]
     }, function(err) {
       if (err) {
-        console.log(`Error storing shout quote: ${err.message}`)
+        console.error('Error storing shout quote', errror.detail)
       } else {
         console.log("[" + opts.to + "] Shout quote from " + opts.from + " stored.");
       }

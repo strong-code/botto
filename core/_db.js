@@ -14,7 +14,6 @@ module.exports = {
         release();
 
         if (err) {
-          console.error('Error executing query', err);
           return cb(err);
         }
 
