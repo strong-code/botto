@@ -23,8 +23,7 @@ module.exports = {
       values: [opts.from, opts.to, opts.text, new Date().toISOString()]
     }, () => {
         console.log("[" + opts.to + "] Shout quote from " + opts.from + " stored.");
-      }
-    });
+    })
   },
 
   getShout: function(respond) {
