@@ -12,12 +12,10 @@ module.exports = {
 
       client.query(queryString, (err, result) => {
         release();
-
         if (err) {
-          return cb(err);
+          console.error(`Error running query ${queryString}`, err)
         }
-
-        return cb(result);
+        return cb(result, err);
       });
     });
   }

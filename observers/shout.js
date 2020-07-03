@@ -21,10 +21,7 @@ module.exports = {
     db.executeQuery({
       text: "INSERT INTO shouts (nick, chan, message, date_spoken) VALUES ($1, $2, $3, $4)",
       values: [opts.from, opts.to, opts.text, new Date().toISOString()]
-    }, function(err) {
-      if (err) {
-        console.error('Error storing shout quote', err.detail)
-      } else {
+    }, () => {
         console.log("[" + opts.to + "] Shout quote from " + opts.from + " stored.");
       }
     });
