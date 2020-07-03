@@ -12,9 +12,15 @@ module.exports = {
 
       client.query(queryString, (err, result) => {
         release();
+        
         if (err) {
-          console.error(`Error running query ${queryString}`, err)
+          if (err.code === '23505') {
+            console.error(`Unique constraint on table ${err.table}. Skipping duplicate entry`, err.detail)
+          } else {
+            console.error(`Error running query "${queryString.text}"`, err)
+          }
         }
+
         return cb(result, err);
       });
     });
