@@ -6,12 +6,8 @@ const msgCache = {};
   return db.executeQuery('SELECT * FROM tells WHERE sent = false', res => {
     if (res.rows && res.rows[0]) {
       _.forEach(res.rows, (row) => {
-        msgCache[row['receiver']] = {
-          chan: row['chan'], 
-          sender: row['sender'], 
-          receiver: row['receiver'], 
-          msg: row['message']
-        } 
+        let tell = { chan: row['chan'], sender: row['sender'], msg: row['message'] }
+        module.exports.addTell(row['receiver'], tell)
       })
     }
     console.log(`Tell message cache warmed with ${res.rows.length} tells`)
@@ -21,18 +17,32 @@ const msgCache = {};
 module.exports = {
 
   call: function(opts, respond) {
-    if (_.includes(_.keys(msgCache), opts.from)) {
-      return module.exports.sendMessage(opts.from, opts.to, respond);
+    const receiver = opts.from
+
+    if (_.includes(_.keys(msgCache), receiver)) {
+      console.log(`Sending ${msgCache[receiver].length} tells to ${receiver}`)
+      _.forEach(msgCache[receiver], (tell) => {
+        module.exports.sendMessage(receiver, tell, (info) => respond(info))
+      })
+    }
+  },
+
+  // key: receiver nick
+  // value: array of tell objects
+  // msgCache[receiver] = [ { chan, sender, message } ]
+  addTell: function(receiver, tell) {
+    if (msgCache[receiver]) {
+      msgCache[receiver].push(tell)
+    } else {
+      msgCache[receiver] = [tell]
     }
   },
 
   msgCache: msgCache,
 
-  sendMessage: function(receiver, chan, respond) {
-    const msg = msgCache[receiver];
-    delete msgCache[receiver];
-    return module.exports.markSent(receiver, msg.msg, () => {
-      return respond(receiver + ', ' + msg.sender + ' says: ' + msg.msg);
+  sendMessage: function(receiver, tell, cb) {
+    module.exports.markSent(receiver, tell.msg, () => {
+      return cb(receiver + ', ' + tell.sender + ' says: ' + tell.msg);
     });
   },
 

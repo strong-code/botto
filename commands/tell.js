@@ -1,6 +1,6 @@
 const db = require('../core/_db.js');
 const _  = require('lodash');
-const msgCache = require('../observers/tell').msgCache;
+const addTell = require('../observers/tell').addTell;
 
 module.exports = {
 
@@ -20,7 +20,7 @@ module.exports = {
   },
 
   toCache: function(chan, sender, receiver, msg) {
-    msgCache[receiver] = {chan: chan, sender: sender, msg: msg};
+    addTell(receiver, { chan: chan, sender: sender, msg: msg })
   },
 
   toDisk: function(chan, sender, receiver, msg) {
