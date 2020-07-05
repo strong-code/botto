@@ -24,6 +24,7 @@ module.exports = {
       _.forEach(msgCache[receiver], (tell) => {
         module.exports.sendMessage(receiver, tell, (info) => respond(info))
       })
+      delete msgCache[receiver]
     }
   },
 
