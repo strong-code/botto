@@ -45,6 +45,9 @@ exports.url = {
     clientSecret: "",
     username: "",
     password: ""
+  },
+  omdb: {
+    apiKey: ""
   }
 }
 

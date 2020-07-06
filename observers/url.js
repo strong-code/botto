@@ -22,6 +22,8 @@ module.exports = {
         module.exports.parseReddit(url, opts, (info) => respond(info))
       } else if (url.hostname.indexOf('youtube.com') > -1) {
         module.exports.parseYoutube(url, opts, (info) => respond(info))
+      } else if (url.hostname.indexOf('imdb.com') > -1) {
+        module.exports.parseImdb(url, opts, (info) => respond(info))
       } else {
         module.exports.parsePage(url.href, opts, (info) => respond(info));
       }
@@ -35,6 +37,23 @@ module.exports = {
       return true
     }
     return false
+  },
+
+  parseImdb: function(url, opts, cb) {
+    const movieId = url.pathname.split('/')[2]
+    const apiUrl = `http://www.omdbapi.com/?i=${movieId}&apikey=${config.omdb.apiKey}`
+
+    needle.get(apiUrl, options, (err, res) => {
+      if (err) {
+        console.log(err)
+        return respond('Unable to parse details for IMDB ID ' + movieId)
+      }
+      const m = res.body
+      const info = `[IMDB] "${m.Title}" (${m.Year}) | ${m.Rated} | ${m.Runtime} | ${m.Genre} |`+
+        ` ★ ${m.imdbRating} | Directed by ${m.Director} | ${m.Plot}`
+
+      return cb(info)
+    })
   },
 
   parseReddit: function(url, opts, cb) {
