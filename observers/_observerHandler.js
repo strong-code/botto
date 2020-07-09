@@ -36,6 +36,7 @@ module.exports = {
             return bot.say(receiver, response);
           });
         } catch (e) {
+          console.log(e)
           return bot.say(receiver, e.message + "; Check logs for more info");
         }
       }

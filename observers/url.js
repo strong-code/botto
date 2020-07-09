@@ -4,7 +4,19 @@ const parser = require('url')
 const qs = require('querystring')
 const _ = require('lodash');
 const config = require('../config.js').url
-const snoowrap = require('snoowrap')
+const parsers = {}
+const fs = require('fs')
+
+;(() => {
+  fs.readdir('./observers/parsers', (err, files) => {
+    files = _.filter(files, (f) => f.slice(-3) === '.js')
+    _.forEach(files, (f) => {
+      let matcher = require('./parsers/'+f).hostMatch
+      parsers[matcher] = f
+    })
+    console.log(`Loaded URL cache with ${files.length} parsers`)
+  })
+})()
 
 module.exports = {
 
@@ -15,19 +27,34 @@ module.exports = {
       const url = parser.parse(match[0].trim())
       if (!url.hostname) { url.hostname = url.href } // hacky but whatever
 
-      //TODO: have a special matching functions for special case parsers
       if (module.exports.isImage(url.href)) {
         return;
-      } else if (url.hostname.indexOf('reddit.com') > -1) {
-        module.exports.parseReddit(url, opts, (info) => respond(info))
-      } else if (url.hostname.indexOf('youtube.com') > -1) {
-        module.exports.parseYoutube(url, opts, (info) => respond(info))
-      } else if (url.hostname.indexOf('imdb.com') > -1) {
-        module.exports.parseImdb(url, opts, (info) => respond(info))
+      }
+
+      const pageParser = module.exports.hasOwnParser(url)
+      if (pageParser) {
+        // delete from cache so parsers get reloaded on !reload url 
+        delete require.cache[require.resolve('./parsers/'+pageParser)]
+        require('./parsers/'+pageParser).parse(url, (info) => {
+          if (info) {
+            return respond(info)
+          }
+        })
       } else {
         module.exports.parsePage(url.href, opts, (info) => respond(info));
       }
     }
+  },
+
+  hasOwnParser: function(url) {
+    let parserFile = false
+    _.forEach(parsers, (v, k) => {
+      if (url.hostname.indexOf(k) > -1) {
+        console.log(`Using ${v} parser for ${url.hostname}`)
+        parserFile = v
+      }
+    })
+    return parserFile
   },
 
   isImage: function(url) {
@@ -39,64 +66,8 @@ module.exports = {
     return false
   },
 
-  parseImdb: function(url, opts, cb) {
-    const movieId = url.pathname.split('/')[2]
-    const apiUrl = `http://www.omdbapi.com/?i=${movieId}&apikey=${config.omdb.apiKey}`
-
-    needle.get(apiUrl, options, (err, res) => {
-      if (err) {
-        console.log(err)
-        return respond('Unable to parse details for IMDB ID ' + movieId)
-      }
-      const m = res.body
-      const info = `[IMDB] "${m.Title}" (${m.Year}) | ${m.Rated} | ${m.Runtime} | ${m.Genre} |`+
-        ` ★ ${m.imdbRating} | Directed by ${m.Director} | ${m.Plot}`
-
-      return cb(info)
-    })
-  },
-
-  parseReddit: function(url, opts, cb) {
-    const r = new snoowrap(config.reddit)
-    const parts = url.path.split('/')
-
-    // It's not a reddit thread, use general parser
-    if (parts[3] != 'comments') {
-      return module.exports.parsePage(url.href, opts, cb)
-    }
-
-    let thread = url.path.split('/')[4]
-    return r.getSubmission(thread).fetch().then(t => {
-      const date = new Date(t.created*1000).toLocaleString().split(' ')[0].slice(0,-1)
-      const info = `${t.subreddit_name_prefixed}: "${t.title}" posted by u/${t.author.name} on ${date} `+
-        `| ${t.ups}↑ - ${t.downs}↓` 
-      return cb(info)
-    })
-  },
-  
-  parseYoutube: function(url, opts, cb) {
-    const videoID = qs.parse(url.query).v
-    const API_KEY = config.youtube.apiKey
-    const apiUrl  = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoID}&key=${API_KEY}`
-
-    needle.get(apiUrl, options, (err, res) => {
-      if (err) {
-        console.log(err)
-        return respond('Unable to parse details for YouTube video ID ' + videoId)
-      } else {
-        const data = res.body.items[0]
-        const views = Number(data.statistics.viewCount).toLocaleString()
-        const likes = Number(data.statistics.likeCount).toLocaleString()
-        const dislikes = Number(data.statistics.dislikeCount).toLocaleString()
-        const info = `[YouTube] "${data.snippet.title}" by ${data.snippet.channelTitle} `
-        +`| ${views} views | ${likes} ↑ - ${dislikes} ↓`
-        return cb(info)
-      }
-    })
-  },
-
   parsePage: function(url, opts, cb) {
-    needle.get(url, options, function(err, response) {
+    needle.get(url, config.options, function(err, response) {
       if (err) {
         return console.log(err);
       } else {
@@ -117,12 +88,3 @@ module.exports = {
 // Regex to find all URLs. Works with/without HTTP(S) and even without a TLD.
 var expression = /[-a-zA-Z@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
 var regex = new RegExp(expression);
-
-// HTTP client options
-var options = {
-    follow: 2,
-    open_timeout: 4000,
-    headers: {
-      'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1677.0 Safari/537.36"
-    }
-  }
