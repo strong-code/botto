@@ -39,14 +39,16 @@ module.exports = {
 
     // If the string contains hours parse it and remove it from our duration string
     if (duration.indexOf('H') > -1) {
-      let hours = parseInt(duration.split('H')[0])
+      let hours_split = duration.split('H')
+      let hours = parseInt(hours_split[0])
       timeStr += `${hours}h `
       duration = hours_split[1]
     }
 
     // If the string contains minutes parse it and remove it from our duration string
     if (duration.indexOf('M') > -1) {
-      let minutes = parseInt(duration.split('M')[0])
+      let minutes_split = duration.split('M')
+      let minutes = parseInt(minutes_split[0])
       timeStr += `${minutes}m `
       duration = minutes_split[1]
     }
