@@ -38,10 +38,14 @@ module.exports = {
         require('./parsers/'+pageParser).parse(url, (info) => {
           if (info) {
             return respond(info)
+          } else {
+            // if we get a cb(false) callback, we broke out of parser early 
+            // so default to general parser
+            module.exports.parsePage(url.href, opts, (info) => respond(info))
           }
         })
       } else {
-        module.exports.parsePage(url.href, opts, (info) => respond(info));
+        module.exports.parsePage(url.href, opts, (info) => respond(info))
       }
     }
   },
