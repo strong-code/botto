@@ -75,7 +75,13 @@ module.exports = {
       if (err) {
         return console.log(err);
       } else {
-        return cb("[URL] " + module.exports.parseTitle(response.body));
+        title = module.exports.parseTitle(response.body)
+        if (!title) {
+          console.log(`No title found in response body for ${url}`)
+          return
+        } else {
+          cb(`[URL] ${title}`)
+        }
       }
     });
   },
