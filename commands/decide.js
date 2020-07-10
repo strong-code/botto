@@ -3,7 +3,7 @@ const _ = require('lodash')
 module.exports = {
 
   call: function(opts, respond) {
-    let choices = opts.args.join(' ').split('or')
+    let choices = opts.args.join(' ').split(' or ')
 
     if (choices.length === 1) {
       choices = ['yes', 'no']
