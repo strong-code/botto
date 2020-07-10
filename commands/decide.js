@@ -9,7 +9,7 @@ module.exports = {
       choices = ['yes', 'no']
     }
 
-    const decision = choices[_.random(0, choices.length)]
+    const decision = choices[_.random(choices.length - 1)]
     respond(decision.trim())
   }
 
