@@ -87,12 +87,13 @@ module.exports = {
   },
 
   parseTitle: function(html) {
+    console.log(html)
     const $ = cheerio.load(html)
-    let title = $('head > title').text().trim()
+    let title = $('meta[property="og:title"]').attr('content')
     if (!title) {
-      title = $('meta[property="og:title"]').attr('content').trim()
+      title = $('head > title').text()
     }
-    title = _.truncate(title, {length: 120})
+    title = _.truncate(title, {length: 120}).trim()
     title = title.replace(/[\r\n\t]/g, " ")
     return title
   }
