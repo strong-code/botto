@@ -36,6 +36,14 @@ exports.logs = {
 }
 
 exports.url = {
+  // Global HTTP options
+  options: {
+    follow: 2,
+    open_timeout: 4000,
+    headers: {
+      'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1677.0 Safari/537.36"
+    }
+  },
   youtube: {
     apiKey: ""
   },
