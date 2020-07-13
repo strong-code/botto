@@ -75,3 +75,7 @@ exports.giphy = {
 exports.google = {
   cx: ""
 };
+
+exports.coinmarketcap = {
+  apiKey: ""
+}

@@ -1,44 +1,44 @@
-const needle   = require('needle');
-const _        = require('lodash');
-const BASE_URL = 'http://api.coinmarketcap.com/v1/ticker/?limit=0';
+const needle   = require('needle')
+const _        = require('lodash')
+const config   = require('../config').coinmarketcap
+const BASE_URL = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol='
 
 module.exports = {
 
   // !crypto <coin>
   call: function(opts, respond) {
-    let coin = opts.args[0];
-    if (coin == '') {
-      return respond('Usage is !crypto <coin name>');
+    const coin = opts.args[0]
+    if (!coin || coin == '') {
+      return respond('Usage is !crypto <coin name>')
     }
 
-    return module.exports.coinInfo(coin, respond);
+    module.exports.coinInfo(coin, (info) => respond(info))
   },
 
-  coinInfo: function(coin, respond) {
-    coin = _.toLower(coin);
-    return needle.get(BASE_URL, httpOpts, (err, res, body) => {
+  coinInfo: function(coin, cb) {
+    coin = _.toUpper(coin).trim()
+    const opts = { headers: { 'X-CMC_PRO_API_KEY': config.apiKey } }
+    const endpoint = BASE_URL + coin + '&convert=USD'
+
+    needle.get(endpoint, opts, (err, res, body) => {
       if (err) {
-        return 'Error fetching data from API. It may be down';
+        return cb(err.message)
+      }
+      if (res.statusCode != 200) {
+        return cb(`[Error ${body.status.error_code}] ${body.status.error_message}`)
       }
 
-      const _coin = _.find(body, (c) => {
-        return _.toLower(c.symbol) === coin || _.toLower(c.id) === coin || _.toLower(c.name) === coin;
-      });
+      const data = body.data[coin]
+      let prices = data.quote.USD
+      let info = `[${data.name}] 1 ${data.symbol} = $${prices.price.toLocaleString()} ` +
+        `| Market cap: $${prices.market_cap.toLocaleString()} `
 
-      if (!_coin) {
-        return respond(`Could not find any information for coin '${coin}'`);
-      }
+      // Map % change values so we cut off after 2 decimal places
+      prices = _.mapValues(data.quote.USD, (v) => parseFloat(v).toFixed(2))
+      info += `| 1h change: ${prices.percent_change_1h}% | 24h change: ${prices.percent_change_24h}% ` +
+        `| 7d change: ${prices.percent_change_7d}%`
 
-      return respond(`1 ${_coin.symbol} (${_coin.name}) = $${_coin.price_usd} | Hourly: ${_coin.percent_change_1h}% | Daily: ${_coin.percent_change_24h}% | Weekly: ${_coin.percent_change_7d}%`)
-    });
+      cb(info)
+    })
   }
-
 }
-
-const httpOpts = {
-  follow: 10,
-  open_timeout: 10000,
-  headers: {
-    'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1677.0 Safari/537.36"
-  }
-};
