@@ -11,7 +11,7 @@ module.exports = {
   call: function(opts, respond) {
     // if first arg is NaN e.g. !logs foo
     // get user logs, else use args[0]
-    if (isNaN(parseInt(opts.args[0]))) { 
+    if (opts.args[0] && isNaN(parseInt(opts.args[0]))) { 
       module.exports.getUserLogs(opts.args, (out) => respond(out))
     } else {
       module.exports.getLocalLogs(opts.args[0], (out) => respond(out))
@@ -42,7 +42,7 @@ module.exports = {
   },
 
   getLocalLogs: function(lines, cb) {
-    lines = lines || 25
+    lines = lines || 50
     const cmd = `tail -n ${lines} ${logs.path}`
     module.exports.runCommand(cmd, cb)
   },
@@ -57,7 +57,8 @@ module.exports = {
         console.log('Error retrieving local logs: ' + err)
         return cb(err, true)
       }
-        return module.exports.upload(out, (url) => cb(url))
+
+      return module.exports.upload(out, (url) => cb(url))
     })
   }
 }
