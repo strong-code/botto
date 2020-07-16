@@ -30,6 +30,10 @@ module.exports = {
 
       const data = body.data[coin]
       let prices = data.quote.USD
+      if (!prices.market_cap) {
+        // sometimes we don't get mcap data back
+        prices.market_cap = 0
+      }
       let info = `[${data.name}] 1 ${data.symbol} = $${prices.price.toLocaleString()} ` +
         `| Market cap: $${prices.market_cap.toLocaleString()} `
 
