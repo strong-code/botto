@@ -87,7 +87,6 @@ module.exports = {
   },
 
   parseTitle: function(html) {
-    console.log(html)
     const $ = cheerio.load(html)
     let title = $('meta[property="og:title"]').attr('content')
     if (!title) {
