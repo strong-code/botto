@@ -1,6 +1,6 @@
 const needle = require('needle');
+const config = require('../config.js').url
 const _ = require('lodash');
-const colors = require('irc').colors;
 
 module.exports = {
   
@@ -8,34 +8,28 @@ module.exports = {
     if (_.isEmpty(opts.args)) {
       return respond('Usage is !up <domain>');
     }
-    return module.exports.check(opts.args[0], respond);
+
+    module.exports.check(opts.args[0], (info) => respond(info))
   },
 
-  check: function (domain, respond) {
-    const url = 'https://isitup.org/' + domain + '.json';
+  check: function (domain, cb) {
+    const url = 'https://isitup.org/' + domain + '.json'
 
-    return needle.get(url, options, (err, res) => {
+    needle.get(url, config.options, (err, res) => {
       if (err) {
-        return respond(err.message);
+        return cb(err.message)
       }
 
-      const status = res.body['status_code'];
+      const status = res.body['status_code']
+      const response_time = res.body['response_time']
 
       if (status === 1) {
-        return respond(colors.wrap('dark_green', domain) + ' is up (response time: ' + res.body['response_time'] + ' seconds)');
+        return cb(`${domain} is up (response time: ${response_time} seconds)`)
       } else if (status === 2) {
-        return respond(colors.wrap('dark_red', domain) + ' is currently offline');
+        return cb(`${domain} is currently offline`)
       } else {
-        return respond(colors.wrap('dark_red', domain) + ' is not a valid domain');
+        return cb(`${domain} is not a valid domain`)
       }
-    });
-  }
-}
-
-const options = { 
-  follow: 3,
-  open_timeout: 5000,
-  headers: {
-    'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1677.0 Safari/537.36"
+    })
   }
 }
