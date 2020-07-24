@@ -14,7 +14,7 @@ module.exports  = {
     const version = process.version
     const modules = module.exports.getModules()
 
-    return `Uptime ${uptime} | Memory ${memory}Mb | Modules ${modules} | Node ${version}`
+    return `Uptime ${uptime} | Memory ${memory}Mb | Modules ${modules} | Node ${version}`
   },
 
   getMemory: function() {
