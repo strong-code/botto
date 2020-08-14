@@ -7,6 +7,6 @@ module.exports = {
       bot.part(chan.key, 'brb')
     })
     // https://nodejs.org/api/process.html#process_process_exitcode
-    return process.exitCode = 1
+    return process.exit(1)
   }
 }
