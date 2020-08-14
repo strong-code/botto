@@ -20,6 +20,10 @@ module.exports = {
       if (err) {
         return respond(err.message);
       }
+
+      if (!res.body.list) {
+        return respond('No definition found for: ' + phrase)
+      }
       
       const upper = res.body.list.length - 1;
       const item = res.body.list[_.random(0, upper)]
