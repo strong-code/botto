@@ -27,7 +27,7 @@ module.exports = {
   },
 
   getShout: function(respond) {
-    db.executeQuery('SELECT * FROM shouts ORDER BY RANDOM() LIMIT 1', function(result) {
+    db.executeQuery('SELECT * FROM shouts ORDER BY random() LIMIT 1', function(result) {
       if (result.rows && result.rows[0]) {
         module.exports.lastShout = result.rows[0];
         respond(result.rows[0]['message']);
