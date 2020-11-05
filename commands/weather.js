@@ -1,59 +1,40 @@
 const weather = require('../config.js').weather;
 const needle  = require('needle');
-const colors  = require('irc').colors;
 const _       = require('lodash');
 
 module.exports = {
 
   call: function(opts, respond) {
-    if (opts.args[0] === '') {
-      return respond('Must provide city');
+    if (!opts.args || opts.args[0] === '') {
+      respond('Usage is !weather <city>, <state>. State is optional')
     } else {
-      return module.exports.getWeather(opts, (response) => {
-        return respond(response)
-      });
+      module.exports.getWeather(opts, (data) => respond(data))
     }
   },
 
   getWeather: function(opts, cb) {
     const city      = _.join(opts.args, '%20');
-    const formedUrl = baseUrl + 'q=' + city + '&appid=' + weather.apiKey + "&units=imperial";
+    const formedUrl = baseUrl + 'access_key=' + weather.apiKey + '&query=' + city + '&units=f'
 
     needle.get(formedUrl, options, function(err, res) {
       if (err) {
         return cb(err.message + '; Check logs for details');
       }
-      if (res.body.cod != 200) {
-        return cb(`[HTTP ${res.body.cod}] ${res.body.message}`)
-      }
+      
+      if (res.statusCode === 200) {
+        const loc = res.body.location
+        const current = res.body.current
+        const desc = _.toLower(current.weather_descriptions[0])
 
-      if (res.body.cod === 200) {
-        const main = res.body['main']
-        const wind = res.body['wind']
-        const desc = res.body['weather'][0]
+        const reply = `Weather for ${loc.name}, ${loc.region}: ${current.temperature}° (feels like ${current.feelslike}°) and ${desc} ` +
+        `| Wind is ${current.wind_speed}mph ${current.wind_dir} | Humidity is at ${current.humidity}% ` +
+        `| UV index of ${current.uv_index} | Cloud cover of ${current.cloudcover} | Visibility of ${current.visibility}`
 
-        const reply = 
-          `${res.body['name']}: currently ${main['temp']}° with  ${desc['description']} | `+
-          `Feels like ${main['feels_like']}° | `+
-          `High of ${main['temp_max']}°, low of ${main['temp_min']}° | `+
-          `Wind speed of ${wind['speed']} mph | Humidity at ${main['humidity']}%`
         return cb(reply)
       }
       
       return cb('Could not find weather conditions for ' + _.join(opts.args, ' '));
     });
-  },
-
-  colorizeTemp: function(temp) {
-    let color;
-    if (temp <= 65) {
-      color ='cyan';
-    } else if (temp > 65 && temp <= 80) {
-      color = 'dark_green';
-    } else {
-      color = 'dark_red';
-    }
-    return colors.wrap(color, temp);
   },
 
   _parseCity: function(opts) {
@@ -62,7 +43,7 @@ module.exports = {
   }
 };
 
-var baseUrl = "http://api.openweathermap.org/data/2.5/weather?";
+const baseUrl = "http://api.weatherstack.com/current?"
 
 var options = {
   follow: 3,
