@@ -5,12 +5,18 @@ module.exports = {
   
   call: function (opts, respond) {
     try {
+
       let [, count, unit, reminder] = regex.exec(_.join(opts.args, ' '))
-      const convertedCount = module.exports.validateUnit(count, unit)
+      
+      const convertedCount = module.exports.toMillis(count, unit)
+
+      if (convertedCount > Math.pow(2,31)-1) { // limitation of setTimeout max millis
+        return respond('bruh')
+      }
 
       setTimeout(() => {
         respond(`${opts.from}: ${reminder} (from ${count} ${unit} ago)`)
-      }, convertedCount*1000)
+      }, convertedCount)
 
       respond(`I will remind you in ${count} ${unit}`)
     } catch (e) {
@@ -25,7 +31,7 @@ module.exports = {
 
   },
 
-  validateUnit: function(count, unit) {
+  toMillis: function(count, unit) {
     let secs = count
     switch (unit) {
       case 'seconds':
@@ -40,7 +46,7 @@ module.exports = {
         secs = count * 86400
         break
     }
-    return secs
+    return secs * 1000
   }
 }
 
