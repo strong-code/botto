@@ -9,7 +9,7 @@ module.exports = {
       const convertedCount = module.exports.validateUnit(count, unit)
 
       setTimeout(() => {
-        respond(opts.from + ': ' + reminder)
+        respond(`${opts.from}: ${reminder} (from ${count} ${unit} ago)`)
       }, convertedCount*1000)
 
       respond(`I will remind you in ${count} ${unit}`)
