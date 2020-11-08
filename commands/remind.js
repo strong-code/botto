@@ -6,11 +6,11 @@ module.exports = {
   call: function (opts, respond) {
     try {
       let [, count, unit, reminder] = regex.exec(_.join(opts.args, ' '))
-      count = module.exports.validateUnit(count, unit)
+      convertedCount = module.exports.validateUnit(count, unit)
 
       setTimeout(() => {
         respond(opts.from + ': ' + reminder)
-      }, count*1000)
+      }, convertedCount*1000)
 
       respond(`I will remind you in ${count} ${unit}`)
     } catch (e) {
