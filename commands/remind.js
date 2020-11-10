@@ -11,7 +11,7 @@ module.exports = {
       const convertedCount = module.exports.toMillis(count, unit)
 
       if (convertedCount > Math.pow(2,31)-1) { // limitation of setTimeout max millis
-        return respond('bruh')
+        return respond('Just use a calendar at that point')
       }
 
       setTimeout(() => {
@@ -33,18 +33,13 @@ module.exports = {
 
   toMillis: function(count, unit) {
     let secs = count
-    switch (unit) {
-      case 'seconds':
-        break
-      case 'minutes':
-        secs = count * 60
-        break
-      case 'hours':
-        secs = count * 3600
-        break
-      case 'days':
-        secs = count * 86400
-        break
+
+    if (/^minute(s?)$/.test(unit)) {
+      secs = count * 60
+    } else if (/^hour(s?)$/.test(unit)) {
+      secs = count * 3600
+    } else if (/^day(s?)$/.test(unit)) {
+      secs = count * 86400
     }
     return secs * 1000
   }
