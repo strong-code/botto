@@ -21,10 +21,11 @@ module.exports = {
       }
 
       const status = res.body['status_code']
+      const http_status = res.body['response_code']
       const response_time = res.body['response_time']
 
       if (status === 1) {
-        return cb(`${domain} is up (response time: ${response_time} seconds)`)
+        return cb(`[${http_status}] ${domain} is up (response time: ${response_time} seconds)`)
       } else if (status === 2) {
         return cb(`${domain} is currently offline`)
       } else {
