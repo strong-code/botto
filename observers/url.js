@@ -41,6 +41,7 @@ module.exports = {
           } else {
             // if we get a cb(false) callback, we broke out of parser early 
             // so default to general parser
+            console.log(`No info returned from parser: ${pageParser}. Falling back to general parser`)
             module.exports.parsePage(url.href, opts, (info) => respond(info))
           }
         })
@@ -90,6 +91,7 @@ module.exports = {
     const $ = cheerio.load(html)
     let title = $('meta[property="og:title"]').attr('content')
     if (!title) {
+      console.log('No meta property found for title. Using html property')
       title = $('head > title').text()
     }
     title = _.truncate(title, {length: 120}).trim()
