@@ -3,23 +3,29 @@ const needle = require('needle')
 const _ = require('lodash')
 const logs = require('../config.js').logs
 
-// TODO: the respond() cb is being passed around a lot
-// so that it can be called early with error messages. Would
-// be better to throw exceptions on error and catch in call()
 module.exports = {
 
   call: function(opts, respond) {
-    // if first arg is NaN e.g. !logs foo
-    // get user logs, else use args[0]
-    if (opts.args[0] && isNaN(parseInt(opts.args[0]))) { 
-      module.exports.getUserLogs(opts.args, (out) => respond(out))
-    } else {
-      module.exports.getLocalLogs(opts.args[0], (out) => respond(out))
+    const options = { lines: '', since: '' }
+    const argString = _.join(opts.args, ' ').trim()
+
+    if (opts.args[0] === '') {
+      return respond("Usage: '!logs 5' for last 5 lines. '!lines 5m ago' for time range logs. These can be combined")
     }
+
+    if (module.exports.isNumber(argString)) {
+      options.lines = `-n ${argString}`
+    }
+
+    if (module.exports.isTimeRange(argString)) {
+      options.since = `--since "${argString}"`
+    }
+
+    module.exports.getJournalLogs(options, (paste) => respond(paste)) 
   },
 
-  upload: function(data, cb) {
-    return needle.post(logs.api, `text=${data}`, {}, (err, res) => {
+  uploadLogs: function(data, cb) {
+    needle.post(logs.api, `text=${data}`, {}, (err, res) => {
       if (err) {
         return cb(err.message)
       }
@@ -31,23 +37,11 @@ module.exports = {
     })
   },
 
-  // Always take first filter, then iterate over remainder
-  // and build grep chain
-  getUserLogs: function(filters, cb) {
-    let cmd = `grep '${filters[0]}' ${logs.path}`
-    _.forEach(_.tail(filters), (filter) => {
-       cmd += ` | grep '${filter}'`
-    })
-    module.exports.runCommand(cmd, cb)
-  },
+  getJournalLogs: function(options, cb) {
+    let cmd = `journalctl -u botto.service -q --no-pager --no-hostname `
+    
+    Object.keys(options).forEach(k => cmd += options[k] )
 
-  getLocalLogs: function(lines, cb) {
-    lines = lines || 50
-    const cmd = `tail -n ${lines} ${logs.path}`
-    module.exports.runCommand(cmd, cb)
-  },
-
-  runCommand: function(cmd, cb) {
     return exec(cmd, (e, out, err) => {
       if (e) {
         console.log(e.message)
@@ -58,7 +52,18 @@ module.exports = {
         return cb(err, true)
       }
 
-      return module.exports.upload(out, (url) => cb(url))
+      module.exports.uploadLogs(out, (url) => cb(url))
     })
+  },
+
+  // e.g. !logs 15
+  isNumber: function(argString) {
+    return /^\d+$/.test(argString)
+  },
+
+  // e.g. !logs 2 days ago OR !logs 2d ago
+  isTimeRange: function(argString) {
+    return /^((\d+\w)|(\d+\s\w+))\sago$/.test(argString)
   }
+
 }
