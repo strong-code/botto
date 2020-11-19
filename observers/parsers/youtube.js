@@ -1,6 +1,7 @@
 const needle = require('needle')
 const qs = require('qs')
 const config = require('../../config').url
+const moment = require('moment')
 
 module.exports = {
 
@@ -20,12 +21,13 @@ module.exports = {
         return cb('Unable to parse details for YouTube video ID ' + videoId)
       } else {
         const data = res.body.items[0]
+        const date = moment(data.snippet.publishedAt).format('MMM Do, YYYY')
         const views = Number(data.statistics.viewCount).toLocaleString()
         const likes = Number(data.statistics.likeCount).toLocaleString()
         const dislikes = Number(data.statistics.dislikeCount).toLocaleString()
         const duration = module.exports.formatDuration(data.contentDetails.duration)
         const info = `[YouTube] "${data.snippet.title}" by ${data.snippet.channelTitle} `
-        +`| ${duration} long | ${views} views | ${likes} ↑ - ${dislikes} ↓`
+        +`| ${date} | ${duration} long | ${views} views | ${likes} ↑ - ${dislikes} ↓`
         return cb(info)
       }
     })
