@@ -4,7 +4,7 @@ const cheerio = require('cheerio')
 
 module.exports = {
 
-  hostMatch: "twitter.com",
+  hostMatch: /^(www\.)?twitter\.com$/,
 
   parse: function(url, cb) {
     // Use general parser if its not a tweet (e.g. homepage)

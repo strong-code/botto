@@ -5,8 +5,9 @@ const config = require('../../config.js').url
 
 module.exports = {
 
-  hostMatch: "goodreads.com",
+  hostMatch: /^(www\.)?goodreads\.com$/,
 
+  // TODO: return cb(false) if it isn't a book page
   parse: function(url, cb) {
     needle.get(url.href, config.options, (err, res) => {
       if (err) {

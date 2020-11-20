@@ -5,7 +5,7 @@ const moment = require('moment')
 
 module.exports = {
 
-  hostMatch: "youtube.com",
+  hostMatch: /^(www\.)?youtube\.com$/,
 
   parse: function(url, cb) {
     const videoID = qs.parse(url.query).v

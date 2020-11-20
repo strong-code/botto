@@ -3,7 +3,7 @@ const config = require('../../config').url
 
 module.exports = {
 
-  hostMatch: "imdb.com",
+  hostMatch: /^(www\.)?imdb\.com$/,
 
   parse: function(url, cb) {
     const movieId = url.pathname.split('/')[2]
@@ -15,6 +15,7 @@ module.exports = {
         return respond('Unable to parse details for IMDB ID ' + movieId)
       }
       const m = res.body
+      console.log(m)
       const info = `[IMDB] "${m.Title}" (${m.Year}) | ${m.Rated} | ${m.Runtime} | ${m.Genre} |`+
         ` ★ ${m.imdbRating} | Directed by ${m.Director} | ${m.Plot}`
 
