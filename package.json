@@ -17,7 +17,7 @@
   "bugs": "https://github.com/strong-code/botto/issues",
   "license": "GPL-3.0",
   "dependencies": {
-    "amazon-product-api": "^0.4.4",
+    "amazon-paapi": "^1.0.3",
     "cheerio": "~0.19.0",
     "irc": "~0.4.0",
     "lodash": ">=4.17.19",
