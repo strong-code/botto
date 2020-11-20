@@ -11,8 +11,10 @@ const fs = require('fs')
   fs.readdir('./observers/parsers', (err, files) => {
     files = _.filter(files, (f) => f.slice(-3) === '.js')
     _.forEach(files, (f) => {
+      // delete from cache so parsers get reloaded when this module is reloaded 
+      delete require.cache[require.resolve('./parsers/'+f)]
       let matcher = require('./parsers/'+f).hostMatch
-      parsers[matcher] = f
+      parsers[f] = matcher
     })
     console.log(`Loaded URL cache with ${files.length} parsers`)
   })
@@ -33,8 +35,6 @@ module.exports = {
 
       const pageParser = module.exports.hasOwnParser(url)
       if (pageParser) {
-        // delete from cache so parsers get reloaded on !reload url 
-        delete require.cache[require.resolve('./parsers/'+pageParser)]
         require('./parsers/'+pageParser).parse(url, (info) => {
           if (info) {
             return respond(info)
@@ -54,9 +54,9 @@ module.exports = {
   hasOwnParser: function(url) {
     let parserFile = false
     _.forEach(parsers, (v, k) => {
-      if (url.hostname.indexOf(k) > -1) {
-        console.log(`Using ${v} parser for ${url.hostname}`)
-        parserFile = v
+      if (v.test(url.hostname)) {
+        console.log(`Using ${k} parser for ${url.hostname}`)
+        parserFile = k
       }
     })
     return parserFile
