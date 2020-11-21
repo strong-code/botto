@@ -39,14 +39,14 @@ module.exports = {
           
           if (err) {
             console.log(err)
-            return cb(`[Amazon] $${data.price} | ${data.desc}`)
+            return cb(`[Amazon] $${data.price} ${data.desc}`)
           }
 
           const $ = cheerio.load(res.body)
           const stars = $('.a-icon-alt').text().split(' ')[0]
           const ratings = $('.totalRatingCount').text().split(' ')[0]
 
-          return cb(`[Amazon] $${data.price} | ★ ${stars} (${ratings} ratings) | ${data.desc}`)
+          return cb(`[Amazon] $${data.price} | ★ ${stars} (${ratings} ratings) ${data.desc}`)
         })
       })
       .catch(e => {
