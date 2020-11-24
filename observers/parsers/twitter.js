@@ -6,22 +6,18 @@ module.exports = {
 
   hostMatch: /^(www\.)?twitter\.com$/,
 
-  parse: function(url, cb) {
-    // Use general parser if its not a tweet (e.g. homepage)
-    if (!url.path.includes('/status/')) { return cb(false) } 
+  parse: async function(url) {
+    if (!url.path.includes('/status/')) {
+      throw Error('Not a tweet page, using default parser')
+    }
 
-    needle.get(url.href, config.options, (err, res) => {
-      if (err) {
-        console.log(err)
-        return cb(false)
-      }
+    const res = await needle('get', url.href, config.options)
+    const $ = cheerio.load(res.body)
+    const username = '@' + url.path.split('/')[1]
+    console.log($('meta[property="og:description"]').attr('content'))
+    const description = $('meta[property="og:description"]').attr('content').replace(/\r?\n|\r/g, " ")
 
-      const $ = cheerio.load(res.body)
-      const username = '@' + url.path.split('/')[1]
-      const description = $('meta[property="og:description"]').attr('content').replace(/\r?\n|\r/g, " ")
-
-      return cb(`${username}: ${description}`)
-    })
+    return `${username}: ${description}`
   }
 
 }

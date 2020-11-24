@@ -9,12 +9,11 @@ module.exports = {
 
   hostMatch: /^(www\.)?(smile\.)?amazon\.com$/,
 
-  parse: function(url, cb) {
+  parse: async function(url) {
     const asin = url.href.match(module.exports.asinRegex)[1]
 
     if (!asin) {
-      console.log('Unable to extract ASIN from ' + url.href)
-      return cb(false)
+      throw Error('Unable to extract ASIN from ' + url.href)
     }
 
     const requestOpts = { 
@@ -26,34 +25,17 @@ module.exports = {
       ]
     }
 
-    client.GetItems(config.amazon, requestOpts)
-      .then(data => {
-        const item = data.ItemsResult.Items[0]
-        const price = item.Offers.Listings[0].Price.Amount
-        const desc = _.truncate(item.ItemInfo.Title.DisplayValue, {length: 120})
+    const data = await client.GetItems(config.amazon, requestOpts)
+    const item = data.ItemsResult.Items[0]
+    const price = item.Offers.Listings[0].Price.Amount
+    const desc = _.truncate(item.ItemInfo.Title.DisplayValue, {length: 120})
         
-        return { price: price, desc: desc }
-      })
-      .then(data => {
-        return needle.get(ratingsUrl + asin, config.options, (err, res) => {
-          
-          if (err) {
-            console.log(err)
-            return cb(`[Amazon] $${data.price} ${data.desc}`)
-          }
+    const res = await needle('get', ratingsUrl + asin, config.options)
+    const $ = cheerio.load(res.body)
+    const stars = $('.a-icon-alt').text().split(' ')[0]
+    const ratings = $('.totalRatingCount').text().split(' ')[0]
 
-          const $ = cheerio.load(res.body)
-          const stars = $('.a-icon-alt').text().split(' ')[0]
-          const ratings = $('.totalRatingCount').text().split(' ')[0]
-
-          return cb(`[Amazon] $${data.price} | ★ ${stars} (${ratings} ratings) ${data.desc}`)
-        })
-      })
-      .catch(e => {
-        console.log(e)
-        cb(false)
-      })
-
+    return `[Amazon] $${price} | ★ ${stars} (${ratings} ratings) ${desc}`
   },
 
   asinRegex: /(?:dp|o|gp|product|-)\/(B[0-9]{2}[0-9A-Z]{7}|[0-9]{9}(?:X|[0-9]))/ 

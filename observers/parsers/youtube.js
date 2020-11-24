@@ -7,30 +7,24 @@ module.exports = {
 
   hostMatch: /^(www\.)?youtube\.com$/,
 
-  parse: function(url, cb) {
+  parse: async function(url) {
     const videoID = qs.parse(url.query).v
     if (!videoID) {
-      return cb(false)
+      throw Error('Unable to extract videoID from url, using default parser')
     }
     const API_KEY = config.youtube.apiKey
     const apiUrl  = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${videoID}&key=${API_KEY}`
 
-    needle.get(apiUrl, config.options, (err, res) => {
-      if (err) {
-        console.log(err)
-        return cb('Unable to parse details for YouTube video ID ' + videoId)
-      } else {
-        const data = res.body.items[0]
-        const date = moment(data.snippet.publishedAt).format('MMM Do, YYYY')
-        const views = Number(data.statistics.viewCount).toLocaleString()
-        const likes = Number(data.statistics.likeCount).toLocaleString()
-        const dislikes = Number(data.statistics.dislikeCount).toLocaleString()
-        const duration = module.exports.formatDuration(data.contentDetails.duration)
-        const info = `[YouTube] "${data.snippet.title}" by ${data.snippet.channelTitle} `
-        +`| ${date} | ${duration} long | ${views} views | ${likes} ↑ - ${dislikes} ↓`
-        return cb(info)
-      }
-    })
+    const res = await needle('get', apiUrl, config.options)
+    const data = res.body.items[0]
+    const date = moment(data.snippet.publishedAt).format('MMM Do, YYYY')
+    const views = Number(data.statistics.viewCount).toLocaleString()
+    const likes = Number(data.statistics.likeCount).toLocaleString()
+    const dislikes = Number(data.statistics.dislikeCount).toLocaleString()
+    const duration = module.exports.formatDuration(data.contentDetails.duration)
+
+    return `[YouTube] "${data.snippet.title}" by ${data.snippet.channelTitle} `
+    +`| ${date} | ${duration} long | ${views} views | ${likes} ↑ - ${dislikes} ↓`
   },
 
   formatDuration: function(duration) {
