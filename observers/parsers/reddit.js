@@ -4,7 +4,7 @@ const r = new snoowrap(config)
 
 module.exports = {
 
-  hostMatch: /^(old\.)?reddit\.com$/,
+  hostMatch: /^(www\.)?(old\.)?reddit\.com$/,
 
   parse: async function(url) {
     const parts = url.path.split('/')
