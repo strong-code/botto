@@ -5,13 +5,10 @@ const moment = require('moment')
 
 module.exports = {
 
-  hostMatch: /^(www\.)?youtube\.com$/,
+  hostMatch: /^(www\.)?(youtube\.com)|(youtu\.be)$/,
 
   parse: async function(url) {
-    const videoID = qs.parse(url.query).v
-    if (!videoID) {
-      throw Error('Unable to extract videoID from url, using default parser')
-    }
+    const videoID = module.exports.extractVideoId(url) 
     const API_KEY = config.youtube.apiKey
     const apiUrl  = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${videoID}&key=${API_KEY}`
 
@@ -25,6 +22,14 @@ module.exports = {
 
     return `[YouTube] "${data.snippet.title}" by ${data.snippet.channelTitle} `
     +`| ${date} | ${duration} long | ${views} views | ${likes} ↑ - ${dislikes} ↓`
+  },
+
+  extractVideoId: function(url) {
+    if (url.host === 'youtu.be') {
+      return url.path.substring(1)
+    } else {
+      return qs.parse(url.query).v
+    }
   },
 
   formatDuration: function(duration) {
