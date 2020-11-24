@@ -22,7 +22,7 @@ const fs = require('fs')
 
 module.exports = {
 
-  call: function(opts, respond) {
+  call: async function(opts, respond) {
     var match = opts.text.match(regex);
 
     if (match) {
@@ -34,17 +34,16 @@ module.exports = {
       }
 
       const pageParser = module.exports.hasOwnParser(url)
+
       if (pageParser) {
-        require('./parsers/'+pageParser).parse(url, (info) => {
-          if (info) {
-            return respond(info)
-          } else {
-            // if we get a cb(false) callback, we broke out of parser early 
-            // so default to general parser
-            console.log(`No info returned from parser: ${pageParser}. Falling back to general parser`)
-            module.exports.parsePage(url.href, opts, (info) => respond(info))
-          }
-        })
+        const p = require('./parsers/'+pageParser)
+        try {
+          let info = await p.parse(url)
+          respond(info)
+        } catch (e) {
+          console.log(`Error in parser: ${pageParser}\n  ${e.message}`)
+          module.exports.parsePage(url.href, opts, (info) => respond(info))
+        }
       } else {
         module.exports.parsePage(url.href, opts, (info) => respond(info))
       }
