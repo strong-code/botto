@@ -72,6 +72,10 @@ module.exports = {
 
   parsePage: function(url, opts, cb) {
     needle.get(url, config.options, function(err, response) {
+      if (response.statusCode === 429) { // probably API rate limiting
+        console.log(`HTTP 429: Too many requests from url: ${url}`)
+        return cb('[429] HTTP Error: Too many requests. Probably got rate limited') 
+      }
       if (err) {
         return console.log(err);
       } else {
