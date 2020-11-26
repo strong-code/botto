@@ -17,7 +17,7 @@ module.exports = {
     console.log($('meta[property="og:description"]').attr('content'))
     const description = $('meta[property="og:description"]').attr('content').replace(/\r?\n|\r/g, " ")
 
-    return `${username}: ${description}`
+    return `[Twitter] ${username}: ${description}`
   }
 
 }
