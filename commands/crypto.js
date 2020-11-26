@@ -34,8 +34,9 @@ module.exports = {
         // sometimes we don't get mcap data back
         prices.market_cap = 0
       }
-      let info = `[${data.name}] 1 ${data.symbol} = $${prices.price.toLocaleString()} ` +
-        `| Market cap: $${prices.market_cap.toLocaleString()} `
+      const digits = { minimumFractionDigits: 3 }
+      let info = `[${data.name}] 1 ${data.symbol} = $${prices.price.toLocaleString(undefined, digits)} ` +
+        `| Market cap: $${prices.market_cap.toLocaleString().split('.')[0]} `
 
       // Map % change values so we cut off after 2 decimal places
       prices = _.mapValues(data.quote.USD, (v) => parseFloat(v).toFixed(2))
