@@ -104,5 +104,4 @@ module.exports = {
 };
 
 // Regex to find all URLs. Works with/without HTTP(S) and even without a TLD.
-var expression = /[-a-zA-Z@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
-var regex = new RegExp(expression);
+const regex = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/
