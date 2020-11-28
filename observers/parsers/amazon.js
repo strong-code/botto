@@ -30,12 +30,22 @@ module.exports = {
     const price = item.Offers.Listings[0].Price.Amount
     const desc = _.truncate(item.ItemInfo.Title.DisplayValue, {length: 120})
         
-    const res = await needle('get', ratingsUrl + asin, config.options)
-    const $ = cheerio.load(res.body)
-    const stars = $('.a-icon-alt').text().split(' ')[0]
-    const ratings = $('.totalRatingCount').text().split(' ')[0]
+    let info = `[Amazon] $${price} | `
 
-    return `[Amazon] $${price} | ★ ${stars} (${ratings} ratings) ${desc}`
+    try {
+      const res = await needle('get', ratingsUrl + asin, config.options)
+      const $ = cheerio.load(res.body)
+      const stars = $('.a-icon-alt').text().split(' ')[0]
+      const ratings = $('.totalRatingCount').text().split(' ')[0]
+
+      info += `★ ${stars} (${ratings} ratings) | `
+    } catch (error) {
+      console.log(`Unable to fetch ratings from ratingsUrl\n  ${error.message}`)
+    }
+
+    info += desc
+
+    return info
   },
 
   asinRegex: /(?:dp|o|gp|product|-)\/(B[0-9]{2}[0-9A-Z]{7}|[0-9]{9}(?:X|[0-9]))/ 
