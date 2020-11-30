@@ -1,40 +1,36 @@
 const needle = require('needle');
-const _ = require('lodash');
-const BASE_URL = 'https://finance.google.com/finance';
+const config = require('../config').url
+const API_KEY = require('../config').stock.apiKey
+const BASE_URL = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE' 
 
 module.exports = {
-  // !stock <stock>
-  call: function(opts, respond) {
-    let stock = opts.args[0];
-    if (stock === ''){
-      return respond('Usage is !stock <stock>');
+
+  call: async function(opts, respond) {
+    const ticker = opts.args[0];
+    if (ticker === '') {
+      return respond('Usage is !stock <ticker>');
     }
 
-    return module.exports.stockInfo(stock, respond);
+    const info = await module.exports.stockInfo(ticker)
+    return respond(info)
   },
 
-  stockInfo: function(stock, respond) {
-    stock = _.toLower(stock);
-    return needle.get(BASE_URL+'?q='+stock+'&output=json', httpOpts, (err, res, body) => {
-      if (err) {
-        return respond('Error fetching data from Google Finance');
-      }
+  stockInfo: async function(ticker) {
+    const API_URL = `${BASE_URL}&symbol=${ticker}&apikey=${API_KEY}`
 
-      try {
-        const _stock = JSON.parse(body.substring(3))[0] // drop invalid data
-        return respond(`$${_stock.symbol} (${_stock.name}) = $${_stock.l} (${_stock.cp}%)`)
-      } catch (e) {
-        console.log(e)
-        return respond(`Unable to find information for ticker symbol ${stock}`)
-      }
-    });
-  }
-};
+    const res = await needle('get', API_URL, config)
+    const data = res.body['Global Quote']
 
-const httpOpts = {
-  follow: 10,
-  open_timeout: 10000,
-  headers: {
-    'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1677.0 Safari/537.36"
+    if (Object.keys(data).length === 0) {
+      return `Unable to fetch stock data for ticker: ${ticker}`
+    }
+
+    const price = parseFloat(data['05. price'])
+    const vol = data['06. volume'].toLocaleString()
+    const change = data['09. change']
+    const percent_change = data['10. change percent']
+
+    return `${ticker.toUpperCase()} - $${price} | Volume: ${vol} | Change: ${change} pts (${percent_change})`
   }
-};
+
+}
