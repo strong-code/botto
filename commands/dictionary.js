@@ -24,7 +24,6 @@ module.exports = {
     const API_URL = `${BASE_URL}${word}?fields=definitions&strictMatch=false`
 
     const res = await needle('get', API_URL, config)
-    console.log(res.body)
     
     if (res.body.error) {
       return res.body.error
