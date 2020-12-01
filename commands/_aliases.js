@@ -8,6 +8,9 @@ module.exports = {
     'r': 'reload',
     'gif': 'giphy',
     'c': 'crypto',
-    's': 'stock'
+    's': 'stock',
+    'd': 'dictionary',
+    'define': 'dictionary',
+    'dict': 'dictionary'
   }
 }
