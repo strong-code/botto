@@ -12,9 +12,14 @@ module.exports = {
       return respond('Usage is !dictionary <word>')
     }
 
-    const def = await module.exports.getDefinition(word)
-    
-    respond(def)
+    let response
+    try {
+      response = await module.exports.getDefinition(word)
+    } catch (e) {
+      response = e.message
+    }
+
+    respond(response)
   },
 
   getDefinition: async function(word) {
@@ -29,12 +34,18 @@ module.exports = {
       return res.body.error
     }
 
-    const data = res.body.results
+    const data = res.body.results[0]
     const definitions = {}
 
-    data[0].lexicalEntries.forEach(le => {
+    data.lexicalEntries.forEach(le => {
       const type = le.lexicalCategory.text
       definitions[type] = ''
+      
+      // sometimes the lexicalEntries don't contain definitions?
+      if (typeof le.entries === 'undefined') {
+        throw new Error(`No definitions found for "${word}"`)
+      }
+
       le.entries.forEach(e => {
         definitions[type] = e.senses[0].definitions[0]
       })
