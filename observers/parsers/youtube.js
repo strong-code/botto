@@ -26,7 +26,7 @@ module.exports = {
 
   extractVideoId: function(url) {
     if (url.host === 'youtu.be') {
-      return url.path.substring(1)
+      return url.pathname.substring(1)
     } else {
       return qs.parse(url.query).v
     }
