@@ -34,9 +34,14 @@ module.exports = {
 
     try {
       const res = await needle('get', ratingsUrl + asin, config.options)
+      console.log(res.body)
       const $ = cheerio.load(res.body)
       const stars = $('.a-icon-alt').text().split(' ')[0]
       const ratings = $('.totalRatingCount').text().split(' ')[0]
+
+      if (stars === '' || ratings === '') {
+        throw new Error('Triggered bot detection on ratings URL, ignoring')
+      }
 
       info += `★ ${stars} (${ratings} ratings) | `
     } catch (error) {
