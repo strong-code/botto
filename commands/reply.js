@@ -29,7 +29,10 @@ module.exports = {
       text: 'INSERT INTO replies (added_by, trigger, reply, enabled, date_added) ' +
         'VALUES ($1, $2, $3, $4, $5)',
       values: [nick, trigger, reply, true, new Date().toISOString()]
-    }, function () {
+    }, function (res, err) {
+      if (err) {
+        return respond(err.message)
+      }
       return respond('Trigger added');
     });
   },
