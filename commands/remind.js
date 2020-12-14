@@ -6,7 +6,7 @@ module.exports = {
   
   call: function (opts, respond) {
     if (opts.args[0] === 'clear') {
-      const cleared = module.exports.clearReminder(opts.from)
+      const cleared = module.exports.clearReminders(opts.from)
       return respond(cleared)
     }
 
@@ -42,6 +42,7 @@ module.exports = {
 
     const r = setTimeout(() => {
       respond(`${user}: ${reminder} (from ${count} ${unit} ago)`)
+      module.exports.clearReminder(user, reminder)
     }, convertedCount)
 
     const obj = { text: reminder, reminder: r }
@@ -67,7 +68,17 @@ module.exports = {
     return allReminders
   },
 
-  clearReminder: function(user) {
+  clearReminder: function(user, text) {
+    reminders[user].forEach((r, i) => {
+      if (r.text === text) {
+        obj = r
+        reminders[user].splice(i, 1)
+        console.log(`Cleared reminder for ${user} (${r,text})`)
+      }
+    })
+  },
+
+  clearReminders: function(user) {
     if (typeof reminders[user] === 'undefined') { return }
 
     reminders[user].forEach(r => clearTimeout(r.reminder))
