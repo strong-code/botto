@@ -1,23 +1,25 @@
 const _ = require('lodash');
 const regex = /(\d+) (seconds?|minutes?|hours?|days?) (.+)/
+const reminders = {}
 
 module.exports = {
   
   call: function (opts, respond) {
+    if (opts.args[0] === 'clear') {
+      const cleared = module.exports.clearReminder(opts.from)
+      return respond(cleared)
+    }
+
+    if (opts.args[0] === 'list') {
+      const reminders = module.exports.listReminders(opts.from)
+      return respond(reminders)
+    }
+
     try {
-
       let [, count, unit, reminder] = regex.exec(_.join(opts.args, ' '))
+
+      module.exports.createReminder(opts.from, count, unit, reminder, respond)
       
-      const convertedCount = module.exports.toMillis(count, unit)
-
-      if (convertedCount > Math.pow(2,31)-1) { // limitation of setTimeout max millis
-        return respond('Just use a calendar at that point')
-      }
-
-      setTimeout(() => {
-        respond(`${opts.from}: ${reminder} (from ${count} ${unit} ago)`)
-      }, convertedCount)
-
       respond(`I will remind you in ${count} ${unit}`)
     } catch (e) {
       console.log(e)
@@ -29,6 +31,49 @@ module.exports = {
       }
     }
 
+  },
+
+  createReminder: function(user, count, unit, reminder, respond) {
+    const convertedCount = module.exports.toMillis(count, unit)
+
+    if (convertedCount > Math.pow(2,31)-1) { // limitation of setTimeout max millis
+      return respond('Just use a calendar at that point')
+    }
+
+    const r = setTimeout(() => {
+      respond(`${user}: ${reminder} (from ${count} ${unit} ago)`)
+    }, convertedCount)
+
+    const obj = { text: reminder, reminder: r }
+
+    if (reminders[user]) {
+      reminders[user].push(obj) 
+    } else {
+      reminders[user] = [obj]
+    }
+  },
+
+  listReminders: function(user) {
+    if (!reminders[user] || _.isEmpty(reminders[user])) {
+      return "You don't have any reminders set"
+    }
+
+    let allReminders = ''
+
+    reminders[user].forEach((r, i) => {
+      allReminders += `[${i+1}] ${r.text} `
+    })
+
+    return allReminders
+  },
+
+  clearReminder: function(user) {
+    if (typeof reminders[user] === 'undefined') { return }
+
+    reminders[user].forEach(r => clearTimeout(r.reminder))
+    reminders[user] = []
+
+    return 'All reminders have been cleared'
   },
 
   toMillis: function(count, unit) {
