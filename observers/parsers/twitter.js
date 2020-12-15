@@ -14,7 +14,6 @@ module.exports = {
     const res = await needle('get', url.href, config.options)
     const $ = cheerio.load(res.body)
     const username = '@' + url.path.split('/')[1]
-    console.log($('meta[property="og:description"]').attr('content'))
     const description = $('meta[property="og:description"]').attr('content').replace(/\r?\n|\r/g, " ")
 
     return `[Twitter] ${username}: ${description}`
