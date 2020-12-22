@@ -34,7 +34,10 @@ module.exports = {
     }
 
     const item = res.body.items[idx]
-    return `[${item.title}] ${item.link} | ${item.snippet}`
+    const charsLeft = 255 - (item.title.length + item.link.length)
+    let desc = item.snippet.substring(0, charsLeft)
+
+    return `[${item.title}] ${item.link} | ${desc}`
   }
 
 }
