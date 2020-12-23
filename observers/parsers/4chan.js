@@ -11,10 +11,29 @@ module.exports = {
     if (!url.path.includes('/thread/')) {
       throw Error('Not a thread page, using default parser')
     }
-
-    const res = await needle('get', url.href + '.json', config.options)
+    
+    const endpoint = url.href.split('#')[0] + '.json'
+    const res = await needle('get', endpoint, config.options)
     const board = '/' + url.path.split('/')[1] + '/'
-    const op = res.body.posts[0]
+
+    // it's an anchor link to specific post
+    if (typeof url.hash !== undefined) {
+      const id = parseInt(url.hash.split('#p')[1])
+      return module.exports.getComment(res.body, board, id)
+    } else {
+      return module.exports.getOp(res.body, board)
+    }
+  },
+
+  getComment: async function(json, board, id) {
+    const post = _.find(json.posts, { 'no': id }) 
+    const content = he.decode(post.com).replace(/<(.|\n)*?>/g, ' ')
+    const posted = post.now.split('(')[0]
+    return `[4chan] ${board} #${id}: ${content.slice(0, 240)} (${posted})`
+  },
+
+  getOp: async function(json, board) {
+    const op = json.posts[0]
     const posted = op.now.split('(')[0]
 
     let content = ''
@@ -22,9 +41,10 @@ module.exports = {
       content += op.sub + ': '
     }
     content += he.decode(op.com).replace(/<(.|\n)*?>/g, ' ')
-    content = _.truncate(content, { length: 120 })
+    content = _.truncate(content, { length: 160 })
 
     return `[4chan] ${board} - ${content} | ${op.replies} replies, ${op.images} images, ${op.unique_ips} uniques | ${posted}`
+
   }
 
 }
