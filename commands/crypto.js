@@ -27,6 +27,9 @@ module.exports = {
       if (res.statusCode != 200) {
         return cb(`[Error ${body.status.error_code}] ${body.status.error_message}`)
       }
+      if (_.isEmpty(body.data)) {
+        return cb(`Unable to find market data for ${coin}`)
+      }
 
       const data = body.data[coin]
       let prices = data.quote.USD
