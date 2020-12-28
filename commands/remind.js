@@ -1,4 +1,5 @@
-const _ = require('lodash');
+const _ = require('lodash')
+const moment = require('moment')
 const regex = /(\d+) (seconds?|minutes?|hours?|days?) (.+)/
 const reminders = {}
 
@@ -45,7 +46,9 @@ module.exports = {
       module.exports.clearReminder(user, reminder)
     }, convertedCount)
 
-    const obj = { text: reminder, reminder: r }
+    const end = moment().add(convertedCount, 'ms')
+
+    const obj = { text: reminder, reminder: r, end: end }
 
     if (reminders[user]) {
       reminders[user].push(obj) 
@@ -62,7 +65,8 @@ module.exports = {
     let allReminders = ''
 
     reminders[user].forEach((r, i) => {
-      allReminders += `[${i+1}] ${r.text} `
+      const timeLeft = moment().to(r.end)
+      allReminders += `[${i+1}] ${r.text} (${timeLeft}) `
     })
 
     return allReminders
