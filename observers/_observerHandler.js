@@ -32,7 +32,7 @@ module.exports = {
         try {
           observer.call(opts, (response) => {
             let mod = module.slice(0,-3).toUpperCase()
-            console.log(`>> [${mod}] observer triggered in ${opts.to} by ${opts.from}`)
+            console.log(`[${mod}] observer triggered in ${opts.to} by ${opts.from}\n  -> "${response}"`)
             return bot.say(receiver, response);
           });
         } catch (e) {

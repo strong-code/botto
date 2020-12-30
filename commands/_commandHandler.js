@@ -23,7 +23,7 @@ module.exports = {
       if (_.includes(fs.readdirSync('core/'), opts.command+'.js')) {
         if (admin.isAdmin(opts.from, opts.to)) {
           let module = require('../core/'+opts.command)
-          console.log(`>> [${opts.command.toUpperCase()}] module triggered in ${opts.to} by ${opts.from}`)
+          console.log(`![${opts.command.toUpperCase()}] admin command triggered in ${opts.to} by ${opts.from}`)
           return module.call(bot, opts);
         }
       } else {
@@ -59,7 +59,7 @@ function publicCommands(bot, opts) {
     try {
       let module = require('./' + opts.command)
       module.call(opts, (response) => {
-        console.log(`>> [${opts.command.toUpperCase()}] module triggered in ${opts.to} by ${opts.from}`)
+        console.log(`![${opts.command.toUpperCase()}] command triggered in ${opts.to} by ${opts.from}\n  -> "${response}"`)
         return bot.say(opts.to, response);
       });
     } catch (e) {
