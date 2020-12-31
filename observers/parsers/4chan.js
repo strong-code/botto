@@ -17,7 +17,7 @@ module.exports = {
     const board = '/' + url.path.split('/')[1] + '/'
 
     // it's an anchor link to specific post
-    if (typeof url.hash !== undefined) {
+    if (url.hash) {
       const id = parseInt(url.hash.split('#p')[1])
       return module.exports.getComment(res.body, board, id)
     } else {
