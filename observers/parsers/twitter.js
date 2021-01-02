@@ -17,7 +17,8 @@ module.exports = {
       const tweetId = url.path.split('/')[3]
       const response = await T.get('statuses/show/:id', { id: tweetId, tweet_mode: 'extended' })
       const data = response.data
-      return `[Twitter] @${data.user.screen_name}: ${data.full_text.strip()}`
+      const text = data.full_text.replace(/\r?\n|\r/g, ' ')
+      return `[Twitter] @${data.user.screen_name}: ${text}`
     } catch (e) {
       console.log(`Error retrieving tweet with Twit library, trying with HTTP request. \n ${e}`)
       const info = await module.exports.getHttp(url)
