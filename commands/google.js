@@ -35,7 +35,7 @@ module.exports = {
 
     const item = res.body.items[idx]
     const charsLeft = 255 - (item.title.length + item.link.length)
-    let desc = item.snippet.substring(0, charsLeft)
+    const desc = item.snippet.replace(/\r?\n|\r/g, " ").substring(0, charsLeft)
 
     return `[${item.title}] ${item.link} | ${desc}`
   }
