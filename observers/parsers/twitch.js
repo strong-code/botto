@@ -25,7 +25,8 @@ module.exports = {
       throw new Error(`Unable to get live stream data from API for ${username}. Falling back to default parser.`)
     }
 
-    return `[Twitch] ${stream.user_name} - "${stream.title}" | ${stream.viewer_count.toLocaleString()} viewers (LIVE)`
+    const viewers = stream.viewer_count.toLocaleString()
+    return `[Twitch] ${stream.user_name} is playing ${stream.game_name}: "${stream.title}" | ${viewers} viewers (LIVE)`
   },
 
 }
