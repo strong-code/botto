@@ -24,6 +24,11 @@ module.exports = {
       if (res.statusCode === 200) {
         const loc = res.body.location
         const current = res.body.current
+
+        if (!current || typeof current === undefined) {
+          return cb(`Could not find weather info for location: ${city}`)
+        }
+
         const desc = _.toLower(current.weather_descriptions[0])
 
         const reply = `Weather for ${loc.name}, ${loc.region}: ${current.temperature}° (feels like ${current.feelslike}°) and ${desc} ` +
