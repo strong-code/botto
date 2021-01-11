@@ -2,15 +2,50 @@ const needle = require('needle')
 const qs = require('qs')
 const config = require('../../config').url
 const moment = require('moment')
+const API_BASE = 'https://www.googleapis.com/youtube/v3'
+const API_KEY = config.youtube.apiKey
 
 module.exports = {
 
   hostMatch: /^(www\.)?(youtube\.com)|(youtu\.be)$/,
 
   parse: async function(url) {
+    if (!url.search) {
+      return await module.exports.parseChannel(url)
+    } else {
+      return await module.exports.parseVideo(url)
+    }
+  },
+
+  parseChannel: async function(url) {
+    const channel = url.path.split('/')[2]
+    let apiUrl = `${API_BASE}/search?part=snippet&type=channel&maxResults=1&q=${channel}&key=${API_KEY}`
+
+    let res = await needle('get', apiUrl, config.options)
+    res = res.body.items[0]
+
+    const channelName = res.snippet.title
+    const snippet = res.snippet.description
+    const channelId = res.snippet.channelId
+
+    apiUrl = `${API_BASE}/channels?part=statistics&id=${channelId}&key=${API_KEY}`
+    res = await needle('get', apiUrl, config.options)
+    res = res.body.items[0].statistics
+
+    const viewcount = parseInt(res.viewCount).toLocaleString()
+    const subs = parseInt(res.subscriberCount).toLocaleString()
+
+    let nameAndDesc = `${channelName}`
+    if (snippet && snippet.length > 0) {
+      nameAndDesc += ` - ${snippet}`
+    }
+
+    return `[YouTube] ${nameAndDesc} | ${subs} subscribers | ${viewcount} total views`
+  },
+
+  parseVideo: async function(url) {
     const videoID = module.exports.extractVideoId(url) 
-    const API_KEY = config.youtube.apiKey
-    const apiUrl  = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${videoID}&key=${API_KEY}`
+    const apiUrl = `${API_BASE}/videos?part=snippet,contentDetails,statistics&id=${videoID}&key=${API_KEY}`
 
     const res = await needle('get', apiUrl, config.options)
     const data = res.body.items[0]
