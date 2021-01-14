@@ -8,11 +8,7 @@ module.exports = {
   hostMatch: /^boards\.4chan(nel)?\.org$/,
 
   parse: async function(url) {
-    if (!url.path.includes('/thread/')) {
-      throw Error('Not a thread page, using default parser')
-    }
-    
-    const endpoint = url.href.split('#')[0] + '.json'
+    const endpoint = module.exports.cleanUrl(url)
     const res = await needle('get', endpoint, config.options)
     const board = '/' + url.path.split('/')[1] + '/'
 
@@ -23,6 +19,22 @@ module.exports = {
     } else {
       return module.exports.getOp(res.body, board)
     }
+  },
+
+  cleanUrl: function(url) {
+    if (!url.path.includes('/thread/')) {
+      throw new Error('Not a thread page, using default parser')
+    }
+
+    const parts = url.href.split('/')
+    const last = parts.pop()
+
+    // clean URL, need to strip last parts
+    if (isNaN(parseInt(last))) {
+      url.href = parts.join('/')
+    }
+
+    return url.href.split('#')[0] + '.json'
   },
 
   getComment: async function(json, board, id) {
