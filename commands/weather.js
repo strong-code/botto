@@ -1,19 +1,31 @@
-const weather = require('../config.js').weather;
-const needle  = require('needle');
-const _       = require('lodash');
+const weather = require('../config.js').weather
+const needle  = require('needle')
+const _       = require('lodash')
+const db      = require('../core/_db.js')
 
 module.exports = {
 
   call: function(opts, respond) {
-    if (!opts.args || opts.args[0] === '') {
-      respond('Usage is !weather <city>, <state>. State is optional')
+    if (opts.args[0] === '') {
+      return module.exports.getUserLocation(opts.from, (city) => {
+        if (!city) {
+          return respond('No city set for your nick. Set one with !weather set <city>')
+        }
+        module.exports.getWeather(city, (info) => respond(info))
+      })
+    } 
+    
+    if (opts.args[0] === 'set') {
+      opts.args.shift()
+      const loc = opts.args.join(' ')
+      module.exports.setLocation(opts.from, loc, respond, (info) => respond(info))
     } else {
-      module.exports.getWeather(opts, (data) => respond(data))
+      const city = _.join(opts.args, '%20')
+      module.exports.getWeather(city, (info) => respond(info))
     }
   },
 
-  getWeather: function(opts, cb) {
-    const city      = _.join(opts.args, '%20');
+  getWeather: function(city, cb) {
     const formedUrl = baseUrl + 'access_key=' + weather.apiKey + '&query=' + city + '&units=f'
 
     needle.get(formedUrl, options, function(err, res) {
@@ -42,10 +54,31 @@ module.exports = {
     });
   },
 
-  _parseCity: function(opts) {
-    var args = _.drop(opts.args);
-    return _.join(args, '%20');
+  setLocation: function(nick, city, cb) {
+    db.executeQuery({
+      text: "INSERT INTO weather_locations (nick, location, date_updated) VALUES ($1, $2, $3)",
+      values: [nick, city, new Date().toISOString()]
+    }, (res, err) => {
+      if (err) {
+        return cb('Error setting user weather location. Check logs for more info')
+      } else {
+        return cb('User location has been set to ' + city)
+      }
+    })
+  },
+
+  getUserLocation: function(nick, cb) {
+    db.executeQuery({
+      text: "SELECT * FROM weather_locations WHERE NICK = $1",
+      values: [nick]
+    }, (res, err) => {
+      if (err || res.rows.length === 0) {
+        return cb(false)
+      }
+      return cb(res.rows[0]['location'])
+    })
   }
+
 };
 
 const baseUrl = "http://api.weatherstack.com/current?"
