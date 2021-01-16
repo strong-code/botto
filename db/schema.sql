@@ -66,3 +66,11 @@ CREATE TABLE IF NOT EXISTS last_fm_users (
   created_at TIMESTAMP NOT NULL
 );
 
+-- Definition for user weather location table
+CREATE TABLE IF NOT EXISTS weather_locations (
+  id SERIAL UNIQUE PRIMARY KEY,
+  nick VARCHAR(55) NOT NULL,
+  location TEXT NOT NULL,
+  date_updated TIMESTAMP NOT NULL
+);
+
