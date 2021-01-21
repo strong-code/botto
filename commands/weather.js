@@ -50,7 +50,7 @@ module.exports = {
         return cb(reply)
       }
       
-      return cb('Could not find weather conditions for ' + _.join(opts.args, ' '));
+      return cb(`Could not find weather conditions for ${city}`)
     });
   },
 
