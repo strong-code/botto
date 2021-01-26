@@ -29,8 +29,8 @@ module.exports = {
       const url = parser.parse(match[0].trim())
       if (!url.hostname) { url.hostname = url.href } // hacky but whatever
 
-      if (module.exports.isImage(url.href)) {
-        return;
+      if (module.exports.isIgnorable(url)) {
+        return
       }
 
       const pageParser = module.exports.hasOwnParser(url)
@@ -50,6 +50,23 @@ module.exports = {
     }
   },
 
+  // Some sites we either cant force SSR on or they block our useragent
+  isIgnorable: function(url) {
+    const ignorables = [
+      'instagram.com',
+      'rei.com'
+    ]
+
+    for (let h of ignorables) {
+      if (url.host.includes(h)) {
+        console.log(`Ignored host: "${url.host}"`)
+        return true
+      }
+    }
+
+    return module.exports.isImage(url)
+  },
+
   hasOwnParser: function(url) {
     let parserFile = false
     _.forEach(parsers, (v, k) => {
@@ -63,11 +80,9 @@ module.exports = {
 
   isImage: function(url) {
     const ignorable = ['jpg', 'png', 'gif', 'webm', 'jpeg', 'mp3', 'mp4']
-    const ending = _.last(url.split('.'))
-    if (ignorable.indexOf(ending) > -1) { 
-      return true
-    }
-    return false
+    const ending = _.last(url.href.split('.'))
+
+    return ignorable.indexOf(ending) > -1
   },
 
   parsePage: function(url, opts, cb) {
@@ -101,6 +116,7 @@ module.exports = {
     title = title.replace(/[\r\n\t]/g, " ")
     return title
   }
+
 };
 
 // Regex to find all URLs. Works with/without HTTP(S) and even without a TLD.
