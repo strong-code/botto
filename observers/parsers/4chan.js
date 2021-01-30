@@ -41,7 +41,7 @@ module.exports = {
     const post = _.find(json.posts, { 'no': id }) 
     const content = he.decode(post.com).replace(/<(.|\n)*?>/g, ' ')
     const posted = post.now.split('(')[0]
-    return `[4chan] ${board} #${id}: ${content.slice(0, 240)} (${posted})`
+    return `[4chan] ${board} "${content.slice(0, 240).trim()}" (${posted})`
   },
 
   getOp: async function(json, board) {
