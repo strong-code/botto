@@ -10,7 +10,7 @@ module.exports = {
   hostMatch: /^(www\.)?(youtube\.com)|(youtu\.be)$/,
 
   parse: async function(url) {
-    if (!url.search) {
+    if (!url.search && url.host !== 'youtu.be') {
       return await module.exports.parseChannel(url)
     } else {
       return await module.exports.parseVideo(url)
