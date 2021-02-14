@@ -5,12 +5,14 @@ const addTell = require('../observers/tell').addTell;
 module.exports = {
 
   call: function(opts, respond) {
-    if (!opts.args[0] || !opts.args[1]) {
-      return respond('Usage is !tell <nick> <message>');
+    const receiver = opts.args.shift()
+    const msg      = opts.args.join(' ')
+
+    if (msg && receiver) {
+      return module.exports.saveMessage(opts.to, opts.from, receiver, msg, respond)
+    } else {
+      return respond('Usage is !tell <nick> <message>')
     }
-    const receiver = opts.args[0];
-    const msg      = _.join(_.drop(opts.args), ' ');
-    return module.exports.saveMessage(opts.to, opts.from, receiver, msg, respond);
   },
 
   saveMessage: function(chan, sender, receiver, msg, respond) {
@@ -29,7 +31,6 @@ module.exports = {
       values: [chan, sender, receiver, msg, new Date().toISOString()]
     }, () => {
       console.log('message saved to disk');
-      //return respond('Message saved. I will tell ' + receiver + ' next time they are around.');
     });
   }
 
