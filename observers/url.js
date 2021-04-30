@@ -54,7 +54,8 @@ module.exports = {
   isIgnorable: function(url) {
     const ignorables = [
       'instagram.com',
-      'rei.com'
+      'rei.com',
+      'nike.com'
     ]
 
     for (let h of ignorables) {
