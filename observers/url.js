@@ -51,11 +51,13 @@ module.exports = {
   },
 
   // Some sites we either cant force SSR on or they block our useragent
+  // TODO: move this into config or something
   isIgnorable: function(url) {
     const ignorables = [
       'instagram.com',
       'rei.com',
-      'nike.com'
+      'nike.com',
+      'vimeo.com'
     ]
 
     for (let h of ignorables) {
