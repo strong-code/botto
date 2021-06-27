@@ -74,3 +74,17 @@ CREATE TABLE IF NOT EXISTS weather_locations (
   date_updated TIMESTAMP NOT NULL
 );
 
+-- Definition for commands table
+CREATE TABLE IF NOT EXISTS commands (
+  id SERIAL UNIQUE PRIMARY KEY,
+  name VARCHAR(55) NOT NULL,
+  mounted BOOLEAN DEFAULT TRUE,
+  admin BOOLEAN DEFAULT FALSE
+);
+
+-- Definition for observers table
+CREATE TABLE IF NOT EXISTS observers (
+  id SERIAL UNIQUE PRIMARY KEY,
+  name VARCHAR(55) NOT NULL,
+  mounted BOOLEAN DEFAULT TRUE
+);
