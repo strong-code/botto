@@ -16,7 +16,7 @@ class Duckhunt extends Command {
 
   call(opts, respond) {
     if (opts.args[0] == 'start') {
-      return startGame(respond);
+      return this.startGame(respond);
     }
   }
 
