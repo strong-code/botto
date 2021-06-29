@@ -33,8 +33,9 @@ class Duckhunt extends Command {
     this.#inGame = true;
     var delay = (Math.random() * 10000) + (Math.floor(Math.random() * 60));
 
+    const _this = this
     setTimeout(function () {
-      this.#shootable = true;
+      _this.#shootable = true;
       return respond(duckling);
     }, delay);
   }
