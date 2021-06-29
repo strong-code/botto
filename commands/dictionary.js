@@ -1,4 +1,4 @@
-const command = require('./command.js')
+const Command = require('./command.js')
 const needle = require('needle');
 const config = require('../config').url.options
 const creds = require('../config').oxford
