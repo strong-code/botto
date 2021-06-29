@@ -19,7 +19,7 @@ class Dictionary extends Command {
 
     let response
     try {
-      response = await getDefinition(word)
+      response = await this.getDefinition(word)
     } catch (e) {
       response = e.message
     }
