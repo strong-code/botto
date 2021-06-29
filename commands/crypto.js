@@ -1,4 +1,4 @@
-const command  = require('./command.js')
+const Command  = require('./command.js')
 const needle   = require('needle')
 const _        = require('lodash')
 const config   = require('../config').coinmarketcap

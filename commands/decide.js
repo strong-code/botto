@@ -1,4 +1,4 @@
-const command = require('./command.js')
+const Command = require('./command.js')
 const _ = require('lodash')
 
 class Decide extends Command {
