@@ -2,7 +2,7 @@ const _config = require('./config.js').core;
 const config = (process.argv[2] === 'test' ? _config.test : _config.default);
 const fs = require('fs');
 const irc = require('irc');
-const commandHandler = require('./commands/_commandHandler.js');
+const commandHandler = new require('./commands/_commandHandler.js')();
 const observerHandler = require('./observers/_observerHandler.js')
 const ignore = require('./core/ignore.js');
 const _ = require('lodash');

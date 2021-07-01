@@ -1,6 +1,6 @@
 const Command = require('./command.js')
 
-class Ping extends Command {
+module.exports = class Ping extends Command {
 
   constructor() {
     super('ping')
@@ -10,5 +10,3 @@ class Ping extends Command {
     return respond(`${opts.from}: PONG`)
   }
 }
-
-module.exports = new Ping()
