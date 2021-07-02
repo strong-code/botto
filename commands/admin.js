@@ -1,3 +1,4 @@
+const Command = require('./command.js')
 const config = require("../config.js");
 const _ = require('lodash');
 
@@ -7,10 +8,14 @@ const _ = require('lodash');
  *
  * !admin user123
  */
-module.exports = {
+module.exports = class Admin extends Command {
+
+  constructor() {
+    super('admin')
+  }
 
   // List all admins for a specified channel
-  call: function(bot, opts) {
+  call(bot, opts) {
     let admins = "No administrators specified for " + opts.to;
     const globalAdmins = config.globalAdmins.join(', ');
 
@@ -19,10 +24,10 @@ module.exports = {
     };
     
     return bot.say(opts.to, admins + ". Global admins: " + globalAdmins);    
-  },
+  }
 
   // Check if a user is an admin for a specified channel
-  isAdmin: function(user, channel) {
+  static isAdmin(user, channel) {
     if (_.includes(config.globalAdmins, user)) {
       return true;
     } else if (config.admin[channel]) {

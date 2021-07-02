@@ -4,38 +4,30 @@ module.exports = class Command {
 
   constructor(name) {
     this.name = name
-
-    db.executeQuery({
-      text: "SELECT * FROM commands WHERE name = $1",
-      values: [this.name]
-    }, (res, err) => {
-      if (err || res.rows.length === 0) {
-        console.err(`Error loading command ${this.name} from db: ${err}`)
-      }
-
-      console.log(res.rows[0])
-      this.mounted = res.rows[0]['mounted']
-      this.admin = res.rows[0]['admin']
-      console.log(`[${this.name}] command successfully loaded. MOUNTED: ${this.mounted}. ADMIN: ${this.admin}.`)
-    }
+    db.one('SELECT * FROM commands WHERE name = $1', [name], row => {
+      this.mounted = row.mounted
+      this.admin = row.admin
+    })
   }
 
   mount() {
     if (this.mounted) {
+      console.warn(`${this.name} is already mounted`)
       return
     }
 
-    // db code to mark as mounted
-    this.mounted = true
+    db.none('UPDATE commands SET mounted = $1 WHERE name = $2', [true, this.name])
+      .then(() => this.mounted = true)
   }
 
   unmount() {
     if (!this.mounted) {
+      console.warn(`${this.name} is already unmounted`)
       return
     }
 
-    // db code to mark as unmounted
-    this.mounted = false
+    db.none('UPDATE commands SET mounted = $1 WHERE name = $2', [false, this.name])
+      .then(() => this.mounted = false)
   }
 
 }

@@ -1,5 +1,5 @@
-const db = require('./_db.js');
-const admin = require('./admin.js');
+const db = require('../util/db.js');
+const admin = require('../commands/admin.js');
 const _  = require('lodash');
 
 module.exports = {
@@ -72,6 +72,7 @@ module.exports = {
 
   // Used to check if an incoming message is from an ignored user
   _isIgnoredBool: function (nick, host, cb) {
+    return cb(false)
     if (process.argv[2] === 'test') { return cb(false) } // hacky shit
     db.executeQuery({
       text: 'SELECT * FROM ignored_users WHERE nick = $1 OR host = $2',
