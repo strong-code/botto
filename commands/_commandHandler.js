@@ -32,13 +32,16 @@ module.exports = class CommandHandler {
     const cmd = CommandHandler.commandList[opts.command]
 
     if (cmd && cmd.mounted) {
-      if (cmd.admin && !Admin.isAdmin(opts.from, opts.to)) {
-        return
-      } else {
+      if (!cmd.admin) {
         cmd.call(opts, (response) => {
           console.log(`[${opts.command.toUpperCase()}] command triggered in ${opts.to} by ${opts.from}\n  -> "${response}"`)
           return bot.say(opts.to, response)
         })
+      } else {
+        if (Admin.isAdmin(opts.from, opts.to)) { 
+          console.log(`[${opts.command.toUpperCase()}] admin command triggered in ${opts.to} by ${opts.from}"`)
+          return cmd.call(bot, opts) // admin commands get the entire bot instance
+        }
       }
     }
   }

@@ -10,22 +10,22 @@ module.exports = class Git extends Command {
     super('git')
   }
 
-  call(opts, respond) {
+  call(bot, opts) {
     const cmd = opts.args[0]
 
     if (!cmd) {
-      return respond('Must provide a command');
+      return bot.say(opts.to, 'Must provide a command');
     } else if (cmd === "pull") {
-      return this.pull(opts, respond);
+      return this.pull(bot, opts);
     } else if (cmd === "status") {
-      return this.status(opts, respond);
+      return this.status(bot, opts);
     }
   }
 
-  pull(opts, respond) {
+  pull(bot, opts) {
     exec('git pull', function (err, stdout, stderr) {
       if (err) {
-        return respond(err.message + "; Check logs for more info");
+        return bot.say(opts.to, err.message + "; Check logs for more info");
       }
 
       // split on newline, drop first 2 lines and last line
@@ -46,28 +46,28 @@ module.exports = class Git extends Command {
 
         needle.post(LOGS_API, `text=${stdout}`, {}, (err, res) => {
           if (err) {
-            return respond(err.message)
+            return bot.say(opts.to, err.message)
           }
           if (!res.body.path) {
-            return respond(`Error while uploading output to API: ${logs.api}`)
+            return bot.say(opts.to, `Error while uploading output to API: ${logs.api}`)
           }
           updateMsg += res.body.path
           respond(updateMsg)
         })
       } else {
         // Normal stdout from `git pull`
-        return respond(stdout)
+        return bot.say(opts.to, stdout)
       }
     });
   }
 
-  status(opts, respond) {
+  status(bot, opts) {
     exec('git status -sb', function (err, stdout, stderr) {
       if (err) {
-        return respond(err.message + "; Check logs for more info");
+        return bot.say(opts.to, err.message + "; Check logs for more info");
       }
 
-      return respond(stdout);
+      return bot.say(opts.to, stdout);
     });
   }
 };

@@ -1,25 +1,48 @@
-module.exports = {
+const Command = require('../command.js')
 
-  // Routing logic
-  call: function(bot, opts) {
+module.exports = class Irc extends Command {
+
+  constructor() {
+    super('irc')
+  }
+
+  call(bot, opts) {
     if (opts.args) {
-      let fn = module.exports[opts.args[0]];
-      if (fn) {
-        return fn(bot, opts);
+      switch (opts.args[0]) {
+        case 'nick':
+          return this.nick(bot, opts)
+        case 'join':
+          return this.join(bot, opts)
+        case 'part':
+          return this.part(bot, opts)
+        case 'say':
+          return this.say(bot, opts)
+        case 'action':
+          return this.action(bot, opts)
+        case 'notice':
+          return this.notice(bot, opts)
+        case 'ctcp':
+          return this.ctcp(bot, opts)
+        case 'cycle':
+          return this.cycle(bot, opts)
+        case 'raw':
+          return this.raw(bot, opts)
+        default:
+          return bot.say(opts.to, `No IRC action for ${opts.args[0]}`)
       }
     }
-  },
+  }
 
-  nick: function(bot, opts) {
+  nick(bot, opts) {
     var nick = opts.args[1];
     if (nick) {
       return bot.send('raw NICK ' + nick);
     } else {
       return bot.say(opts.to, "No nick specified");
     }
-  },
+  }
 
-  join: function(bot, opts) {
+  join(bot, opts) {
     var chan = opts.args[1];
 
     if (chan) {
@@ -27,9 +50,9 @@ module.exports = {
     } else {
       return bot.say(opts.to, "No channel specified");
     }
-  },
+  }
 
-  part: function(bot, opts) {
+  part(bot, opts) {
     var chan = opts.args[1];
 
     if (chan) {
@@ -38,9 +61,9 @@ module.exports = {
     } else {
       return bot.say(opts.to, "No channel specified");
     }
-  },
+  }
 
-  say: function(bot, opts) {
+  say(bot, opts) {
     var receiver = opts.args[1];
     var message = opts.args.slice(2).join(' ');
 
@@ -49,9 +72,9 @@ module.exports = {
     } else {
       return bot.say(opts.to, "Not enough parameters specified. Usage is !irc say <receiver> <message>");
     }
-  },
+  }
 
-  action: function(bot, opts) {
+  action(bot, opts) {
     var receiver = opts.args[1];
     var action = opts.args.slice(2).join(' ');
 
@@ -60,9 +83,9 @@ module.exports = {
     } else {
       return bot.say(opts.to, "Not enough parameters specified. Usage is !irc action <receiver> <message>");
     }
-  },
+  }
 
-  notice: function(bot, opts) {
+  notice(bot, opts) {
     var receiver = opts.args[1];
     var message = opts.args.slice(2).join(' ');
 
@@ -71,9 +94,9 @@ module.exports = {
     } else {
       return bot.say(opts.to, "Not enough parameters specified. Usage is !irc notice <receiver> <message>");
     }
-  },
+  }
 
-  ctcp: function(bot, opts) {
+  ctcp(bot, opts) {
     var receiver = opts.args[1];
     var type = opts.args[2];
     var text = opts.args.slice(3).join(' ');
@@ -83,9 +106,9 @@ module.exports = {
     } else {
       return bot.say(opts.to, "Not enough parameters specified. Usage is !irc ctcp <receiver> <message>");
     }
-  },
+  }
 
-  cycle: function(bot, opts) {
+  cycle(bot, opts) {
     var chan = opts.args[1];
 
     if (chan) {
@@ -94,9 +117,9 @@ module.exports = {
     } else {
       return bot.say(opts.to, "No channel specified");
     }
-  },
+  }
 
-  raw: function(bot, opts) {
+  raw(bot, opts) {
     if (opts.args[1]) {
       return bot.send(opts.args.join(' '));
     } else {
