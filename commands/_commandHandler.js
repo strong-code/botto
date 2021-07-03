@@ -1,4 +1,5 @@
 const db = require('../util/db.js')
+const Admin = require('./admin.js')
 
 /*
  * Command handler responsible for routing commands. These include admin only
@@ -11,14 +12,19 @@ module.exports = class CommandHandler {
   static commandList = {}
 
   async init() {
-    let loaded = 0
-    
-    db.each('SELECT * FROM commands', [], row => {
-      let cmd = new (require(`./${row.name}.js`))()
+    await db.each('SELECT * FROM commands', [], row => {
+      let reqPath = './'
+      if (row.admin) {
+        reqPath = './admin/'
+      }
+      let cmd = new (require(`${reqPath}${row.name}.js`))();
       CommandHandler.commandList[row.name] = cmd
-      loaded++
     })
-      .then(() => console.log(`Loaded ${loaded} command modules`))
+
+    for (const v of Object.values(CommandHandler.commandList)) { await v.init() }
+    const total = Object.keys(CommandHandler.commandList).length
+    const admin = Object.values(CommandHandler.commandList).filter(x => x.admin).length
+    console.log(`Loaded ${total} total command modules (${admin} admin modules)`)
   }
 
   route(bot, from, to, text, message) {
@@ -47,14 +53,13 @@ module.exports = class CommandHandler {
   }
 
   #respondsTo(command) {
-    const alias = require('./_aliases').aliases[command];
+    const alias = require('./_aliases').aliases[command]
     if (typeof alias !== 'undefined') {
-      return alias;
+      return alias
     }
-    return command;
+    return command
   }
 
-  // Helper function to stuff params into an `opts` hash
   #makeOptions(bot, from, to, text, message) {
     return {
       from: from,
@@ -62,7 +67,7 @@ module.exports = class CommandHandler {
       command: this.#respondsTo(String(text.split(' ')[0]).replace('!', '').trim()),
       args: text.substring(String(text.split(' ')[0]).length).trim().split(' '),
       raw: message
-    };
+    }
   }
-};
+}
 
