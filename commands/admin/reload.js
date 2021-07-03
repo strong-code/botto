@@ -13,19 +13,22 @@ module.exports = class Reload extends Command {
     super('reload')
   }
 
-  call(bot, opts) {
+  async call(bot, opts) {
 
     const moduleName = opts.args[0];
     let numReloaded = 0;
 
     try {
-      if (CommandHandler.reload(moduleName)) {
+      if (await CommandHandler.reload(moduleName)) {
+        console.log('its true')
         numReloaded++
       }
       
       // do the same static call for ObserverHandler 
 
-      return bot.say(opts.to, "Reloaded " + moduleName + " (" + numReloaded + " total)");
+      if (numReloaded > 0) {
+        return bot.say(opts.to, "Reloaded " + moduleName + " (" + numReloaded + " total)");
+      }
     } catch (e) {
       console.error(e);
       return bot.say(opts.to, e.message);

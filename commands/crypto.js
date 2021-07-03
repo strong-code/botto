@@ -4,7 +4,7 @@ const _        = require('lodash')
 const config   = require('../config').coinmarketcap
 const BASE_URL = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol='
 
-class Crypto extends Command {
+module.exports = class Crypto extends Command {
 
   constructor() {
     super('crypto')
@@ -16,7 +16,7 @@ class Crypto extends Command {
       return respond('Usage is !crypto <coin name>')
     }
 
-    module.exports.coinInfo(coin, (info) => respond(info))
+    this.coinInfo(coin, (info) => respond(info))
   }
 
   coinInfo(coin, cb) {
@@ -55,4 +55,3 @@ class Crypto extends Command {
   }
 }
 
-module.exports = new Crypto()

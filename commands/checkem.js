@@ -1,7 +1,7 @@
 const Command = require('./command.js')
 const _ = require('lodash');
 
-class Checkem extends Command {
+module.exports = class Checkem extends Command {
 
   constructor() {
     super('checkem')
@@ -13,4 +13,3 @@ class Checkem extends Command {
   }
 }
 
-module.exports = new Checkem()

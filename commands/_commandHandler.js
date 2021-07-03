@@ -62,6 +62,7 @@ module.exports = class CommandHandler {
       const reloadedCommand = new (require(path))()
       await reloadedCommand.init()
       CommandHandler.commandList[cmd] = reloadedCommand
+      console.log('returning true')
       return true
     }
     return false
