@@ -1,30 +1,35 @@
 const { exec } = require('child_process')
 const needle = require('needle')
 const _ = require('lodash')
-const logs = require('../config.js').logs
+const logs = require('../../config.js').logs
+const Command = require('../command.js')
 
-module.exports = {
+module.exports = class Logs extends Command {
 
-  call: function(opts, respond) {
+  constructor() {
+    super('logs')
+  }
+
+  call(bot, opts) {
     const options = { lines: '', since: '' }
     const argString = _.join(opts.args, ' ').trim()
 
     if (opts.args[0] === '') {
-      return respond("Usage: '!logs 5' for last 5 lines. '!lines 5m ago' for time range logs. These can be combined")
+      return bot.say(opts.to, "Usage: '!logs 5' for last 5 lines. '!lines 5m ago' for time range logs. These can be combined")
     }
 
-    if (module.exports.isNumber(argString)) {
+    if (this.isNumber(argString)) {
       options.lines = `-n ${argString}`
     }
 
-    if (module.exports.isTimeRange(argString)) {
+    if (this.isTimeRange(argString)) {
       options.since = `--since "${argString}"`
     }
 
-    module.exports.getJournalLogs(options, (paste) => respond(paste)) 
-  },
+    this.getJournalLogs(options, (paste) => bot.say(opts.to, paste)) 
+  }
 
-  uploadLogs: function(data, cb) {
+  uploadLogs(data, cb) {
     needle.post(logs.api, `text=${data}`, {}, (err, res) => {
       if (err) {
         return cb(err.message)
@@ -35,9 +40,9 @@ module.exports = {
       console.log(`Log output uploaded to: ${res.body.path}`)
       return cb(res.body.path)
     })
-  },
+  }
 
-  getJournalLogs: function(options, cb) {
+  getJournalLogs(options, cb) {
     let cmd = `journalctl -u botto.service -q --no-pager --no-hostname `
     
     Object.keys(options).forEach(k => cmd += options[k] )
@@ -52,17 +57,17 @@ module.exports = {
         return cb(err, true)
       }
 
-      module.exports.uploadLogs(out, (url) => cb(url))
+      this.uploadLogs(out, (url) => cb(url))
     })
-  },
+  }
 
   // e.g. !logs 15
-  isNumber: function(argString) {
+  isNumber(argString) {
     return /^\d+$/.test(argString)
-  },
+  }
 
   // e.g. !logs 2 days ago OR !logs 2d ago
-  isTimeRange: function(argString) {
+  isTimeRange(argString) {
     return /^((\d+\w)|(\d+\s\w+))\sago$/.test(argString)
   }
 

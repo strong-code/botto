@@ -8,7 +8,7 @@ const duckling =
 '         `  =~~/\n' +
 '         `---Y-\'\n';
 
-class Duckhunt extends Command {
+module.exports = class Duckhunt extends Command {
 
   constructor() {
     super('duckhunt')
@@ -51,4 +51,3 @@ class Duckhunt extends Command {
 
 }
 
-module.exports = new Duckhunt()

@@ -1,7 +1,7 @@
 const Command = require('./command.js')
 const _ = require('lodash')
 
-class Decide extends Command {
+module.exports = class Decide extends Command {
 
   constructor() {
     super('decide')
@@ -20,4 +20,3 @@ class Decide extends Command {
 
 }
 
-module.exports = new Decide()

@@ -4,7 +4,7 @@ const config = require('../config').url.options
 const creds = require('../config').oxford
 const BASE_URL = 'https://od-api.oxforddictionaries.com/api/v2/entries/en-gb/'
 
-class Dictionary extends Command {
+module.exports = class Dictionary extends Command {
 
   constructor() {
     super('dictionary')
@@ -66,4 +66,3 @@ class Dictionary extends Command {
 
 }
 
-module.exports = new Dictionary()
