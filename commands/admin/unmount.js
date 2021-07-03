@@ -1,6 +1,6 @@
 const _ = require('lodash');
-const Command = require('./command.js')
-const CommandHandler = require('./_commandHandler.js')
+const Command = require('../command.js')
+const CommandHandler = require('../_commandHandler.js')
 
 module.exports = class Unmount extends Command {
 

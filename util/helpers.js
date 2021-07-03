@@ -1,7 +1,7 @@
-module.exports = {
+module.exports = class Helpers {
 
   // Strip carriage returns and newline from a given string
-  strip: function(str, nospace) {
+  static strip(str, nospace) {
     if (nospace) {
       return str.replace(/\r?\n|\r/g, "")
     } else {

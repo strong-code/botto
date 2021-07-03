@@ -46,13 +46,25 @@ module.exports = class CommandHandler {
     }
   }
 
-  static reload(cmd) {
+  static async reload(cmd) {
     if (CommandHandler.commandList[cmd]) {
+      const admin = CommandHandler.commandList[cmd].admin
+      let path
+
+      if (admin) {
+        path = `./admin/${cmd}.js`
+      } else {
+        path = `./${cmd}.js`
+      }
+
       delete CommandHandler.commandList[cmd]
-      delete require.cache[require.resolve(`./${cmd}.js`)]
-      const reloadedCommand = new (require(`./${cmd}.js`))()
+      delete require.cache[require.resolve(path)]
+      const reloadedCommand = new (require(path))()
+      await reloadedCommand.init()
       CommandHandler.commandList[cmd] = reloadedCommand
+      return true
     }
+    return false
   }
 
   #respondsTo(command) {
