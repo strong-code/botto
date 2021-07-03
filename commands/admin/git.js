@@ -1,26 +1,31 @@
 const exec = require('child_process').exec
 const _ = require('lodash')
 const needle = require('needle')
-const LOGS_API = require('../config.js').logs.api
+const LOGS_API = require('../../config.js').logs.api
+const Command = require('../command.js')
 
-module.exports = {
+module.exports = class Git extends Command {
 
-  call: function(bot, opts) {
+  constructor() {
+    super('git')
+  }
+
+  call(opts, respond) {
     const cmd = opts.args[0]
 
     if (!cmd) {
-      return bot.say(opts.to, 'Must provide a command');
+      return respond('Must provide a command');
     } else if (cmd === "pull") {
-      return module.exports.pull(bot, opts);
+      return this.pull(opts, respond);
     } else if (cmd === "status") {
-      return module.exports.status(bot, opts);
+      return this.status(opts, respond);
     }
-  },
+  }
 
-  pull: function (bot, opts) {
+  pull(opts, respond) {
     exec('git pull', function (err, stdout, stderr) {
       if (err) {
-        return bot.say(opts.to, err.message + "; Check logs for more info");
+        return respond(err.message + "; Check logs for more info");
       }
 
       // split on newline, drop first 2 lines and last line
@@ -41,28 +46,28 @@ module.exports = {
 
         needle.post(LOGS_API, `text=${stdout}`, {}, (err, res) => {
           if (err) {
-            return bot.say(opts.to, err.message)
+            return respond(err.message)
           }
           if (!res.body.path) {
-            return bot.say(opts.to, `Error while uploading output to API: ${logs.api}`)
+            return respond(`Error while uploading output to API: ${logs.api}`)
           }
           updateMsg += res.body.path
-          bot.say(opts.to, updateMsg)
+          respond(updateMsg)
         })
       } else {
         // Normal stdout from `git pull`
-        return bot.say(opts.to, stdout)
+        return respond(stdout)
       }
     });
-  },
+  }
 
-  status: function (bot, opts) {
+  status(opts, respond) {
     exec('git status -sb', function (err, stdout, stderr) {
       if (err) {
-        return bot.say(opts.to, err.message + "; Check logs for more info");
+        return respond(err.message + "; Check logs for more info");
       }
 
-      return bot.say(opts.to, stdout);
+      return respond(stdout);
     });
   }
 };
