@@ -1,24 +1,25 @@
-const db = require('../core/_db.js');
+const db = require('../util/db.js')
+const Command = require('./command.js')
 
-module.exports = {
+module.exports = class Points extends Command {
 
-  call: function(opts, respond) {
-    if (opts.args[0]) {
-      return module.exports.showPoints(opts.args[0], respond);
-    }
-    return respond('Usage is !points <username>');
-  },
-
-  showPoints: function(nick, respond) {
-    return db.executeQuery({
-      text: 'SELECT score FROM points WHERE nick = $1',
-      values: [nick]
-    }, (result) => {
-      if (result.rows && result.rows[0]) {
-        return respond(nick + ' has ' + result.rows[0].score + ' points');
-      }
-      return respond(nick + ' has 0 points');
-    });
+  constructor() {
+    super('points')
   }
 
-};
+  call(opts, respond) {
+    // if no arg supplied, look up points of sender
+    const nick = (opts.args[0] ? opts.args[0] : opts.from)
+    return this.showPoints(nick, respond)
+  }
+
+  async showPoints(nick, respond) {
+    try {
+      const points = await db.one('SELECT score FROM points WHERE nick = $1', [nick], r => r.score)
+      return respond(`${nick} has ${points} points`)
+    } catch (e) {
+      return respond(`${nick} has 0 points`)
+    }
+  }
+
+}

@@ -1,4 +1,4 @@
-var db = require('../core/_db.js');
+var db = require('../util/db.js')
 var _  = require('lodash');
 
 module.exports = {
@@ -27,6 +27,6 @@ module.exports = {
     }
   },
 
-  last: undefined
+  lastReply: undefined
 
 };
