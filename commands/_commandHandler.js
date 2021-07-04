@@ -13,10 +13,7 @@ module.exports = class CommandHandler {
 
   async init() {
     await db.each('SELECT * FROM commands', [], row => {
-      let reqPath = './'
-      if (row.admin) {
-        reqPath = './admin/'
-      }
+      let reqPath = (row.admin ? './admin/' : './')
       let cmd = new (require(`${reqPath}${row.name}.js`))();
       CommandHandler.commandList[row.name] = cmd
     })
@@ -49,27 +46,22 @@ module.exports = class CommandHandler {
   static async reload(cmd) {
     if (CommandHandler.commandList[cmd]) {
       const admin = CommandHandler.commandList[cmd].admin
-      let path
-
-      if (admin) {
-        path = `./admin/${cmd}.js`
-      } else {
-        path = `./${cmd}.js`
-      }
+      let path = (admin ? `./admin/${cmd}.js` : `./${cmd}.js`)
 
       delete CommandHandler.commandList[cmd]
       delete require.cache[require.resolve(path)]
+
       const reloadedCommand = new (require(path))()
       await reloadedCommand.init()
+
       CommandHandler.commandList[cmd] = reloadedCommand
-      console.log('returning true')
       return true
     }
     return false
   }
 
   #respondsTo(command) {
-    const alias = require('./_aliases').aliases[command]
+    const alias = require('../util/aliases.js').aliases[command]
     if (typeof alias !== 'undefined') {
       return alias
     }

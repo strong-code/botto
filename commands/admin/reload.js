@@ -20,7 +20,6 @@ module.exports = class Reload extends Command {
 
     try {
       if (await CommandHandler.reload(moduleName)) {
-        console.log('its true')
         numReloaded++
       }
       
