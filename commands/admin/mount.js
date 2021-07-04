@@ -7,15 +7,15 @@ module.exports = class Mount extends Command {
     super('mount')
   }
 
-  call(opts, respond) {
+  call(bot, opts) {
     const cmdName = opts.args[0]
     const cmd = CommandHandler.commandList[cmdName]
 
     if (cmd.mounted) {
-      return respond(`Command "${cmd.name}" is already mounted`)
+      return bot.say(opts.to, `Command "${cmd.name}" is already mounted`)
     } else {
       cmd.mount()
-      return respond(`Mounted command "${cmd.name}"`)
+      return bot.say(opts.to, `Mounted command "${cmd.name}"`)
     }
   }
 }
