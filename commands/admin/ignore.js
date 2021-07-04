@@ -9,10 +9,7 @@ module.exports = class Ignore extends Command {
 
   constructor() {
     super('ignore')
-
-    db.each('SELECT nick FROM ignored_users', [], row => {
-      Ignore.ignoredUsers.push(row.nick)
-    })
+    this.#refresh()
   }
 
   call(bot, opts) {
@@ -30,10 +27,7 @@ module.exports = class Ignore extends Command {
   }
 
   async listIgnored(bot, chan) {
-    Ignore.ignoredUsers = [] // overwrite with fresh DB data 
-    await db.each('SELECT nick FROM ignored_users', [], row => {
-      Ignore.ignoredUsers.push(row.nick)
-    })
+    await this.#refresh()
     return bot.say(chan, 'BAD USERS LIST: ' + _.join(Ignore.ignoredUsers, ', '))
   }
 
@@ -43,10 +37,12 @@ module.exports = class Ignore extends Command {
     }
 
     bot.whois(target, (data) => {
-      db.none('INSERT INTO ignored_users (nick, host, banned_by, date_added) VALUES($1, $2, $3, $4)',
-        [target, data.host, requester, new Date().toISOString()])
+      db.none(
+        'INSERT INTO ignored_users (nick, host, banned_by, date_added) VALUES($1, $2, $3, $4)',
+        [target, data.host, requester, new Date().toISOString()]
+      )
+      .then(() => this.#refresh())
 
-      Ignore.ignoredUsers.push(target)
       
       return bot.say(chan, `Ignoring user: ${target}. Bot privilege has been revoked`)
     })
@@ -57,9 +53,8 @@ module.exports = class Ignore extends Command {
       return bot.say(chan, 'I am not currently ignoring ' + target)
     }
 
-    db.none('DELETE FROM ignored_users WHERE nick = $1', [target])
+    db.none('DELETE FROM ignored_users WHERE nick = $1', [target]).then(() => this.#refresh())
 
-    Ignore.ignoredUsers = Ignore.ignoredUsers.filter(n => n !== target)
 
     return bot.say(chan, `No longer ignoring user: ${target}. Please be better behaved from now on.`)
   }
@@ -70,6 +65,15 @@ module.exports = class Ignore extends Command {
     } else {
       return bot.say(chan, `User ${nick} is NOT currently ignored`)
     }
+  }
+
+  async #refresh() {
+    Ignore.ignoredUsers = []
+
+    await db.each('SELECT nick FROM ignored_users', [], row => {
+      Ignore.ignoredUsers.push(row.nick)
+    })
+    console.log(`Refreshed ignoredUser list with ${Ignore.ignoredUsers.length} users`)
   }
 
   // Used to check if an incoming message is from an ignored user
