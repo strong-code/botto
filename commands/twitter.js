@@ -1,46 +1,50 @@
-var Twitter = require('twit');
-var config = require('../config.js').twitter;
-var client = new Twitter(config);
+const Twitter = require('twit')
+const config = require('../config.js').twitter
+const client = new Twitter(config)
+const Command = require('./command.js')
 
-module.exports = {
+module.exports = class Twitter extends Command {
 
-  call: function(opts, respond) {
-    module.exports.tweetByUser(opts.args[0], opts.args[1], respond);
-  },
+  constructor() {
+    super('twitter')
+  }
 
-  tweetByUser: function(user, index, respond) {
+  call(opts, respond) {
+    this.tweetByUser(opts.args[0], opts.args[1], respond)
+  }
+
+  tweetByUser(user, index, respond) {
     if (user == '') {
-      respond("No username supplied. Syntax is !twitter <username> <[optional] number of tweet>");
-      return;
+      return respond("No username supplied. Syntax is !twitter <username> <[optional] number of tweet>")
     }
 
-    var options = { screen_name: user, offset: module.exports.getOffset(index), trim_user: true };
+    var options = { screen_name: user, offset: this.getOffset(index), trim_user: true }
 
-    client.get('statuses/user_timeline', options, function(err, data, response) {
+    client.get('statuses/user_timeline', options, (err, data, response) => {
       if (err) {
-        console.log(err);
-        respond("[" + response.statusCode + "] " + err.message);
+        console.log(err)
+        return respond("[" + response.statusCode + "] " + err.message)
       } else {
         try {
-          respond("[@" + options.screen_name + "] " + data[options.offset]["text"].replace(/[\r\n]/g, " "));
+          return respond("[" + options.screen_name + "] " + data[options.offset]["text"].replace(/[\r\n]/g, " "))
         } catch (e) {
-          console.log(e);
-          respond("Error fetching tweets for @" + options.screen_name + "...");
+          console.log(e)
+          return respond("Error fetching tweets for @" + options.screen_name + "...")
         }
       }
-    });
-  },
+    })
+  }
 
   /*
    * If second arg is an integer, attempt to retrieve that many tweets. If it is 'random'
    * then retrieve 100 latest tweets and select at random.
    */
-  getOffset: function(index) {
+  getOffset(index) {
     if (index == 'random') {
-      return Math.floor(Math.random() * 20 + 0);
+      return Math.floor(Math.random() * 20 + 0)
     } else {
-      return typeof index !== 'undefined' ? index : 0;
+      return (typeof index !== 'undefined' ? index : 0)
     }
   }
 
-};
+}

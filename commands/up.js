@@ -1,23 +1,28 @@
-const needle = require('needle');
+const needle = require('needle')
 const config = require('../config.js').url
-const _ = require('lodash');
+const _ = require('lodash')
+const Command = require('./command.js')
 
-module.exports = {
+module.exports = class Up extends Command {
+
+  constructor() {
+    super('up')
+  }
   
-  call: function (opts, respond) {
+  call(opts, respond) {
     if (_.isEmpty(opts.args)) {
       return respond('Usage is !up <domain>');
     }
 
-    module.exports.check(opts.args[0], (info) => respond(info))
-  },
+    this.check(opts.args[0], respond)
+  }
 
-  check: function (domain, cb) {
+  check(domain, respond) {
     const url = 'https://isitup.org/' + domain + '.json'
 
     needle.get(url, config.options, (err, res) => {
       if (err) {
-        return cb(err.message)
+        return respond(err.message)
       }
 
       const status = res.body['status_code']
@@ -25,11 +30,11 @@ module.exports = {
       const response_time = res.body['response_time']
 
       if (status === 1) {
-        return cb(`[${http_status}] ${domain} is up (response time: ${response_time} seconds)`)
+        return respond(`[HTTP ${http_status}] ${domain} is up (response time: ${response_time} seconds)`)
       } else if (status === 2) {
-        return cb(`${domain} is currently offline`)
+        return respond(`${domain} is currently offline`)
       } else {
-        return cb(`${domain} is not a valid domain`)
+        return respond(`${domain} is not a valid domain`)
       }
     })
   }

@@ -12,6 +12,7 @@ module.exports = {
     'd': 'dictionary',
     'define': 'dictionary',
     'dict': 'dictionary',
-    'np': 'nowplaying'
+    'np': 'nowplaying',
+    'ud': 'urbandictionary'
   }
 }
