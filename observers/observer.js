@@ -1,15 +1,14 @@
 const db = require('../util/db.js')
 
-module.exports = class Command {
+class Observer {
 
   constructor(name) {
     this.name = name
   }
 
   async init() {
-    await db.one('SELECT * FROM commands WHERE name = $1', [this.name], row => {
+    await db.one('SELECT * FROM observers WHERE name = $1', [this.name], row => {
       this.mounted = row.mounted
-      this.admin = row.admin
     })
   }
 
@@ -19,10 +18,10 @@ module.exports = class Command {
       return
     }
 
-    db.none('UPDATE commands SET mounted = $1 WHERE name = $2', [true, this.name])
+    db.none('UPDATE observers SET mounted = $1 WHERE name = $2', [true, this.name])
       .then(() => this.mounted = true)
-
-    console.log(`Command ${this.name} has been mounted`)
+    
+    console.log(`Observer "${this.name}" has been mounted`)
   }
 
   unmount() {
@@ -31,11 +30,10 @@ module.exports = class Command {
       return
     }
 
-    db.none('UPDATE commands SET mounted = $1 WHERE name = $2', [false, this.name])
+    db.none('UPDATE observers SET mounted = $1 WHERE name = $2', [false, this.name])
       .then(() => this.mounted = false)
 
-    console.log(`Command ${this.name} has been unmounted`)
+    console.log(`Observer ${this.name} has been unmounted`)
   }
-
+  
 }
-
