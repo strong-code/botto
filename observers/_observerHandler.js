@@ -1,4 +1,5 @@
-const fs = require('fs');
+const fs = require('fs')
+const db = require('../util/db.js')
 
 /*
  * Observer handler responsible for routing "observables". An observable is
@@ -8,9 +9,22 @@ const fs = require('fs');
  * no real logic beyond that (besides very light parsing).
  */
 
-module.exports = {
+module.exports = class ObserverHandler {
 
-  route: function(bot, from, to, text, message) {
+  static observerList = {}
+
+  async init() {
+    await db.each('SELECT * FROM observers', [], row => {
+      let reqpath = `./${row.name}.js`
+      let observer = new (require(reqpath))();
+      ObserverHandler.observerList[row.name] = observer
+    })
+
+    for (const v of Object.values(ObserverHandler.observerList)) { await v.init() }
+    console.log(`Loaded ${Object.keys(ObserverHandler.observerList).length} observer modules`)
+  }
+
+  route(bot, from, to, text, message) {
     const opts = {
       from: from,
       to: to,
@@ -18,39 +32,23 @@ module.exports = {
       raw: message
     }
 
-    if (opts.text && opts.text[0] != '!') {
+    // set receiver to the channel if it came from one, otherwise to whoever sent it
+    const receiver = (to[0] === '#' ? opts.to : opts.from)
 
-      // It's a private message, so respond to the sender
-      let receiver = opts.from;
-
-      // It's a a public, channel message
-      if (to[0] == '#') {
-        receiver = opts.to;
-      }
-
-      const tryCalling = function (observer, module, opts) {
-        try {
+    try {
+      for (let [name, observer] of Object.entries(ObserverHandler.observerList)) {
+        if (observer.callable(opts)) {
           observer.call(opts, (response) => {
-            let mod = module.slice(0,-3).toUpperCase()
-            console.log(`[${mod}] observer triggered in ${opts.to} by ${opts.from}\n  -> "${response}"`)
-            return bot.say(receiver, response);
-          });
-        } catch (e) {
-          console.log(e)
-          return bot.say(receiver, e.message + "; Check logs for more info");
+            console.log(`[${name}] observer triggered in ${opts.to} by ${opts.from}\n  -> "${response}"`)
+            return bot.say(receiver, response)
+          })
         }
       }
-
-      // Check our observers for anything that may trigger a response
-      fs.readdirSync('./observers/').forEach(file => {
-        if (file.slice(-3) === '.js') {
-          let observer = require('../observers/'+file);
-          if (typeof observer.call === 'function') {
-            return tryCalling(observer, file, opts);
-          }
-        }
-      });
+    } catch (e) {
+      console.log(e)
+      return bot.say(receiver, e.message + "; Check logs for more info");
     }
+
   }
 
-};
+}

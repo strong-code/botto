@@ -3,14 +3,14 @@ const config = (process.argv[2] === 'test' ? _config.test : _config.default);
 const fs = require('fs');
 const irc = require('irc');
 const commandHandler = new (require('./commands/_commandHandler.js'))();
-const observerHandler = require('./observers/_observerHandler.js')
+const observerHandler = new (require('./observers/_observerHandler.js'))();
 const Ignore = require('./commands/admin/ignore.js');
 const _ = require('lodash');
 
 // Preload the observerHandler and commandHandler
 (async () => {
   await commandHandler.init()
-  // await observerHandler
+  await observerHandler.init()
 })();
 
 // Initiate the bot and the observers

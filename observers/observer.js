@@ -1,15 +1,20 @@
 const db = require('../util/db.js')
 
-class Observer {
+module.exports = class Observer {
 
-  constructor(name) {
+  constructor(name, regex) {
     this.name = name
+    this.regex = regex
   }
 
   async init() {
     await db.one('SELECT * FROM observers WHERE name = $1', [this.name], row => {
       this.mounted = row.mounted
     })
+  }
+
+  callable(opts) {
+    return this.regex.test(opts.text)
   }
 
   mount() {
