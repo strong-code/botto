@@ -51,7 +51,7 @@ module.exports = class CommandHandler {
       delete CommandHandler.commandList[cmd]
       delete require.cache[require.resolve(path)]
 
-      const reloadedCommand = new (require(path))()
+      const reloadedCommand = new (require(path))();
       await reloadedCommand.init()
 
       CommandHandler.commandList[cmd] = reloadedCommand

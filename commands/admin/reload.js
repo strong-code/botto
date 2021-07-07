@@ -1,6 +1,7 @@
 const fs = require('fs');
 const Command = require('../command.js')
 const CommandHandler = require('../_commandHandler.js')
+const ObserverHandler = require('../../observers/_observerHandler.js')
 
 /*
  * A module for reloading (other) modules. This will purge a named module
@@ -23,7 +24,9 @@ module.exports = class Reload extends Command {
         numReloaded++
       }
       
-      // do the same static call for ObserverHandler 
+      if (await ObserverHandler.reload(moduleName)) {
+        numReloaded++
+      }
 
       if (numReloaded > 0) {
         return bot.say(opts.to, "Reloaded " + moduleName + " (" + numReloaded + " total)");

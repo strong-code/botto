@@ -1,5 +1,6 @@
 const Command = require('../command.js')
 const CommandHandler = require('../_commandHandler.js')
+const ObserverHandler = require('../../observers/_observerHandler.js')
 
 module.exports = class Mount extends Command {
   
@@ -8,14 +9,26 @@ module.exports = class Mount extends Command {
   }
 
   call(bot, opts) {
-    const cmdName = opts.args[0]
-    const cmd = CommandHandler.commandList[cmdName]
+    const module = opts.args[0]
+    const cmd = CommandHandler.commandList[module]
+    const obs = ObserverHandler.observerList[module]
 
-    if (cmd.mounted) {
-      return bot.say(opts.to, `Command "${cmd.name}" is already mounted`)
-    } else {
-      cmd.mount()
-      return bot.say(opts.to, `Mounted command "${cmd.name}"`)
+    if (cmd) {
+      if (cmd.mounted) {
+        return bot.say(opts.to, `Command "${module}" is already mounted`)
+      } else {
+        cmd.mount()
+        return bot.say(opts.to, `Mounted command "${module}"`)
+      }
+    }
+
+    if (obs) {
+      if (obs.mounted) {
+        return bot.say(opts.to, `Observer "${module}" is already mounted`)
+      } else {
+        obs.mount()
+        return bot.say(opts.to, `Mounted observer "${module}"`)
+      }
     }
   }
 }

@@ -1,4 +1,3 @@
-const fs = require('fs')
 const db = require('../util/db.js')
 
 /*
@@ -37,6 +36,11 @@ module.exports = class ObserverHandler {
 
     try {
       for (let [name, observer] of Object.entries(ObserverHandler.observerList)) {
+
+        if (!observer.mounted) {
+          continue
+        }
+
         if (observer.callable(opts)) {
           observer.call(opts, (response) => {
             console.log(`[${name}] observer triggered in ${opts.to} by ${opts.from}\n  -> "${response}"`)
@@ -49,6 +53,23 @@ module.exports = class ObserverHandler {
       return bot.say(receiver, e.message + "; Check logs for more info");
     }
 
+  }
+
+  static async reload(observer) {
+    if (ObserverHandler.observerList[observer]) {
+      const path = `./${observer}`
+
+      delete ObserverHandler.observerList[observer]
+      delete require.cache[require.resolve(path)]
+
+      const reloadedObserver = new (require(path))();
+      await reloadedObserver.init()
+
+      ObserverHandler.observerList[observer] = reloadedObserver
+      return true
+    }
+
+    return false
   }
 
 }
