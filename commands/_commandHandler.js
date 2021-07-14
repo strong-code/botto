@@ -32,15 +32,24 @@ module.exports = class CommandHandler {
       if (cmd.admin && Admin.isAdmin(opts.from, opts.to)) {
         // Admin commands get the entire bot instance
         console.log(`[${opts.command.toUpperCase()}] admin command triggered in ${opts.to} by ${opts.from}"`)
+        this.#logEvent(cmd, opts, '')
         return cmd.call(bot, opts) 
       } else {
         // Non-admin command
         cmd.call(opts, (response) => {
           console.log(`[${opts.command.toUpperCase()}] command triggered in ${opts.to} by ${opts.from}\n  -> "${response}"`)
+          this.#logEvent(cmd, opts, response)
           return bot.say(opts.to, response)
         })
       }
     }
+  }
+
+  #logEvent(cmd, opts, response) {
+    db.none(
+      'INSERT INTO command_events (time, command_id, nick, sent_to, response) VALUES ($1, $2, $3, $4, $5)',
+      [new Date().toISOString(), cmd.id, opts.from, opts.to, response]
+    )
   }
 
   static async reload(cmd) {

@@ -44,6 +44,7 @@ module.exports = class ObserverHandler {
         if (observer.callable(opts)) {
           observer.call(opts, (response) => {
             console.log(`[${name}] observer triggered in ${opts.to} by ${opts.from}\n  -> "${response}"`)
+            this.#logEvent(observer, opts, response)
             return bot.say(receiver, response)
           })
         }
@@ -53,6 +54,13 @@ module.exports = class ObserverHandler {
       return bot.say(receiver, e.message + "; Check logs for more info");
     }
 
+  }
+
+  #logEvent(observer, opts, response) {
+    db.none(
+      'INSERT INTO observer_events (time, observer_id, nick, sent_to, response) VALUES ($1, $2, $3, $4, $5)',
+      [new Date().toISOString(), observer.id, opts.from, opts.to, response]
+    )
   }
 
   static async reload(observer) {

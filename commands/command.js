@@ -10,6 +10,7 @@ module.exports = class Command {
     await db.one('SELECT * FROM commands WHERE name = $1', [this.name], row => {
       this.mounted = row.mounted
       this.admin = row.admin
+      this.id = row.id
     })
   }
 

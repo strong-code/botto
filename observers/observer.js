@@ -10,6 +10,7 @@ module.exports = class Observer {
   async init() {
     await db.one('SELECT * FROM observers WHERE name = $1', [this.name], row => {
       this.mounted = row.mounted
+      this.id = row.id
     })
   }
 
