@@ -1,7 +1,7 @@
 const config = require('../../config').twitch
+const parser = require('url')
 const { ApiClient } = require('twitch')
 const { ClientCredentialsAuthProvider } = require('twitch-auth')
-
 const authProvider = new ClientCredentialsAuthProvider(config.clientId, config.clientSecret)
 const client = new ApiClient({ authProvider })
 
@@ -10,6 +10,12 @@ module.exports = {
   hostMatch: /^(www\.)?(clips\.)?twitch\.tv$/,
 
   parse: async function(url) {
+    let info = ''
+
+    if (url.path.split('/')[2] === 'clip') {
+      url = module.exports.transformClipUrl(url)
+    }
+
     if (url.host.indexOf('clips') > -1) {
       info = await module.exports.clipData(url)
     } else {
@@ -52,5 +58,10 @@ module.exports = {
     const views = clip.view_count.toLocaleString()
     const date = new Date(clip.created_at).toDateString()
     return `[Twitch] "${clip.title.trim()}" from ${clip.broadcaster_name} | ${views} views | Clipped on ${date}`
+  },
+
+  transformClipUrl: function(url) {
+    const path = url.path.split('/')[3]
+    return parser.parse(`https://clips.twitch.tv/${path}`)
   }
 }
