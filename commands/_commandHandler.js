@@ -1,5 +1,5 @@
 const db = require('../util/db.js')
-const Admin = require('./admin.js')
+const Admin = require('./admins.js')
 
 /*
  * Command handler responsible for routing commands. These include admin only

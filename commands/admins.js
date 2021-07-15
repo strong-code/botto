@@ -8,32 +8,32 @@ const _ = require('lodash');
  *
  * !admin user123
  */
-module.exports = class Admin extends Command {
+module.exports = class Admins extends Command {
 
   constructor() {
-    super('admin')
+    super('admins')
   }
 
   // List all admins for a specified channel
-  call(bot, opts) {
-    let admins = "No administrators specified for " + opts.to;
-    const globalAdmins = config.globalAdmins.join(', ');
+  call(opts, respond) {
+    let admins = `No administrators specified for ${opts.to}`
+    const globalAdmins = config.globalAdmins.join(', ')
 
     if (config.admin[opts.to]) {
-      admins = "Admins for " + opts.to + ": " + config.admin[opts.to].join(', ');
-    };
+      admins = `Admins for ${opts.to}: ${config.admin[opts.to].join(', ')}`
+    }
     
-    return bot.say(opts.to, admins + ". Global admins: " + globalAdmins);    
+    return respond(`${admins}. Global admins: ${globalAdmins}`)    
   }
 
   // Check if a user is an admin for a specified channel
   static isAdmin(user, channel) {
     if (_.includes(config.globalAdmins, user)) {
-      return true;
+      return true
     } else if (config.admin[channel]) {
-      return _.includes(config.admin[channel], user);
+      return _.includes(config.admin[channel], user)
     }
-    return false;
+    return false
   }
 
-};
+}
