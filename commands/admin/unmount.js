@@ -10,6 +10,8 @@ module.exports = class Unmount extends Command {
   }
 
   call(bot, opts) {
+    if (!this.adminCallable) return
+
     const module = opts.args[0]
     const cmd = CommandHandler.commandList[module]
     const obs = ObserverHandler.observerList[module]

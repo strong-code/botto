@@ -1,5 +1,5 @@
 const db = require('../util/db.js')
-const Admin = require('./admins.js')
+const Helpers = require('../util/helpers.js')
 
 /*
  * Command handler responsible for routing commands. These include admin only
@@ -29,7 +29,7 @@ module.exports = class CommandHandler {
     const cmd = CommandHandler.commandList[opts.command]
 
     if (cmd && cmd.mounted) {
-      if (cmd.admin && Admin.isAdmin(opts.from, opts.to)) {
+      if (cmd.admin) {
         // Admin commands get the entire bot instance
         console.log(`[${opts.command.toUpperCase()}] admin command triggered in ${opts.to} by ${opts.from}"`)
         this.#logEvent(cmd, opts, '')

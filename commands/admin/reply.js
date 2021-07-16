@@ -11,6 +11,8 @@ module.exports = class Reply extends Command {
   }
 
   async call(bot, opts) {
+    if (!this.adminCallable) return
+
     const cmd = opts.args.shift()
 
     if (cmd === 'add') {

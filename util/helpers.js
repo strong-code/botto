@@ -1,3 +1,6 @@
+const config = require("../config.js")
+const _ = require('lodash')
+
 module.exports = class Helpers {
 
   // Strip carriage returns and newline from a given string
@@ -9,6 +12,7 @@ module.exports = class Helpers {
     }
   }
 
+  // Common HTTP request options
   static httpOptions = {
     follow: 3,
     open_timeout: 20000,
@@ -17,4 +21,14 @@ module.exports = class Helpers {
     }
   }
   
+  // Check if a user is an admin for a specified channel
+  static isAdmin(user, channel) {
+    if (_.includes(config.globalAdmins, user)) {
+      return true
+    } else if (config.admin[channel]) {
+      return _.includes(config.admin[channel], user)
+    }
+    return false
+  }
+
 }

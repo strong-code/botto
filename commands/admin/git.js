@@ -11,6 +11,8 @@ module.exports = class Git extends Command {
   }
 
   call(bot, opts) {
+    if (!this.adminCallable) return
+
     const cmd = opts.args[0]
 
     if (!cmd) {

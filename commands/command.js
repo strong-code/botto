@@ -1,4 +1,5 @@
 const db = require('../util/db.js')
+const Helpers = require('../util/helpers.js')
 
 module.exports = class Command {
 
@@ -12,6 +13,14 @@ module.exports = class Command {
       this.admin = row.admin
       this.id = row.id
     })
+  }
+
+  adminCallable(opts) {
+    if (this.admin) {
+      return Helpers.isAdmin(opts.from, opts.to)
+    }
+
+    return true
   }
 
   mount() {

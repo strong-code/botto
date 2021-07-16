@@ -15,6 +15,7 @@ module.exports = class Reload extends Command {
   }
 
   async call(bot, opts) {
+    if (!this.adminCallable) return
 
     const moduleName = opts.args[0];
     let numReloaded = 0;
@@ -29,11 +30,11 @@ module.exports = class Reload extends Command {
       }
 
       if (numReloaded > 0) {
-        return bot.say(opts.to, "Reloaded " + moduleName + " (" + numReloaded + " total)");
+        return bot.say(opts.to, "Reloaded " + moduleName + " (" + numReloaded + " total)")
       }
     } catch (e) {
-      console.error(e);
-      return bot.say(opts.to, e.message);
+      console.error(e)
+      return bot.say(opts.to, e.message)
     }
   }
-};
+}

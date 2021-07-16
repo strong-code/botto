@@ -13,6 +13,8 @@ module.exports = class Ignore extends Command {
   }
 
   call(bot, opts) {
+    if (!this.adminCallable) return
+
     const command = opts.args[0];
 
     if (command === 'add') {

@@ -9,6 +9,8 @@ module.exports  = class Health extends Command {
   }
 
   call(bot, opts) {
+    if (!this.adminCallable) return
+
     const healthStatus = this.getHealth();
     return bot.say(opts.to, healthStatus);
   }
