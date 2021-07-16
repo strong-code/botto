@@ -4,7 +4,7 @@ const Observer = require('./observer.js')
 module.exports = class Points extends Observer {
 
   constructor() {
-    const regex = new RegExp(/^[a-z0-9]*((\+\+)|(\-\-))$/gi)
+    const regex = new RegExp(/^[a-z0-9]*((\+\+)|(\-\-))$/i)
     super('points', regex)
   }
   

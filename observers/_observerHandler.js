@@ -35,7 +35,7 @@ module.exports = class ObserverHandler {
     const receiver = (to[0] === '#' ? opts.to : opts.from)
 
     try {
-      for (let [name, observer] of Object.entries(ObserverHandler.observerList)) {
+      for (let observer of Object.values(ObserverHandler.observerList)) {
 
         if (!observer.mounted) {
           continue
@@ -43,7 +43,7 @@ module.exports = class ObserverHandler {
 
         if (observer.callable(opts)) {
           observer.call(opts, (response) => {
-            console.log(`[${name}] observer triggered in ${opts.to} by ${opts.from}\n  -> "${response}"`)
+            console.log(`[${observer.name}] observer triggered in ${opts.to} by ${opts.from}\n  -> "${response}"`)
             this.#logEvent(observer, opts, response)
             return bot.say(receiver, response)
           })

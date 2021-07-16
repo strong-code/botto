@@ -4,7 +4,7 @@ const Observer = require('./observer.js')
 module.exports = class Emoji extends Observer {
 
   constructor() {
-    const regex = new RegExp(/^:\S*:$/gi)
+    const regex = new RegExp(/^:\S*:$/i)
     super('emoji', regex)
   }
   
