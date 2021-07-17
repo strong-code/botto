@@ -31,13 +31,14 @@ module.exports = class CommandHandler {
     if (cmd && cmd.mounted) {
       if (cmd.admin) {
         // Admin commands get the entire bot instance
-        console.log(`[${opts.command.toUpperCase()}] admin command triggered in ${opts.to} by ${opts.from}"`)
-        this.#logEvent(cmd, opts, '')
-        return cmd.call(bot, opts) 
+        return cmd.call(bot, opts, (response) => {
+          console.log(`[${opts.command.toUpperCase()}] command triggered in ${opts.to} by ${opts.from}\n  -> "${response}"`)
+          this.#logEvent(cmd, opts, response)
+          return bot.say(opts.to, response)
+        }) 
       } else {
         // Non-admin command
         cmd.call(opts, (response) => {
-          console.log(`[${opts.command.toUpperCase()}] command triggered in ${opts.to} by ${opts.from}\n  -> "${response}"`)
           this.#logEvent(cmd, opts, response)
           return bot.say(opts.to, response)
         })
@@ -83,7 +84,8 @@ module.exports = class CommandHandler {
       to: to,
       command: this.#respondsTo(String(text.split(' ')[0]).replace('!', '').trim()),
       args: text.substring(String(text.split(' ')[0]).length).trim().split(' '),
-      raw: message
+      raw: message,
+      text: text
     }
   }
 }
