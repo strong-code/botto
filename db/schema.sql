@@ -93,6 +93,7 @@ CREATE TABLE IF NOT EXISTS observers (
 CREATE TABLE IF NOT EXISTS command_events (
   time TIMESTAMP NOT NULL,
   command_id SMALLINT,
+  message TEXT NOT NULL,
   nick VARCHAR(55) NOT NULL,
   sent_to VARCHAR(55) NOT NULL,
   response TEXT,
@@ -104,6 +105,7 @@ CREATE TABLE IF NOT EXISTS command_events (
 CREATE TABLE IF NOT EXISTS observer_events (
   time TIMESTAMP NOT NULL,
   observer_id SMALLINT,
+  message TEXT NOT NULL,
   nick VARCHAR(55) NOT NULL,
   sent_to VARCHAR(55) NOT NULL,
   response TEXT,

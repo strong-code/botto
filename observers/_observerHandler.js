@@ -58,8 +58,8 @@ module.exports = class ObserverHandler {
 
   #logEvent(observer, opts, response) {
     db.none(
-      'INSERT INTO observer_events (time, observer_id, nick, sent_to, response) VALUES ($1, $2, $3, $4, $5)',
-      [new Date().toISOString(), observer.id, opts.from, opts.to, response]
+      'INSERT INTO observer_events (time, observer_id, message, nick, sent_to, response) VALUES ($1, $2, $3, $4, $5, $6)',
+      [new Date().toISOString(), observer.id, opts.text, opts.from, opts.to, response]
     )
   }
 
