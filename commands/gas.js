@@ -8,7 +8,7 @@ module.exports = class Gas extends Command {
     super('gas')
   }
 
-  call(opts, respond) {
+  call(bot, opts, respond) {
     needle.get(API_URL, (err, res, body) => {
       if (err)
         return respond(err.message)

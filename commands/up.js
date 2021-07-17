@@ -9,7 +9,7 @@ module.exports = class Up extends Command {
     super('up')
   }
   
-  call(opts, respond) {
+  call(bot, opts, respond) {
     if (_.isEmpty(opts.args)) {
       return respond('Usage is !up <domain>');
     }

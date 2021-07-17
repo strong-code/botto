@@ -7,7 +7,7 @@ module.exports = class Help extends Command {
     super('help')
   }
 
-  call(opts, respond) {
+  call(bot, opts, respond) {
     exec("cat ./scripts/help.txt | curl -F 'sprunge=<-' http://sprunge.us", (error, stdout, stderr) => {
       if (error) {
         console.error(error);

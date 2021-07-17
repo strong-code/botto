@@ -12,7 +12,7 @@ module.exports = class NowPlaying extends Command {
     super('nowplaying')
   }
   
-  call(opts, respond) {
+  call(bot, opts, respond) {
     if (opts.args[0] == 'add') {
       return this.registerUser(opts.args[1], opts.from, respond);
     } else {

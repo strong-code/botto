@@ -10,7 +10,7 @@ module.exports = class Crypto extends Command {
     super('crypto')
   }
 
-  call(opts, respond) {
+  call(bot, opts, respond) {
     const coin = opts.args[0]
     if (!coin || coin == '') {
       return respond('Usage is !crypto <coin name>')

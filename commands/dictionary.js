@@ -10,7 +10,7 @@ module.exports = class Dictionary extends Command {
     super('dictionary')
   }
 
-  async call(opts, respond) {
+  async call(bot, opts, respond) {
     const word = opts.args[0]
 
     if (!word || word === '') {

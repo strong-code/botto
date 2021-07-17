@@ -10,7 +10,7 @@ module.exports = class UrbanDictionary extends Command {
     super('urbandictionary')
   }
 
-  call(opts, respond) {
+  call(bot, opts, respond) {
     if (_.isEmpty(opts.args)) {
       return respond('Usage is !ud <phrase>')
     } else {

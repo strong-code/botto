@@ -14,7 +14,7 @@ module.exports = class Duckhunt extends Command {
     super('duckhunt')
   }
 
-  call(opts, respond) {
+  call(bot, opts, respond) {
     if (opts.args[0] == 'start') {
       return this.startGame(respond);
     }

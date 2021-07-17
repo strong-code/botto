@@ -10,7 +10,7 @@ module.exports = class Google extends Command {
     super('google')
   }
 
-  async call(opts, respond) {
+  async call(bot, opts, respond) {
     if (opts.args[0] === '') {
       respond('Usage is !google <query> or !google 1 <query> to get next result')
     }

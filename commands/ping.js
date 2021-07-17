@@ -6,7 +6,7 @@ module.exports = class Ping extends Command {
     super('ping')
   }
 
-  call(opts, respond) {
+  call(bot, opts, respond) {
     return respond(`${opts.from}: PONG`)
   }
 }

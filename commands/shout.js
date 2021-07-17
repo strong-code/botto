@@ -7,7 +7,7 @@ module.exports = class Shout extends Command {
     super('shout')
   }
 
-  call(opts, respond) {
+  call(bot, opts, respond) {
     if (opts.args[0].length) {
       return this.getShoutForNick(opts.args[0], respond)
     } else {

@@ -7,7 +7,7 @@ module.exports = class Points extends Command {
     super('points')
   }
 
-  call(opts, respond) {
+  call(bot, opts, respond) {
     // if no arg supplied, look up points of sender
     const nick = (opts.args[0] ? opts.args[0] : opts.from)
     return this.showPoints(nick, respond)

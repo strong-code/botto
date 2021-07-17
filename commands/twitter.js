@@ -9,7 +9,7 @@ module.exports = class Twitter extends Command {
     super('twitter')
   }
 
-  call(opts, respond) {
+  call(bot, opts, respond) {
     this.tweetByUser(opts.args[0], opts.args[1], respond)
   }
 

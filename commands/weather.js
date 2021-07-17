@@ -12,7 +12,7 @@ module.exports = class Weather extends Command {
     super('weather')
   }
 
-  async call(opts, respond) {
+  async call(bot, opts, respond) {
     if (opts.args[0] === '') {
       const city = await this.getUserLocation(opts.from)
       if (!city) {

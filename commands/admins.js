@@ -8,7 +8,7 @@ module.exports = class Admins extends Command {
   }
 
   // List all admins for a specified channel
-  call(opts, respond) {
+  call(bot, opts, respond) {
     let admins = `No administrators specified for ${opts.to}`
     const globalAdmins = config.globalAdmins.join(', ')
 

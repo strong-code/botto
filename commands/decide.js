@@ -7,7 +7,7 @@ module.exports = class Decide extends Command {
     super('decide')
   }
 
-  call(opts, respond) {
+  call(bot, opts, respond) {
     let choices = opts.args.join(' ').split(' or ')
 
     if (choices.length === 1) {

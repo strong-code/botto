@@ -10,7 +10,7 @@ module.exports = class Remind extends Command {
     super('remind')
   }
   
-  call(opts, respond) {
+  call(bot, opts, respond) {
     if (opts.args[0] === 'clear') {
       const cleared = this.clearReminders(opts.from)
       return respond(cleared)

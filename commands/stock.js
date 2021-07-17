@@ -10,7 +10,7 @@ module.exports = class Stock extends Command {
     super('stock')
   }
 
-  async call(opts, respond) {
+  async call(bot, opts, respond) {
     const ticker = opts.args[0]
 
     if (ticker === '') {

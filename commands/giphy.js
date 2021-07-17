@@ -3,15 +3,7 @@ const needle = require('needle');
 const giphy = require('../config.js').giphy
 const Command = require('./command.js')
 const baseUrl = 'http://api.giphy.com/v1/gifs/search?q='
-
-// HTTP client options
-const options = {
-  follow: 3,
-  open_timeout: 5000,
-  headers: {
-    'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1677.0 Safari/537.36"
-  }
-}
+const Helpers = require('../util/helpers.js')
 
 module.exports = class Giphy extends Command {
 
@@ -19,7 +11,7 @@ module.exports = class Giphy extends Command {
     super('giphy')
   }
 
-  call(opts, respond) {
+  call(bot, opts, respond) {
     if (opts.args.length < 1) {
       respond('Usage is !giphy <query>');
     } else {
@@ -30,7 +22,7 @@ module.exports = class Giphy extends Command {
 
   getResults(query, _from, cb) {
     const url = baseUrl + query + '&api_key=' + giphy.apiKey + '&limit=100';
-    return needle.get(url, options, function (err, response) {
+    return needle.get(url, Helpers.httpOptions, function (err, response) {
       if (err || response.statusCode != 200) {
         const errMsg = `[${response.statusCode}] ${response.body.message}` || 'API might be down'
         return cb(errMsg)

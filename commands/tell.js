@@ -8,7 +8,7 @@ module.exports = class Tell extends Command {
     super('tell')
   }
 
-  call(opts, respond) {
+  call(bot, opts, respond) {
     const receiver = opts.args.shift()
     const msg      = opts.args.join(' ')
 
