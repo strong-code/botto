@@ -8,29 +8,26 @@ module.exports = class Mount extends Command {
     super('mount')
   }
 
-  call(bot, opts) {
+  call(bot, opts, respond) {
     if (!this.adminCallable) return
 
     const module = opts.args[0]
     const cmd = CommandHandler.commandList[module]
     const obs = ObserverHandler.observerList[module]
 
-    if (cmd) {
-      if (cmd.mounted) {
-        return bot.say(opts.to, `Command "${module}" is already mounted`)
-      } else {
-        cmd.mount()
-        return bot.say(opts.to, `Mounted command "${module}"`)
-      }
+    let cmdString = `Command "${module}" is already mounted`
+    let obsString = `Observer ${module}" is already mounted`
+
+    if (cmd && !cmd.mounted) {
+      cmd.mount()
+      cmdString = `Mounted command "${module}"`
     }
 
-    if (obs) {
-      if (obs.mounted) {
-        return bot.say(opts.to, `Observer "${module}" is already mounted`)
-      } else {
-        obs.mount()
-        return bot.say(opts.to, `Mounted observer "${module}"`)
-      }
+    if (obs && !obs.mounted) {
+      obs.mount()
+      obsString = `Mounted observer "${module}"`
     }
+
+    return respond(`${cmdString}. ${obsString}.`)
   }
 }

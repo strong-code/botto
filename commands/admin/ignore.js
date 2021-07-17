@@ -12,30 +12,30 @@ module.exports = class Ignore extends Command {
     this.#refresh()
   }
 
-  call(bot, opts) {
+  call(bot, opts, respond) {
     if (!this.adminCallable) return
 
-    const command = opts.args[0];
+    const command = opts.args[0]
 
     if (command === 'add') {
-      return this.ignoreUser(bot, opts.from, opts.args[1], opts.to);
+      return this.ignoreUser(bot, opts.from, opts.args[1], opts.to, respond)
     } else if (command === 'list') {
-      return this.listIgnored(bot, opts.to);
+      return this.listIgnored(opts.to, respond)
     } else if (command === 'del') {
-      return this.unignoreUser(bot, opts.args[1], opts.to);
+      return this.unignoreUser(opts.args[1], opts.to, respond)
     } else if (command === 'check') {
-      return this.check(bot, opts.args[1], opts.to);
+      return this.check(opts.args[1], opts.to, respond)
     }
   }
 
-  async listIgnored(bot, chan) {
+  async listIgnored(chan, respond) {
     await this.#refresh()
-    return bot.say(chan, 'BAD USERS LIST: ' + _.join(Ignore.ignoredUsers, ', '))
+    return respond('BAD USERS LIST: ' + _.join(Ignore.ignoredUsers, ', '))
   }
 
-  ignoreUser(bot, requester, target, chan) {
+  ignoreUser(bot, requester, target, chan, respond) {
     if (Ignore.isIgnored(target)) {
-      return bot.say(chan, `I am already ignoring ${target}`)
+      return respond(`I am already ignoring ${target}`)
     }
 
     bot.whois(target, (data) => {
@@ -43,29 +43,31 @@ module.exports = class Ignore extends Command {
         'INSERT INTO ignored_users (nick, host, banned_by, date_added) VALUES($1, $2, $3, $4)',
         [target, data.host, requester, new Date().toISOString()]
       )
-      .then(() => this.#refresh())
-
-      
-      return bot.say(chan, `Ignoring user: ${target}. Bot privilege has been revoked`)
+      .then(() => {
+        this.#refresh()
+        respond(`Ignoring user: ${target}. Bot privilege has been revoked`)
+      })
+      .catch(e => respond(`There is no one named '${target}' in this channel`))
     })
+
   }
 
-  unignoreUser(bot, target, chan) {
+  unignoreUser(target, chan, respond) {
     if (!Ignore.isIgnored(target)) {
-      return bot.say(chan, 'I am not currently ignoring ' + target)
+      return respond('I am not currently ignoring ' + target)
     }
 
     db.none('DELETE FROM ignored_users WHERE nick = $1', [target]).then(() => this.#refresh())
 
 
-    return bot.say(chan, `No longer ignoring user: ${target}. Please be better behaved from now on.`)
+    return respond(`No longer ignoring user: ${target}. Please be better behaved from now on.`)
   }
 
-  check(bot, nick, chan) {
+  check(nick, chan, respond) {
     if (Ignore.isIgnored(nick)) {
-      return bot.say(chan, `User ${nick} is currently ignored`)
+      return respond(`User ${nick} is currently ignored`)
     } else {
-      return bot.say(chan, `User ${nick} is NOT currently ignored`)
+      return respond(`User ${nick} is NOT currently ignored`)
     }
   }
 

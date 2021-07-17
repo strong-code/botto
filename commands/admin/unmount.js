@@ -9,31 +9,27 @@ module.exports = class Unmount extends Command {
     super('unmount')
   }
 
-  call(bot, opts) {
+  call(bot, opts, respond) {
     if (!this.adminCallable) return
 
     const module = opts.args[0]
     const cmd = CommandHandler.commandList[module]
     const obs = ObserverHandler.observerList[module]
 
-    if (cmd) {
-      if (!cmd.mounted) {
-        return bot.say(opts.to, `Command "${module}" is already unmounted`)
-      } else {
-        cmd.unmount()
-        return bot.say(opts.to, `Unmounted command "${module}"`)
-      }
+    let cmdString = `Command "${module}" is already unmounted`
+    let obsString = `Observer ${module}" is already unmounted`
+
+    if (cmd && cmd.mounted) {
+      cmd.unmount()
+      cmdString = `Unmounted command "${module}"`
     }
 
-    if (obs) {
-      if (!obs.mounted) {
-        return bot.say(opts.to, `Observer "${module}" is already unmounted`)
-      } else {
-        obs.unmount()
-        return bot.say(opts.to, `Unmounted observer "${module}"`)
-      }
+    if (obs && obs.mounted) {
+      obs.unmount()
+      obsString = `Unmounted observer "${module}"`
     }
 
+    return respond(`${cmdString}. ${obsString}.`)
   }
 
 }

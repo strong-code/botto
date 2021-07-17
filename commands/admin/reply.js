@@ -10,23 +10,22 @@ module.exports = class Reply extends Command {
     super('reply')
   }
 
-  async call(bot, opts) {
+  async call(bot, opts, respond) {
     if (!this.adminCallable) return
 
     const cmd = opts.args.shift()
 
     if (cmd === 'add') {
-      return bot.say(opts.to, this.addReply(opts.args, opts.from))
+      return respond(this.addReply(opts.args, opts.from))
     } else if (cmd === 'stop') {
-      return bot.say(opts.to, this.disable())
+      return respond(this.disable())
     } else if (cmd === 'list') {
-      console.log(opts.args)
       if (opts.args[0] === 'disabled') {
         const res = await this.listDisabled()
-        return bot.say(opts.to, res)
+        return respond(res)
       } else if (opts.args[0] === 'enabled') { 
         const res = await this.listEnabled()
-        return bot.say(opts.to, res)
+        return respond(res)
       }
     }
   }

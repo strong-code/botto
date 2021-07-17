@@ -6,8 +6,10 @@ module.exports = class Restart extends Command {
     super('restart')
   }
 
-  call(bot, opts) {
+  call(bot, opts, respond) {
     if (!this.adminCallable) return
+
+    respond()
 
     Object.values(bot.chans).forEach(chan => {
       bot.part(chan.key, 'brb')

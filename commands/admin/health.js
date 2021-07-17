@@ -8,11 +8,11 @@ module.exports  = class Health extends Command {
     super('health')
   }
 
-  call(bot, opts) {
+  call(bot, opts, respond) {
     if (!this.adminCallable) return
 
-    const healthStatus = this.getHealth();
-    return bot.say(opts.to, healthStatus);
+    const healthStatus = this.getHealth()
+    return respond(healthStatus)
   }
 
   getHealth() {
@@ -35,4 +35,4 @@ module.exports  = class Health extends Command {
     }).length
   }
 
-};
+}

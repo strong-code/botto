@@ -10,14 +10,14 @@ module.exports = class Logs extends Command {
     super('logs')
   }
 
-  call(bot, opts) {
+  call(bot, opts, respond) {
     if (!this.adminCallable) return
 
     const options = { lines: '', since: '' }
     const argString = _.join(opts.args, ' ').trim()
 
     if (opts.args[0] === '') {
-      return bot.say(opts.to, "Usage: '!logs 5' for last 5 lines. '!lines 5m ago' for time range logs. These can be combined")
+      return respond("Usage: '!logs 5' for last 5 lines. '!lines 5m ago' for time range logs. These can be combined")
     }
 
     if (this.isNumber(argString)) {
@@ -28,23 +28,23 @@ module.exports = class Logs extends Command {
       options.since = `--since "${argString}"`
     }
 
-    this.getJournalLogs(options, (paste) => bot.say(opts.to, paste)) 
+    this.getJournalLogs(options, (paste) => respond(paste)) 
   }
 
-  uploadLogs(data, cb) {
+  uploadLogs(data, respond) {
     needle.post(logs.api, `text=${data}`, {}, (err, res) => {
       if (err) {
-        return cb(err.message)
+        return respond(err.message)
       }
       if (!res.body.path) {
-        return cb(`Error while uploading output to API: ${logs.api}`)
+        return respond(`Error while uploading output to API: ${logs.api}`)
       }
       console.log(`Log output uploaded to: ${res.body.path}`)
-      return cb(res.body.path)
+      return respond(res.body.path)
     })
   }
 
-  getJournalLogs(options, cb) {
+  getJournalLogs(options, respond) {
     let cmd = `journalctl -u botto.service -q --no-pager --no-hostname `
     
     Object.keys(options).forEach(k => cmd += options[k] )
@@ -52,14 +52,14 @@ module.exports = class Logs extends Command {
     return exec(cmd, (e, out, err) => {
       if (e) {
         console.log(e.message)
-        return cb('Ironically, something went wrong and you need to check logs', true)
+        return respond('Ironically, something went wrong and you need to check logs', true)
       }
       if (err) {
         console.log('Error retrieving local logs: ' + err)
-        return cb(err, true)
+        return respond(err, true)
       }
 
-      this.uploadLogs(out, (url) => cb(url))
+      this.uploadLogs(out, (url) => respond(url))
     })
   }
 
