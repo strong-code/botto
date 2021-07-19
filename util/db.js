@@ -1,33 +1,5 @@
-const pg = require('pg');
+const pgp = require('pg-promise')();
 const _config = require('./../config.js').db;
-
-module.exports = {
-  
-  executeQuery: function (queryString, cb) {
-    pool.connect((err, client, release) => {
-      if (err) {
-        console.error('Error connecting to postgres', err);
-        return cb(err);
-      }
-
-      client.query(queryString, (err, result) => {
-        release();
-        
-        if (err) {
-          if (err.code === '23505') {
-            console.error(`Unique constraint on table ${err.table}. Skipping duplicate entry`, err.detail)
-          } else {
-            console.error(`Error running query "${queryString.text}"`, err)
-          }
-        }
-
-        return cb(result, err);
-      });
-    });
-  }
-
-};
-
 const config = {
   user: _config.username,
   database: 'botto',
@@ -38,7 +10,9 @@ const config = {
   idleTimeoutMillis: 30000
 };
 
-const pool = new pg.Pool(config);
+const db = pgp(config)
+
+module.exports = db
 
 /*
  * This is intended to be a private command that can be used to set up the

@@ -1,31 +1,38 @@
 const _ = require('lodash');
 const moment = require('moment');
+const Command = require('../command.js')
 
-module.exports  = {
+module.exports  = class Health extends Command {
 
-  call: function(bot, opts) {
-    const healthStatus = module.exports.getHealth();
-    return bot.say(opts.to, healthStatus);
-  },
+  constructor() {
+    super('health')
+  }
 
-  getHealth: function() {
+  call(bot, opts, respond) {
+    if (!this.adminCallable) return
+
+    const healthStatus = this.getHealth()
+    return respond(healthStatus)
+  }
+
+  getHealth() {
     const uptime  = moment.duration(process.uptime(), 'seconds').humanize()
-    const memory  = module.exports.getMemory()
+    const memory  = this.getMemory()
     const version = process.version
-    const modules = module.exports.getModules()
+    const modules = this.getModules()
 
     return `Uptime ${uptime} | Memory ${memory}Mb | Modules ${modules} | Node ${version}`
-  },
+  }
 
-  getMemory: function() {
+  getMemory() {
     const memory = process.memoryUsage().rss / 1024576
     return Math.round(Number(memory))
-  },
+  }
 
-  getModules: function() {
+  getModules() {
     return _.filter(require.cache, (v, k) => {
       return !_.includes(k, 'node_modules')
     }).length
   }
 
-};
+}

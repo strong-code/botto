@@ -1,9 +1,15 @@
+const Command = require('./command.js')
 const _ = require('lodash');
 
-module.exports = {
+module.exports = class Checkem extends Command {
 
-  call: function(opts, respond) {
-    const target = opts.args[0] || 'bro';
-    return respond('(⊃｡•́‿•̀｡)⊃ Check \'em ' + target + ': ' + _.random(1,9) + '' + _.random(1,9));
+  constructor() {
+    super('checkem')
   }
-};
+
+  call(bot, opts, respond) {
+    const target = opts.args[0] || 'bro'
+    return respond('(⊃｡•‿•｡)⊃ Check \'em ' + target + ': ' + _.random(1,9) + '' + _.random(1,9))
+  }
+}
+

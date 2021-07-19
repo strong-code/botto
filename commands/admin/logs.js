@@ -1,11 +1,18 @@
 const { exec } = require('child_process')
 const needle = require('needle')
 const _ = require('lodash')
-const logs = require('../config.js').logs
+const logs = require('../../config.js').logs
+const Command = require('../command.js')
 
-module.exports = {
+module.exports = class Logs extends Command {
 
-  call: function(opts, respond) {
+  constructor() {
+    super('logs')
+  }
+
+  call(bot, opts, respond) {
+    if (!this.adminCallable) return
+
     const options = { lines: '', since: '' }
     const argString = _.join(opts.args, ' ').trim()
 
@@ -13,31 +20,31 @@ module.exports = {
       return respond("Usage: '!logs 5' for last 5 lines. '!lines 5m ago' for time range logs. These can be combined")
     }
 
-    if (module.exports.isNumber(argString)) {
+    if (this.isNumber(argString)) {
       options.lines = `-n ${argString}`
     }
 
-    if (module.exports.isTimeRange(argString)) {
+    if (this.isTimeRange(argString)) {
       options.since = `--since "${argString}"`
     }
 
-    module.exports.getJournalLogs(options, (paste) => respond(paste)) 
-  },
+    this.getJournalLogs(options, (paste) => respond(paste)) 
+  }
 
-  uploadLogs: function(data, cb) {
+  uploadLogs(data, respond) {
     needle.post(logs.api, `text=${data}`, {}, (err, res) => {
       if (err) {
-        return cb(err.message)
+        return respond(err.message)
       }
       if (!res.body.path) {
-        return cb(`Error while uploading output to API: ${logs.api}`)
+        return respond(`Error while uploading output to API: ${logs.api}`)
       }
       console.log(`Log output uploaded to: ${res.body.path}`)
-      return cb(res.body.path)
+      return respond(res.body.path)
     })
-  },
+  }
 
-  getJournalLogs: function(options, cb) {
+  getJournalLogs(options, respond) {
     let cmd = `journalctl -u botto.service -q --no-pager --no-hostname `
     
     Object.keys(options).forEach(k => cmd += options[k] )
@@ -45,24 +52,24 @@ module.exports = {
     return exec(cmd, (e, out, err) => {
       if (e) {
         console.log(e.message)
-        return cb('Ironically, something went wrong and you need to check logs', true)
+        return respond('Ironically, something went wrong and you need to check logs', true)
       }
       if (err) {
         console.log('Error retrieving local logs: ' + err)
-        return cb(err, true)
+        return respond(err, true)
       }
 
-      module.exports.uploadLogs(out, (url) => cb(url))
+      this.uploadLogs(out, (url) => respond(url))
     })
-  },
+  }
 
   // e.g. !logs 15
-  isNumber: function(argString) {
+  isNumber(argString) {
     return /^\d+$/.test(argString)
-  },
+  }
 
   // e.g. !logs 2 days ago OR !logs 2d ago
-  isTimeRange: function(argString) {
+  isTimeRange(argString) {
     return /^((\d+\w)|(\d+\s\w+))\sago$/.test(argString)
   }
 

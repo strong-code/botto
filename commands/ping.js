@@ -1,11 +1,12 @@
-/*
- * Respond to a user with a PONG message. Helpful for when a user needs to be
- * highlighted for testing or to check connection latency.
- */
-module.exports = {
+const Command = require('./command.js')
 
-  call: function(opts, respond) {
-    respond(opts.from + ": PONG");
+module.exports = class Ping extends Command {
+
+  constructor() {
+    super('ping')
   }
 
-};
+  call(bot, opts, respond) {
+    return respond(`${opts.from}: PONG`)
+  }
+}

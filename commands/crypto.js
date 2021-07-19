@@ -1,21 +1,25 @@
+const Command  = require('./command.js')
 const needle   = require('needle')
 const _        = require('lodash')
 const config   = require('../config').coinmarketcap
 const BASE_URL = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol='
 
-module.exports = {
+module.exports = class Crypto extends Command {
 
-  // !crypto <coin>
-  call: function(opts, respond) {
+  constructor() {
+    super('crypto')
+  }
+
+  call(bot, opts, respond) {
     const coin = opts.args[0]
     if (!coin || coin == '') {
       return respond('Usage is !crypto <coin name>')
     }
 
-    module.exports.coinInfo(coin, (info) => respond(info))
-  },
+    this.coinInfo(coin, (info) => respond(info))
+  }
 
-  coinInfo: function(coin, cb) {
+  coinInfo(coin, cb) {
     coin = _.toUpper(coin).trim()
     const opts = { headers: { 'X-CMC_PRO_API_KEY': config.apiKey } }
     const endpoint = BASE_URL + coin + '&convert=USD'
@@ -50,3 +54,4 @@ module.exports = {
     })
   }
 }
+

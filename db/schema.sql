@@ -74,3 +74,42 @@ CREATE TABLE IF NOT EXISTS weather_locations (
   date_updated TIMESTAMP NOT NULL
 );
 
+-- Definition for commands table
+CREATE TABLE IF NOT EXISTS commands (
+  id SERIAL UNIQUE PRIMARY KEY,
+  name VARCHAR(55) NOT NULL,
+  mounted BOOLEAN DEFAULT TRUE,
+  admin BOOLEAN DEFAULT FALSE
+);
+
+-- Definition for observers table
+CREATE TABLE IF NOT EXISTS observers (
+  id SERIAL UNIQUE PRIMARY KEY,
+  name VARCHAR(55) NOT NULL,
+  mounted BOOLEAN DEFAULT TRUE
+);
+
+-- Definition for command_events table
+CREATE TABLE IF NOT EXISTS command_events (
+  time TIMESTAMP NOT NULL,
+  command_id SMALLINT,
+  message TEXT NOT NULL,
+  nick VARCHAR(55) NOT NULL,
+  sent_to VARCHAR(55) NOT NULL,
+  response TEXT,
+  PRIMARY KEY(command_id, time),
+  CONSTRAINT fk_command FOREIGN KEY(command_id) REFERENCES commands(id)
+);
+
+-- Definition for observer_events table
+CREATE TABLE IF NOT EXISTS observer_events (
+  time TIMESTAMP NOT NULL,
+  observer_id SMALLINT,
+  message TEXT NOT NULL,
+  nick VARCHAR(55) NOT NULL,
+  sent_to VARCHAR(55) NOT NULL,
+  response TEXT,
+  PRIMARY KEY(observer_id, time),
+  CONSTRAINT fk_observer FOREIGN KEY(observer_id) REFERENCES observers(id)
+);
+

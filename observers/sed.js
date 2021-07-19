@@ -1,30 +1,38 @@
 const MSG_CACHE_LENGTH = 25
+const Observer = require('./observer.js')
 
-module.exports = {
+module.exports = class Sed extends Observer {
 
-  call: function(opts, respond) {
+  constructor() {
+    // we need callable() to always return true to build msgCache
+    const regex = new RegExp(/.*/)
+    super('sed', regex)
+  }
+
+  call(opts, respond) {
     if (/^s\/(.+)\/(.*)$/.test(opts.text)) {
       const [_, rgx, replacement] = opts.text.split('/')
-      const replaced = module.exports.tryReplacing(rgx, replacement)
+      const replaced = this.tryReplacing(rgx, replacement)
       return respond(replaced)
     } else {
-      module.exports.storeMessage(opts.text)
+      this.storeMessage(opts.text)
     }
-  },
+  }
 
-  msgCache: [],
+  #msgCache = []
 
-  storeMessage: function(msg) {
-    if (module.exports.msgCache.length === MSG_CACHE_LENGTH) {
-      module.exports.msgCache.pop()
+  storeMessage(msg) {
+    if (this.#msgCache.length === MSG_CACHE_LENGTH) {
+      this.#msgCache.pop()
     }
-    module.exports.msgCache.unshift(msg)
-  },
 
-  tryReplacing: function(rgx, replacement) {
+    this.#msgCache.unshift(msg)
+  }
+
+  tryReplacing(rgx, replacement) {
     const r = new RegExp(rgx)
 
-    for(let msg of module.exports.msgCache) {
+    for(let msg of this.#msgCache) {
       if (r.test(msg)) {
         return msg.replace(r, replacement)
       }

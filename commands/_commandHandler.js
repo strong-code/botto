@@ -1,7 +1,5 @@
-const fs = require('fs');
-const admin     = require('../core/admin.js');
-const logger    = require('../core/logger.js');
-const _         = require('lodash');
+const db = require('../util/db.js')
+const Helpers = require('../util/helpers.js')
 
 /*
  * Command handler responsible for routing commands. These include admin only
@@ -9,84 +7,77 @@ const _         = require('lodash');
  * as _file.js. This module is essentially a routing layer and should contain no
  * command logic other than delegation and some (light) parsing.
  */
-module.exports = {
+module.exports = class CommandHandler {
 
-  route: function(bot, from, to, text, message) {
-    if (text && text[0] == '!') {
-      let opts = makeOptions(bot, from, to, text, message);
-      opts.command = respondsTo(opts.command);
+  static commandList = {}
 
-      if (_.includes(module.exports.unmounted[opts.to], opts.command)) {
-        return;
-      }
+  async init() {
+    await db.each('SELECT * FROM commands', [], row => {
+      let reqPath = (row.admin ? './admin/' : './')
+      let cmd = new (require(`${reqPath}${row.name}.js`))();
+      CommandHandler.commandList[row.name] = cmd
+    })
 
-      if (_.includes(fs.readdirSync('core/'), opts.command+'.js')) {
-        if (admin.isAdmin(opts.from, opts.to)) {
-          let module = require('../core/'+opts.command)
-          console.log(`![${opts.command.toUpperCase()}] admin command triggered in ${opts.to} by ${opts.from}`)
-          return module.call(bot, opts);
-        }
-      } else {
-        return publicCommands(bot, opts);
-      }
+    for (const v of Object.values(CommandHandler.commandList)) { await v.init() }
+    const total = Object.keys(CommandHandler.commandList).length
+    const admin = Object.values(CommandHandler.commandList).filter(x => x.admin).length
+    console.log(`Loaded ${total} total command modules (${admin} admin modules)`)
+  }
+
+  route(bot, from, to, text, message) {
+    const opts = this.#makeOptions(bot, from, to, text, message)
+    const cmd = CommandHandler.commandList[opts.command]
+
+    if (cmd && cmd.mounted) {
+      return cmd.call(bot, opts, (response) => {
+        console.log(`[${opts.command.toUpperCase()}] command triggered in ${opts.to} by ${opts.from}\n  -> "${response}"`)
+        this.#logEvent(cmd, opts, response)
+        return bot.say(opts.to, response)
+      }) 
     }
-  },
+  }
 
-  unmount: function(to, command) {
-    if (module.exports.unmounted[to]) {
-      module.exports.unmounted[to].push(command);
-    } else {
-      module.exports.unmounted[to] = [command];
+  #logEvent(cmd, opts, response) {
+    db.none(
+      'INSERT INTO command_events (time, command_id, message, nick, sent_to, response) VALUES ($1, $2, $3, $4, $5, $6)',
+      [new Date().toISOString(), cmd.id, opts.text, opts.from, opts.to, response]
+    )
+  }
+
+  static async reload(cmd) {
+    if (CommandHandler.commandList[cmd]) {
+      const admin = CommandHandler.commandList[cmd].admin
+      let path = (admin ? `./admin/${cmd}.js` : `./${cmd}.js`)
+
+      delete CommandHandler.commandList[cmd]
+      delete require.cache[require.resolve(path)]
+
+      const reloadedCommand = new (require(path))();
+      await reloadedCommand.init()
+
+      CommandHandler.commandList[cmd] = reloadedCommand
+      return true
     }
-  },
+    return false
+  }
 
-  mount: function(to, command) {
-    return _.remove(module.exports.unmounted[to], (el) => {
-      return command === el;
-    });
-  },
+  #respondsTo(command) {
+    const alias = require('../util/aliases.js').aliases[command]
+    if (typeof alias !== 'undefined') {
+      return alias
+    }
+    return command
+  }
 
-  unmounted: {}
-
-};
-
-/*
-* Dynamically require and look up our triggers/commands, allowing for
-* hot-swapping of code if something in a module needs to be changed.
-*/
-function publicCommands(bot, opts) {
-  if (fs.existsSync('./commands/' + opts.command + '.js')) {
-    try {
-      let module = require('./' + opts.command)
-      module.call(opts, (response) => {
-        console.log(`![${opts.command.toUpperCase()}] command triggered in ${opts.to} by ${opts.from}\n  -> "${response}"`)
-        return bot.say(opts.to, response);
-      });
-    } catch (e) {
-      console.error(opts.from, opts.to, e);
-      return bot.say(opts.to, e.message + "; Check logs for more info");
+  #makeOptions(bot, from, to, text, message) {
+    return {
+      from: from,
+      to: to,
+      command: this.#respondsTo(String(text.split(' ')[0]).replace('!', '').trim()),
+      args: text.substring(String(text.split(' ')[0]).length).trim().split(' '),
+      raw: message,
+      text: text
     }
   }
 }
 
-// Returns aliased value if a module would respond to a command
-// Used for aliasing commands to modules that have a different name
-// i.e. calling !eth for ether.js
-function respondsTo(command) {
-  const alias = require('./_aliases').aliases[command];
-  if (typeof alias !== 'undefined') {
-    return alias;
-  }
-  return command;
-}
-
-// Helper function to stuff params into an `opts` hash
-function makeOptions(bot, from, to, text, message) {
-  return {
-    from: from,
-    to: to,
-    command: String(text.split(' ')[0]).replace('!', '').trim(),
-    args: text.substring(String(text.split(' ')[0]).length).trim().split(' '),
-    raw: message
-  };
-}

@@ -1,32 +1,42 @@
-const _  = require('lodash')
 const emoji = require('node-emoji')
+const Observer = require('./observer.js')
 
-module.exports = {
+module.exports = class Emoji extends Observer {
+
+  constructor() {
+    const regex = new RegExp(/^:\S*:$/i)
+    super('emoji', regex)
+  }
   
-  call: function(opts, respond) {
-    const match = opts.text.match(regex)
+  call(opts, respond) {
+    const match = opts.text.match(this.regex)
 
     if (match) {
-      module.exports.getEmoji(match[0], (e) => respond(e))
-    }
-  },
+      const emoji = this.getEmoji(match[0])
 
-  getEmoji: function(name, cb) {
-    if (module.exports.alias[name]) {
-      name = module.exports.alias[name]
+      if (emoji) {
+        return respond(emoji)
+      }
+
+      return
+    }
+  }
+
+  getEmoji(name) {
+    if (this.#alias[name]) {
+      name = this.#alias[name]
     }
 
     if (emoji.hasEmoji(name)) {
-      cb(emoji.get(name))
+      return emoji.get(name)
     }
-  },
+  }
 
   // TODO: move this into a separate file if it grows too big
   // or if it needs to be shared elsewhere
-  alias: {
+  #alias = {
     ':thinking:': 'thinking_face:'
   }
 
 }
 
-const regex = new RegExp(/^:\S*:$/gi)

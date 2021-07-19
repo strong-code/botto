@@ -2,20 +2,26 @@ const needle = require('needle');
 const config = require('../config').url
 const API_KEY = require('../config').stock.apiKey
 const BASE_URL = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE' 
+const Command = require('./command.js')
 
-module.exports = {
+module.exports = class Stock extends Command {
+  
+  constructor() {
+    super('stock')
+  }
 
-  call: async function(opts, respond) {
-    const ticker = opts.args[0];
+  async call(bot, opts, respond) {
+    const ticker = opts.args[0]
+
     if (ticker === '') {
-      return respond('Usage is !stock <ticker>');
+      return respond('Usage is !stock <ticker>')
     }
 
-    const info = await module.exports.stockInfo(ticker)
+    const info = await this.stockInfo(ticker)
     return respond(info)
-  },
+  }
 
-  stockInfo: async function(ticker) {
+  async stockInfo(ticker) {
     const API_URL = `${BASE_URL}&symbol=${ticker}&apikey=${API_KEY}`
 
     const res = await needle('get', API_URL, config)

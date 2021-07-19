@@ -1,59 +1,58 @@
-const db = require('../core/_db.js');
-const _  = require('lodash');
-const msgCache = {};
+const db = require('../util/db.js')
+const _ = require('lodash')
+const Observer = require('./observer.js')
 
-(function () {
-  return db.executeQuery('SELECT * FROM tells WHERE sent = false', res => {
-    if (res.rows && res.rows[0]) {
-      _.forEach(res.rows, (row) => {
-        let tell = { chan: row['chan'], sender: row['sender'], msg: row['message'] }
-        module.exports.addTell(row['receiver'], tell)
-      })
-    }
-    console.log(`Tell message cache warmed with ${res.rows.length} tells`)
-  })
-})()
-
-module.exports = {
-
-  call: function(opts, respond) {
-    const receiver = opts.from
-
-    if (_.includes(_.keys(msgCache), receiver)) {
-      console.log(`Sending ${msgCache[receiver].length} tells to ${receiver}`)
-      _.forEach(msgCache[receiver], (tell) => {
-        module.exports.sendMessage(receiver, tell, (info) => respond(info))
-      })
-      delete msgCache[receiver]
-    }
-  },
+module.exports = class Tell extends Observer {
 
   // key: receiver nick
   // value: array of tell objects
   // msgCache[receiver] = [ { chan, sender, message } ]
-  addTell: function(receiver, tell) {
-    if (msgCache[receiver]) {
-      msgCache[receiver].push(tell)
-    } else {
-      msgCache[receiver] = [tell]
-    }
-  },
+  static msgCache = {}
 
-  msgCache: msgCache,
-
-  sendMessage: function(receiver, tell, cb) {
-    module.exports.markSent(receiver, tell.msg, () => {
-      return cb(receiver + ', ' + tell.sender + ' says: ' + tell.msg);
-    });
-  },
-
-  markSent: function(receiver, msg, cb) {
-    return db.executeQuery({
-      text: 'UPDATE tells SET sent = true WHERE receiver = $1 AND message = $2',
-      values: [receiver, msg]
-    }, () => {
-      console.log('Tell marked as sent');
-      return cb();
-    });
+  constructor() {
+    const regex = new RegExp(/.*/)
+    super('tell', regex)
   }
-};
+
+  async init() {
+    super.init()
+    await Tell.refresh()
+  }
+
+  call(opts, respond) {
+    const receiver = opts.from
+
+    if (_.includes(_.keys(Tell.msgCache), receiver)) {
+      console.log(`Sending ${Tell.msgCache[receiver].length} tells to ${receiver}`)
+      _.forEach(Tell.msgCache[receiver], (tell) => {
+        this.sendMessage(receiver, tell, (info) => respond(info))
+      })
+      delete Tell.msgCache[receiver]
+    }
+  }
+
+  static async refresh() {
+    Tell.msgCache = {}
+
+    await db.each('SELECT * FROM tells WHERE sent = false', [], row => {
+      const receiver = row.receiver
+      const tell = { chan: row.chan, sender: row.sender, msg: row.message }
+
+      if (Tell.msgCache[receiver]) {
+        Tell.msgCache[receiver].push(tell)
+      } else {
+        Tell.msgCache[receiver] = [tell]
+      }
+    })
+
+    const total = Object.values(this.msgCache).length
+    console.log(`Tell message cache warmed with ${total} messages`)
+  }
+  
+  sendMessage(receiver, tell, cb) {
+    db.none('UPDATE tells SET sent = true WHERE receiver = $1 AND message = $2', [receiver, tell.msg])
+    console.log(`Tell marked as sent`)
+    return cb(`${receiver}, ${tell.sender} says: ${tell.msg}`)
+  }
+
+}

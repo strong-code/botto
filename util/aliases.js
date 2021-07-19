@@ -11,6 +11,8 @@ module.exports = {
     's': 'stock',
     'd': 'dictionary',
     'define': 'dictionary',
-    'dict': 'dictionary'
+    'dict': 'dictionary',
+    'np': 'nowplaying',
+    'ud': 'urbandictionary'
   }
 }

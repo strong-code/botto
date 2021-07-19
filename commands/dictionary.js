@@ -1,11 +1,16 @@
+const Command = require('./command.js')
 const needle = require('needle');
 const config = require('../config').url.options
 const creds = require('../config').oxford
 const BASE_URL = 'https://od-api.oxforddictionaries.com/api/v2/entries/en-gb/'
 
-module.exports = {
+module.exports = class Dictionary extends Command {
 
-  call: async function(opts, respond) {
+  constructor() {
+    super('dictionary')
+  }
+
+  async call(bot, opts, respond) {
     const word = opts.args[0]
 
     if (!word || word === '') {
@@ -14,15 +19,15 @@ module.exports = {
 
     let response
     try {
-      response = await module.exports.getDefinition(word)
+      response = await this.getDefinition(word)
     } catch (e) {
       response = e.message
     }
 
     respond(response)
-  },
+  }
 
-  getDefinition: async function(word) {
+  async getDefinition(word) {
 
     config.headers['app_id'] = creds.id
     config.headers['app_key'] = creds.apiKey
@@ -60,3 +65,4 @@ module.exports = {
   }
 
 }
+

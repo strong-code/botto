@@ -1,9 +1,14 @@
 const needle   = require('needle')
 const API_URL  = 'https://ethgasstation.info/json/ethgasAPI.json' 
+const Command  = require('./command.js')
 
-module.exports = {
+module.exports = class Gas extends Command {
+  
+  constructor() {
+    super('gas')
+  }
 
-  call: function(opts, respond) {
+  call(bot, opts, respond) {
     needle.get(API_URL, (err, res, body) => {
       if (err)
         return respond(err.message)

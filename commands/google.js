@@ -2,10 +2,15 @@ const needle  = require('needle')
 const BASE_URL = 'https://customsearch.googleapis.com/customsearch/v1?'
 const google = require('../config.js').google
 const config = require('../config').url
+const Command = require('./command.js')
 
-module.exports = {
+module.exports = class Google extends Command {
 
-  call: async function(opts, respond) {
+  constructor() {
+    super('google')
+  }
+
+  async call(bot, opts, respond) {
     if (opts.args[0] === '') {
       respond('Usage is !google <query> or !google 1 <query> to get next result')
     }
@@ -16,11 +21,11 @@ module.exports = {
     }
 
     const query = opts.args.join('+');
-    const info = await module.exports.search(query, idx)
+    const info = await this.search(query, idx)
     respond(info)
-  },
+  }
 
-  search: async function(query, idx) {
+  async search(query, idx) {
     const API_URL = `${BASE_URL}cx=${google.cx}&q=${query}&key=${google.key}`
 
     const res = await needle('get', API_URL, config)
