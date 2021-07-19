@@ -26,17 +26,15 @@ if (config.debug) {
   });
 }
 
-// Register all our message listeners (either observers or commands)
 bot.addListener("message", function(_from, to, text, msg) {
   try {
-    if (!Ignore.isIgnored(_from)) {
+    if (!Ignore.isIgnored(_from)) {  
       if (text[0] === '!') {
         // Delegate explicit commands starting with a !bang to the handler
         commandHandler.route(bot, _from, to, text, msg);
-      } else {
-        // Delegate observables (keywords, mentions, etc) to the handler
-        observerHandler.route(bot, _from, to, text, msg);
       }
+      // Delegate observables (keywords, mentions, etc) to the handler
+      observerHandler.route(bot, _from, to, text, msg);
     }
   } catch (e) {
     console.log(e);
