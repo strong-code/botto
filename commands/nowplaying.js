@@ -1,7 +1,6 @@
 const pgp    = require('pg-promise')
 const apiKey = require('../config.js').lastfm.apiKey
 const needle = require('needle')
-const _      = require('lodash')
 const db     = require ('../util/db.js')
 const Command = require('./command.js')
 const Helpers = require('../util/helpers.js')
@@ -32,12 +31,13 @@ module.exports = class NowPlaying extends Command {
 
       const res =  await needle('get', url, Helpers.httpOptions)
 
-      const nowPlaying = res.body['recenttracks']['track'][0];
-      const artist     = nowPlaying['artist']['#text'];
-      const track      = nowPlaying['name'];
-      const album      = nowPlaying['album']['#text'];
+      const nowPlaying = res.body.recenttracks.track[0]
+      const artist     = nowPlaying.artist['#text']
+      const track      = nowPlaying.name
+      const album      = nowPlaying.album['#text']
+      const date       = nowPlaying.date['#text']
 
-      return respond(`♬ ${ircNick} is listening to "${track}" by ${artist} off of "${album}" ♬`)
+      return respond(`♬ ${ircNick} is listening to "${track}" by ${artist} off of "${album}" ♬  (at ${date})`)
     } catch (e) {
       if (e instanceof pgp.errors.QueryResultError && e.received === 0) {
         return respond(`No last.fm username registered for ${ircNick}. Use !np add <username> to register`)
