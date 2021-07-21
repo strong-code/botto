@@ -1,5 +1,5 @@
-const _ = require('lodash');
-const moment = require('moment');
+const moment = require('moment')
+const db = require('../../util/db.js')
 const Command = require('../command.js')
 
 module.exports  = class Health extends Command {
@@ -8,20 +8,20 @@ module.exports  = class Health extends Command {
     super('health')
   }
 
-  call(bot, opts, respond) {
+  async call(bot, opts, respond) {
     if (!this.adminCallable) return
 
-    const healthStatus = this.getHealth()
+    const healthStatus = await this.getHealth()
     return respond(healthStatus)
   }
 
-  getHealth() {
+  async getHealth() {
     const uptime  = moment.duration(process.uptime(), 'seconds').humanize()
     const memory  = this.getMemory()
     const version = process.version
-    const modules = this.getModules()
+    const modules = await this.getModules()
 
-    return `Uptime ${uptime} | Memory ${memory}Mb | Modules ${modules} | Node ${version}`
+    return `Uptime: ${uptime} | Memory: ${memory}Mb | ${modules} | Node ${version}`
   }
 
   getMemory() {
@@ -29,10 +29,25 @@ module.exports  = class Health extends Command {
     return Math.round(Number(memory))
   }
 
-  getModules() {
-    return _.filter(require.cache, (v, k) => {
-      return !_.includes(k, 'node_modules')
-    }).length
+  async getModules() {
+    const observers = await db.manyOrNone('SELECT * FROM observers')
+    const commands = await db.many('SELECT * FROM commands')
+
+    let obsStr = `${observers.filter(o => o.mounted).length} observers mounted`
+    let cmdStr = `${commands.filter(c => c.mounted).length} commands mounted`
+
+    const unmountedObservers = observers.filter(o => !o.mounted)
+    const unmountedCommands = commands.filter(c => !c.mounted)
+
+    if (unmountedObservers.length > 0) {
+      obsStr += ` (${unmountedObservers.length} unmounted)`
+    }
+
+    if (unmountedCommands.length > 0) {
+      cmdStr += ` (${unmountedCommands.length} unmounted)`
+    }
+
+    return `${obsStr}, ${cmdStr}`
   }
 
 }
