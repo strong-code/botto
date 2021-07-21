@@ -16,20 +16,26 @@ module.exports = class Unmount extends Command {
     const cmd = CommandHandler.commandList[module]
     const obs = ObserverHandler.observerList[module]
 
-    let cmdString = `Command "${module}" is already unmounted`
-    let obsString = `Observer ${module}" is already unmounted`
+    let cmdString = ''
+    let obsString = ''
 
-    if (cmd && cmd.mounted) {
-      cmd.unmount()
-      cmdString = `Unmounted command "${module}"`
+    if (cmd) {
+      cmdString = `Command "${module}" is already unmounted.`
+      if (cmd.mounted) {
+        cmd.unmount()
+        cmdString = `Unmounted command "${module}".`
+      }
     }
 
-    if (obs && obs.mounted) {
-      obs.unmount()
-      obsString = `Unmounted observer "${module}"`
+    if (obs) {
+      obsString = `Observer "${module}" is already unmounted.`
+      if (obs.mounted) {
+        obs.unmount()
+        obsString = `Unmounted observer "${module}".`
+      }
     }
 
-    return respond(`${cmdString}. ${obsString}.`)
+    return respond(`${cmdString} ${obsString}`)
   }
 
 }

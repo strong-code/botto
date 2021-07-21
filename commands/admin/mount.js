@@ -15,19 +15,25 @@ module.exports = class Mount extends Command {
     const cmd = CommandHandler.commandList[module]
     const obs = ObserverHandler.observerList[module]
 
-    let cmdString = `Command "${module}" is already mounted`
-    let obsString = `Observer ${module}" is already mounted`
+    let cmdString = ''
+    let obsString = ''
 
-    if (cmd && !cmd.mounted) {
-      cmd.mount()
-      cmdString = `Mounted command "${module}"`
+    if (cmd) {
+      cmdString = `Command "${module}" is already mounted.`
+      if (!cmd.mounted) {
+        cmd.mount()
+        cmdString = `Mounted command "${module}".`
+      }
     }
 
-    if (obs && !obs.mounted) {
-      obs.mount()
-      obsString = `Mounted observer "${module}"`
+    if (obs) {
+      obsString = `Observer ${module}" is already mounted.`
+      if (!obs.mounted) {
+        obs.mount()
+        obsString = `Mounted observer "${module}".`
+      }
     }
 
-    return respond(`${cmdString}. ${obsString}.`)
+    return respond(`${cmdString} ${obsString}`)
   }
 }
