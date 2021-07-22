@@ -33,10 +33,12 @@ module.exports = class Tell extends Observer {
 
   static async refresh() {
     Tell.msgCache = {}
+    let total = 0
 
     await db.each('SELECT * FROM tells WHERE sent = false', [], row => {
       const receiver = row.receiver
       const tell = { chan: row.chan, sender: row.sender, msg: row.message }
+      total++
 
       if (Tell.msgCache[receiver]) {
         Tell.msgCache[receiver].push(tell)
@@ -45,7 +47,6 @@ module.exports = class Tell extends Observer {
       }
     })
 
-    const total = Object.values(this.msgCache).length
     console.log(`Tell message cache warmed with ${total} messages`)
   }
   
