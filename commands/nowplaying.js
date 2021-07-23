@@ -39,9 +39,12 @@ module.exports = class NowPlaying extends Command {
 
       return respond(`♬ ${ircNick} is listening to "${track}" by ${artist} off of "${album}" ♬  (at ${date})`)
     } catch (e) {
+      console.log(e.message)
+
       if (e instanceof pgp.errors.QueryResultError && e.received === 0) {
         return respond(`No last.fm username registered for ${ircNick}. Use !np add <username> to register`)
       }
+
       return respond(`Error fetching current track from Last.fm API`)
     }
   }
