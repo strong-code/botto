@@ -8,9 +8,8 @@ module.exports = {
   parse: async function(url) {
     const appId = url.path.split('/')[2]
     const res = await needle('get', `https://store.steampowered.com/api/appdetails?appids=${appId}`)
-    const game = res.body[appId]
 
-    console.log(game)
+    const game = res.body[appId]
     const name = game.data.name
     const desc = game.data.short_description
     const site = game.data.website
