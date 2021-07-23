@@ -13,6 +13,7 @@ module.exports = {
     'define': 'dictionary',
     'dict': 'dictionary',
     'np': 'nowplaying',
-    'ud': 'urbandictionary'
+    'ud': 'urbandictionary',
+    'wiki': 'wikipedia'
   }
 }
