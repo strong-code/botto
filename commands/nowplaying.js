@@ -35,11 +35,11 @@ module.exports = class NowPlaying extends Command {
       const artist     = nowPlaying.artist['#text']
       const track      = nowPlaying.name
       const album      = nowPlaying.album['#text']
-      const date       = nowPlaying.date['#text']
+      const date       = nowPlaying.date ? `(at ${nowPlaying.date['#text']}` : `` // sometimes we dont get date info back
 
-      return respond(`♬ ${ircNick} is listening to "${track}" by ${artist} off of "${album}" ♬  (at ${date})`)
+      return respond(`♬ ${ircNick} is listening to "${track}" by ${artist} off of "${album}" ♬ ${date}`)
     } catch (e) {
-      console.log(e.message)
+      console.log(e)
 
       if (e instanceof pgp.errors.QueryResultError && e.received === 0) {
         return respond(`No last.fm username registered for ${ircNick}. Use !np add <username> to register`)
