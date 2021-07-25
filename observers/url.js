@@ -118,8 +118,14 @@ module.exports = class Url extends Observer {
       console.log('No meta property found for title. Using html property')
       title = $('head > title').text()
     }
-    title = _.truncate(title, {length: 120}).trim()
+    title = _.truncate(title, {length: 150}).trim()
     title = title.replace(/[\r\n\t]/g, " ")
+
+    if (title = 'Attention Required! | Cloudflare') {
+      // DigitalOcean VPN hits cloudflare captcha challenge
+      return null
+    }
+
     return title
   }
 
