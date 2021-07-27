@@ -123,7 +123,8 @@ module.exports = class Url extends Observer {
 
     if (title = 'Attention Required! | Cloudflare') {
       // DigitalOcean VPN hits cloudflare captcha challenge
-      return null
+      console.log('Hit CloudFlare captcha test - unable to parse page title')
+      return
     }
 
     return title
