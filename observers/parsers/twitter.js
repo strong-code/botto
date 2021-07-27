@@ -6,7 +6,7 @@ const cheerio = require('cheerio')
 
 module.exports = {
 
-  hostMatch: /^(www\.)?twitter\.com$/,
+  hostMatch: /^(www\.)?(mobile\.)?twitter\.com$/,
 
   parse: async function(url) {
     if (!url.path.includes('/status/')) {
