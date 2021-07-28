@@ -52,7 +52,11 @@ module.exports = {
     if (typeof op.sub !== 'undefined' && op.sub) {
       content += op.sub + ': '
     }
-    content += he.decode(op.com).replace(/<(.|\n)*?>/g, ' ')
+
+    if (op.com) {
+      content += he.decode(op.com).replace(/<(.|\n)*?>/g, ' ')
+    }
+
     content = _.truncate(content, { length: 160 })
 
     return `[4chan] ${board} - ${content} | ${op.replies} replies, ${op.images} images, ${op.unique_ips} uniques | ${posted}`
