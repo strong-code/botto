@@ -1,8 +1,8 @@
 const { exec } = require('child_process')
-const needle = require('needle')
 const _ = require('lodash')
 const logs = require('../../config.js').logs
 const Command = require('../command.js')
+const Helpers = require('../../util/helpers.js')
 
 module.exports = class Logs extends Command {
 
@@ -31,17 +31,9 @@ module.exports = class Logs extends Command {
     this.getJournalLogs(options, (paste) => respond(paste)) 
   }
 
-  uploadLogs(data, respond) {
-    needle.post(logs.api, `text=${data}`, {}, (err, res) => {
-      if (err) {
-        return respond(err.message)
-      }
-      if (!res.body.path) {
-        return respond(`Error while uploading output to API: ${logs.api}`)
-      }
-      console.log(`Log output uploaded to: ${res.body.path}`)
-      return respond(res.body.path)
-    })
+  async uploadLogs(data, respond) {
+    const res = await Helpers.uploadText(data)
+    return respond(res.body.path)
   }
 
   getJournalLogs(options, respond) {
