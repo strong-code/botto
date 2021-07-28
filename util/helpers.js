@@ -1,5 +1,7 @@
 const config = require("../config.js")
 const _ = require('lodash')
+const needle = require('needle')
+const STRONGCODE_API = require('../config.js').logs.api
 
 module.exports = class Helpers {
 
@@ -29,6 +31,11 @@ module.exports = class Helpers {
       return _.includes(config.admin[channel], user)
     }
     return false
+  }
+
+  // Uploads supplied text to strongco.de API and returns paste url
+  static uploadText(text) {
+    return needle('post', STRONGCODE_API, `text=${text}`)
   }
 
 }
