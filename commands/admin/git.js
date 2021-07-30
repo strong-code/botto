@@ -1,7 +1,6 @@
 const exec = require('child_process').exec
 const needle = require('needle')
 const Helpers = require('../../util/helpers.js')
-const LOGS_API = require('../../config.js').logs.api
 const Command = require('../command.js')
 
 module.exports = class Git extends Command {
@@ -25,7 +24,7 @@ module.exports = class Git extends Command {
   }
 
   pull(bot, opts, respond) {
-    exec('git pull', (err, stdout, stderr) => {
+    exec('git pull', async (err, stdout, stderr) => {
       if (err) {
         return respond(`${Helpers.strip(err.message)} Check logs for more info`)
       }
@@ -34,17 +33,8 @@ module.exports = class Git extends Command {
         return resopnd(stdout)
       }
 
-      needle.post(LOGS_API, `text=${stdout}`, {}, (err, res) => {
-        if (err) {
-          return respond(Helpers.strip(err.message))
-        }
-
-        if (!res.body.path) {
-          return respond(`Error while uploading output to API: ${LOGS_API}`)
-        }
-
-        return respond(`Pulled in new changes from upstream. Full output: ${res.body.path}`)
-      })
+      const res = await Helpers.uploadText(stdout)
+      return respond(`Pulled in new changes from upstream. Full output: ${res.body.path}`)
     })
   }
 

@@ -3,6 +3,7 @@ const _ = require('lodash')
 const Command = require('../command.js')
 const ReplyObserver = require('../../observers/reply.js')
 const needle = require('needle')
+const Helpers = require('../../util/helpers.js')
 
 module.exports = class Reply extends Command {
 
@@ -20,6 +21,9 @@ module.exports = class Reply extends Command {
     } else if (cmd === 'stop') {
       return respond(this.disable())
     } else if (cmd === 'list') {
+      if (!opts.args[0]) {
+        return respond(`!reply list enabled OR !reply list disabled`)
+      }
       if (opts.args[0] === 'disabled') {
         const res = await this.listDisabled()
         return respond(res)
@@ -62,7 +66,7 @@ module.exports = class Reply extends Command {
         text += `\n ${row.trigger} | ${row.response} (Added by ${row.creator})`
       })
 
-    const res = await needle('post', 'http://strongco.de/api/paste', {text: text} )
+    const res = await Helpers.uploadText(text) 
 
     return `Currently enabled triggers: ${res.body.path}`
   }
