@@ -34,6 +34,10 @@ module.exports = class Mount extends Command {
       }
     }
 
+    if (!cmdString && !obsString) {
+      return respond(`Could not find module "${module}"`)
+    }
+
     return respond(`${cmdString} ${obsString}`)
   }
 }

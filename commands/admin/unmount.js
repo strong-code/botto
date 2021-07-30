@@ -34,6 +34,10 @@ module.exports = class Unmount extends Command {
         obsString = `Unmounted observer "${module}".`
       }
     }
+    
+    if (!cmdString && !obsString) {
+      return respond(`Could not find module "${module}"`)
+    }
 
     return respond(`${cmdString} ${obsString}`)
   }
