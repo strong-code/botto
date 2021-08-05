@@ -18,8 +18,9 @@ module.exports = class Gas extends Command {
 
       const avgGasInGwei = body.average / 10
       const blockTime = parseInt(body.block_time)
+      const block = body.blockNum.toLocaleString()
 
-      respond(`Average gas price is ${avgGasInGwei} gwei. Current block time is ${blockTime} seconds.`)
+      respond(`Average gas price is ${avgGasInGwei} gwei. Current block time is ${blockTime} seconds. Current block #${block}.`)
     })
   }
 
