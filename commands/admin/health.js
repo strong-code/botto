@@ -1,6 +1,8 @@
 const moment = require('moment')
 const db = require('../../util/db.js')
 const Command = require('../command.js')
+const needle = require('needle')
+const WEB_URL = 'botto.strongco.de'
 
 module.exports  = class Health extends Command {
 
@@ -20,8 +22,9 @@ module.exports  = class Health extends Command {
     const memory  = this.getMemory()
     const version = process.version
     const modules = await this.getModules()
+    const web     = await this.getWebHealth()
 
-    return `Uptime: ${uptime} | Memory: ${memory}Mb | ${modules} | Node ${version}`
+    return `Uptime: ${uptime} | Memory: ${memory}Mb | ${modules} | Node ${version} | ${WEB_URL} is ${web}`
   }
 
   getMemory() {
@@ -48,6 +51,16 @@ module.exports  = class Health extends Command {
     }
 
     return `${obsStr}, ${cmdStr}`
+  }
+
+  async getWebHealth() {
+    const res = await needle('get', WEB_URL)
+
+    if (res.statusCode === 200) {
+      return 'up [200]'
+    } else { 
+      return `down [${res.statusCode}]`
+    }
   }
 
 }
