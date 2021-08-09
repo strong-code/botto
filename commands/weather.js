@@ -36,8 +36,9 @@ module.exports = class Weather extends Command {
   }
 
   async getWeather(city) {
-    const formedUrl = baseUrl + 'access_key=' + weather.apiKey + '&query=' + city + '&units=f'
+    city = city.replace(' ', '+')
 
+    const formedUrl = baseUrl + 'access_key=' + weather.apiKey + '&query=' + city + '&units=f'
     const res = await needle('get', formedUrl, Helpers.httpOptions)
 
     if (res.statusCode != 200) {
@@ -51,9 +52,12 @@ module.exports = class Weather extends Command {
         return `Could not find weather info for location: ${city}`
       }
 
+      const wttr = await needle('get', `wttr.in/${city}?format='%c\n'`, Helpers.httpOptions)
+      current.emoji = (wttr.statusCode == 200 && wttr.body[1]) ? wttr.body[1] : ''
+
       const desc = _.toLower(current.weather_descriptions[0])
 
-      const weather = `Weather for ${loc.name}, ${loc.region}: ${current.temperature}° (feels like ${current.feelslike}°) ` +
+      const weather = `Weather for ${loc.name}, ${loc.region}: ${current.emoji} ${current.temperature}° (feels like ${current.feelslike}°) ` +
       `and ${desc} | Wind is ${current.wind_speed}mph ${current.wind_dir} | Humidity is at ${current.humidity}% ` +
       `| UV index of ${current.uv_index} | Cloud cover of ${current.cloudcover} | Visibility of ${current.visibility}`
 
