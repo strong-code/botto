@@ -13,7 +13,7 @@ module.exports = class Weather extends Command {
   }
 
   async call(bot, opts, respond) {
-    if (opts.args[0] === '') {
+    if (!opts.args[0]) {
       const city = await this.getUserLocation(opts.from)
       if (!city) {
         return respond('No city set for your nick. Set one with !weather set <city>')
@@ -29,39 +29,38 @@ module.exports = class Weather extends Command {
       const updated = await this.setLocation(opts.from, loc)
       return respond(updated)
     } else {
-      const city = _.join(opts.args, '%20')
+      const city = _.join(opts.args, '+')
       const weather = await this.getWeather(city)
       return respond(weather)
     }
   }
 
   async getWeather(city) {
-    city = city.replace(' ', '+')
-
     const formedUrl = baseUrl + 'access_key=' + weather.apiKey + '&query=' + city + '&units=f'
     const res = await needle('get', formedUrl, Helpers.httpOptions)
 
-    if (res.statusCode != 200) {
+    if (res.statusCode != 200 || !res.body.current) {
       return `Could not find weather info for location: ${city}`
-    } else {
+    }
 
-      const loc = res.body.location
-      const current = res.body.current
+    const loc = res.body.location
+    const current = res.body.current
+    const desc = _.toLower(current.weather_descriptions[0])
+    current.emoji = await this.getWeatherEmoji(city) 
 
-      if (!current || typeof current === undefined) {
-        return `Could not find weather info for location: ${city}`
-      }
+    return `Weather for ${loc.name}, ${loc.region}: ${current.emoji} ${current.temperature}° (feels like ${current.feelslike}°) ` +
+    `and ${desc} | Wind is ${current.wind_speed}mph ${current.wind_dir} | Humidity is at ${current.humidity}% ` +
+    `| UV index of ${current.uv_index} | Cloud cover of ${current.cloudcover} | Visibility of ${current.visibility}`
+  }
 
-      const wttr = await needle('get', `wttr.in/${city}?format='%c\n'`, Helpers.httpOptions)
-      current.emoji = (wttr.statusCode == 200 && wttr.body[1]) ? wttr.body[1] : ''
-
-      const desc = _.toLower(current.weather_descriptions[0])
-
-      const weather = `Weather for ${loc.name}, ${loc.region}: ${current.emoji} ${current.temperature}° (feels like ${current.feelslike}°) ` +
-      `and ${desc} | Wind is ${current.wind_speed}mph ${current.wind_dir} | Humidity is at ${current.humidity}% ` +
-      `| UV index of ${current.uv_index} | Cloud cover of ${current.cloudcover} | Visibility of ${current.visibility}`
-
-      return weather
+  // Return weather forecast emoji, or empty string if none found
+  async getWeatherEmoji(city) {
+    try {
+      const res = await needle('get', `wttr.in/${city}?format='%c\n'`, Helpers.httpOptions)
+      return res.body[1]
+    } catch (e) {
+      console.error(e)
+      return ''
     }
   }
 
@@ -85,7 +84,7 @@ module.exports = class Weather extends Command {
     const row = await db.oneOrNone('SELECT * FROM weather_locations WHERE nick = $1', [nick])
     
     if (row) {
-      return row.location
+      return row.location.replace(' ', '+')
     }
 
     return
