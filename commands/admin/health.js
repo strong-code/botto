@@ -3,6 +3,7 @@ const db = require('../../util/db.js')
 const Command = require('../command.js')
 const needle = require('needle')
 const WEB_URL = 'botto.strongco.de'
+const fs = require('fs/promises')
 
 module.exports  = class Health extends Command {
 
@@ -35,9 +36,11 @@ module.exports  = class Health extends Command {
   async getModules() {
     const observers = await db.manyOrNone('SELECT * FROM observers')
     const commands = await db.many('SELECT * FROM commands')
+    const parsers = await fs.readdir('./observers/parsers')
 
-    let obsStr = `${observers.filter(o => o.mounted).length} observers mounted`
-    let cmdStr = `${commands.filter(c => c.mounted).length} commands mounted`
+    let obsStr = `${observers.filter(o => o.mounted).length} observers`
+    let cmdStr = `${commands.filter(c => c.mounted).length} commands`
+    const parsersStr = `${parsers.length} URL parsers`
 
     const unmountedObservers = observers.filter(o => !o.mounted)
     const unmountedCommands = commands.filter(c => !c.mounted)
@@ -50,7 +53,7 @@ module.exports  = class Health extends Command {
       cmdStr += ` (${unmountedCommands.length} unmounted)`
     }
 
-    return `${obsStr}, ${cmdStr}`
+    return `${obsStr}, ${cmdStr}, ${parsersStr}`
   }
 
   async getWebHealth() {
