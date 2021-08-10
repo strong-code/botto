@@ -21,11 +21,16 @@ module.exports = class Markov extends Observer {
     }
 
     const res = await needle('post', url, data, { json: true })
-    const text = Helpers.strip(res.body.text)
-
     const limit = Math.ceil(Math.random() * 3) // 1 - 3 sentence limit
+    const text = res.body.text
+      .split('\n')
+      .filter(s => s.length > 0)
+      .map(s => s.trim()) 
+      .slice(0, limit)
+      .join(' ')
+      .substring(0, 225)
 
-    return respond(text.split('.').slice(0, limit).join('.'))
+    return respond(text)
   }
 
 }
