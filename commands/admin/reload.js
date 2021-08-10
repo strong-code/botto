@@ -31,10 +31,12 @@ module.exports = class Reload extends Command {
 
       if (numReloaded > 0) {
         return respond("Reloaded " + moduleName + " (" + numReloaded + " total)")
+      } else {
+        return respond(`No observer or command modules named "${moduleName}" found`)
       }
     } catch (e) {
       console.error(e)
-      return respond(e.message)
+      return respond(`Error reloading module "${moduleName}": ${e.message}. Check logs for more info`)
     }
   }
 }

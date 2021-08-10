@@ -13,15 +13,29 @@ module.exports = class CommandHandler {
 
   async init() {
     await db.each('SELECT * FROM commands', [], row => {
-      let reqPath = (row.admin ? './admin/' : './')
-      let cmd = new (require(`${reqPath}${row.name}.js`))();
+      let path = (row.admin ? `./admin/${row.name}` : `./${row.name}`)
+      let cmd
+
+      try {
+        cmd = new (require(path))();
+      } catch (e) {
+        console.error(e)
+        cmd = { name: row.name, admin: row.admin, mounted: false }
+      }
+
       CommandHandler.commandList[row.name] = cmd
     })
 
-    for (const v of Object.values(CommandHandler.commandList)) { await v.init() }
-    const total = Object.keys(CommandHandler.commandList).length
-    const admin = Object.values(CommandHandler.commandList).filter(x => x.admin).length
-    console.log(`Loaded ${total} total command modules (${admin} admin modules)`)
+    for (const v of Object.values(CommandHandler.commandList)) {
+      try {
+        await v.init() 
+      } catch {
+        continue
+      }
+    }
+
+    const total = Object.values(CommandHandler.commandList)
+    console.log(`Loaded ${total.length} total command modules (${total.filter(x => x.admin).length} admin modules)`)
   }
 
   route(bot, from, to, text, message) {
@@ -52,11 +66,16 @@ module.exports = class CommandHandler {
       delete CommandHandler.commandList[cmd]
       delete require.cache[require.resolve(path)]
 
-      const reloadedCommand = new (require(path))();
-      await reloadedCommand.init()
-
-      CommandHandler.commandList[cmd] = reloadedCommand
-      return true
+      try {
+        const reloadedCommand = new (require(path))();
+        await reloadedCommand.init()
+        CommandHandler.commandList[cmd] = reloadedCommand
+        return true
+      } catch (e) {
+        const reloadedCommand = { name: cmd, admin: admin, mounted: false } 
+        CommandHandler.commandList[cmd] = reloadedCommand
+        throw e 
+      } 
     }
     return false
   }
