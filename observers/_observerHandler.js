@@ -70,11 +70,16 @@ module.exports = class ObserverHandler {
       delete ObserverHandler.observerList[observer]
       delete require.cache[require.resolve(path)]
 
-      const reloadedObserver = new (require(path))();
-      await reloadedObserver.init()
-
-      ObserverHandler.observerList[observer] = reloadedObserver
-      return true
+      try {
+        const reloadedObserver = new (require(path))();
+        await reloadedObserver.init()
+        ObserverHandler.observerList[observer] = reloadedObserver
+        return true
+      } catch (e) {
+        const reloadedObserver = { name: observer, mounted: false }
+        ObserverHandler.observerList[observer] = reloadedObserver
+        throw e
+      }
     }
 
     return false
