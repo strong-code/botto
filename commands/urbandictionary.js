@@ -1,6 +1,4 @@
-const _ = require('lodash')
 const needle = require('needle')
-const baseUrl = 'http://api.urbandictionary.com/v0/define?term='
 const Command = require('./command.js')
 const Helpers = require('../util/helpers.js')
 
@@ -11,33 +9,27 @@ module.exports = class UrbanDictionary extends Command {
   }
 
   call(bot, opts, respond) {
-    if (_.isEmpty(opts.args)) {
+    if (!opts.args) {
       return respond('Usage is !ud <phrase>')
     } else {
       return this.getDefinition(opts.args, respond)
     }
   }
 
-  getDefinition(phraseArray, respond) {
-    const phrase = _.join(phraseArray, ' ')
-    const apiUrl = baseUrl + _.join(phraseArray, '+')
+  async getDefinition(phraseArray, respond) {
+    const phrase = phraseArray.join('+')
+    const apiUrl = `http://api.urbandictionary.com/v0/define?term=${phrase}`
 
-    return needle.get(apiUrl, Helpers.httpOptions, (err, res) => {
-      if (err) {
-        return respond(err.message)
-      }
+    const res = await needle('get', apiUrl, Helpers.httpOptions)
 
-      if (!res.body.list) {
-        return respond('No definition found for: ' + phrase)
-      }
-      
-      const upper = res.body.list.length - 1
-      const item = res.body.list[_.random(0, upper)]
-      if (item) {
-        return respond(phrase + ': ' + item.definition + '. Example: ' + item.example)
-      }
+    if (!res.body.list) {
+      return respond(`No definition found for: ${phrase}`)
+    }
+    
+    const item = res.body.list[0]
+    const desc = Helpers.strip(Helpers.truncate(item.definition, 200, '...'))
+    const example = Helpers.strip(Helpers.truncate(item.example, 100, '...'))
 
-      return respond('No definition found for: ' + phrase)
-    })
+    return respond(`${phrase}: ${desc} Example: ${example}`)
   }
 }
