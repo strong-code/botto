@@ -38,4 +38,12 @@ module.exports = class Helpers {
     return needle('post', STRONGCODE_API, `text=${text}`)
   }
 
+  static truncate(str, length, trail = '') {
+    if (length >= str.length) {
+      return str
+    }
+
+    return `${str.substr(0, length)}${trail}`
+  }
+
 }
