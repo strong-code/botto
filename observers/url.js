@@ -48,7 +48,8 @@ module.exports = class Url extends Observer {
         let info = await p.parse(url)
         return respond(info)
       } catch (e) {
-        console.log(`Error in parser: ${pageParser}\n  ${e.message}`)
+        console.log(`Error in parser: ${pageParser}`)
+        console.error(e)
         this.parsePage(url.href, opts, (info) => respond(info))
       }
     } else {
