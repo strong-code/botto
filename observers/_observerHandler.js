@@ -43,7 +43,6 @@ module.exports = class ObserverHandler {
 
         if (observer.callable(opts)) {
           observer.call(opts, (response) => {
-            console.log(`[${observer.name}] observer triggered in ${opts.to} by ${opts.from}\n  -> "${response}"`)
             this.#logEvent(observer, opts, response)
             return bot.say(receiver, response)
           })
@@ -57,6 +56,7 @@ module.exports = class ObserverHandler {
   }
 
   #logEvent(observer, opts, response) {
+    console.log(`[${observer.name.toUpperCase()}] observer triggered in ${opts.to} by ${opts.from}\n  -> "${response}"`)
     db.none(
       'INSERT INTO observer_events (time, observer_id, message, nick, sent_to, response) VALUES ($1, $2, $3, $4, $5, $6)',
       [new Date().toISOString(), observer.id, opts.text, opts.from, opts.to, response]

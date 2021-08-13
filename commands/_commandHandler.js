@@ -44,7 +44,6 @@ module.exports = class CommandHandler {
 
     if (cmd && cmd.mounted) {
       return cmd.call(bot, opts, (response) => {
-        console.log(`[${opts.command.toUpperCase()}] command triggered in ${opts.to} by ${opts.from}\n  -> "${response}"`)
         this.#logEvent(cmd, opts, response)
         return bot.say(opts.to, response)
       }) 
@@ -52,6 +51,7 @@ module.exports = class CommandHandler {
   }
 
   #logEvent(cmd, opts, response) {
+    console.log(`[${opts.command.toUpperCase()}] command triggered in ${opts.to} by ${opts.from}\n  -> "${response}"`)
     db.none(
       'INSERT INTO command_events (time, command_id, message, nick, sent_to, response) VALUES ($1, $2, $3, $4, $5, $6)',
       [new Date().toISOString(), cmd.id, opts.text, opts.from, opts.to, response]
