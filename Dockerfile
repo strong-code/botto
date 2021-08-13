@@ -13,6 +13,4 @@ COPY . .
 EXPOSE 6697/tcp
 EXPOSE 5432/tcp
 
-ENV DB_HOST=172.17.0.1
-
-CMD ["node" "botto.js"] 
+CMD ["node", "botto.js"] 

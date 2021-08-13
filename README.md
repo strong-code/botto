@@ -81,3 +81,11 @@ module.exports = function(opts, respond) {
 Enter psql prompt with `psql -d botto`.
 
 Import the schema (from psql) with `\i db/schema.sql`. Old tables will be skipped.
+
+### Docker
+
+Build with `docker build -t botto .` in project dir.
+Run with `docker run -d --net="host" --name botto botto`
+Tail logs with `docker logs -tf botto`
+Attach with `docker attach --sig-proxy=false botto` for running procs on container with botto still up (e.g. `top`)
+Prune old images/containers with `docker (image|container) prune`
