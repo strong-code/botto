@@ -35,7 +35,6 @@ ${new Array(35).join('-')}
 
 bot.addListener("message", function(_from, to, text, msg) {
   console.log(` <- [${to}] ${_from}: ${text}`)
-  // console.log(  "[" + to + "] " + _from + ": " + text)
 
   try {
     if (!Ignore.isIgnored(_from)) {  
