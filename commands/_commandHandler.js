@@ -14,26 +14,11 @@ module.exports = class CommandHandler {
   async init() {
     await db.each('SELECT * FROM commands', [], row => {
       let path = (row.admin ? `./admin/${row.name}` : `./${row.name}`)
-      let cmd
-
-      try {
-        cmd = new (require(path))();
-      } catch (e) {
-        console.error(e)
-        cmd = { name: row.name, admin: row.admin, mounted: false }
-      }
-
+      let cmd = new (require(path))();
       CommandHandler.commandList[row.name] = cmd
     })
 
-    for (const v of Object.values(CommandHandler.commandList)) {
-      try {
-        await v.init() 
-      } catch {
-        continue
-      }
-    }
-
+    for (const v of Object.values(CommandHandler.commandList)) { await v.init() }
     const total = Object.values(CommandHandler.commandList)
     console.log(`Loaded ${total.length} total command modules (${total.filter(x => x.admin).length} admin modules)`)
   }
