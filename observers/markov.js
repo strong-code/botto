@@ -12,7 +12,7 @@ module.exports = class Markov extends Observer {
   async call(opts, respond) {
     const url = 'https://bellard.org/textsynth/api/v1/engines/gptj_6B/completions'
     const data = {
-      prompt: opts.text.replace('botto', ''),
+      prompt: opts.text,
       seed: 0,
       stream: false,
       temperature: 1,
@@ -28,7 +28,7 @@ module.exports = class Markov extends Observer {
       .map(s => s.trim()) 
       .slice(0, limit)
       .join(' ')
-      .substring(0, 225)
+      // .substring(0, 225)
 
     return respond(text)
   }
