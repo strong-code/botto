@@ -12,9 +12,7 @@ module.exports = class News extends Command {
     let apiUrl = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${apiKey}`
 
     if (opts.args[0] !== '') {
-      apiUrl += `country=us&apiKey=${apiKey}`
-    } else {
-      apiUrl += `q=${opts.args.join(' ')}&apiKey=${apiKey}`
+      apiUrl += `q=${opts.args.join(' ')}`
     }
 
     const news = await this.fetchNews(apiUrl)
@@ -33,9 +31,16 @@ module.exports = class News extends Command {
 
     for (let i = 0; i < limit; i++) {
       let article = res.body.articles[i]
-      str += `${article.title} (${article.source.name}) | `
+      let shortUrl = await this.shorten(article.url)
+      str += `${article.title} (${article.source.name}) ${shortUrl} | `
     }
 
     return str
+  }
+
+  async shorten(url) {
+    const shortenerUrl = 'http://strongco.de/api/shorten'
+    const res = await needle('post', shortenerUrl, {url: url}, {json: true})
+    return res.body.url
   }
 }
