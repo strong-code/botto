@@ -12,7 +12,7 @@ module.exports = class News extends Command {
     let apiUrl = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${apiKey}`
 
     if (opts.args[0] !== '') {
-      apiUrl += `q=${opts.args.join(' ')}`
+      apiUrl += `&q=${opts.args.join(' ')}`
     }
 
     const news = await this.fetchNews(apiUrl)
@@ -26,16 +26,20 @@ module.exports = class News extends Command {
       return `Error fetching news: ${res.body.message}`
     }
 
-    let str = ''
+    if (res.body.articles.length === 0) {
+      return `Unable to find any relevant headlines for "${url.split('&q=')[1]}"`
+    }
+
+    const news = []
     const limit = Math.min(3, res.body.articles.length)
 
     for (let i = 0; i < limit; i++) {
       let article = res.body.articles[i]
       let shortUrl = await this.shorten(article.url)
-      str += `${article.title} (${article.source.name}) ${shortUrl} | `
+      news.push(`${article.title} (${article.source.name}) ${shortUrl}`)
     }
 
-    return str
+    return news.join(' | ')
   }
 
   async shorten(url) {
