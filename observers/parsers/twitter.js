@@ -14,7 +14,7 @@ module.exports = {
     }
 
     try {
-      const tweetId = url.path.split('/')[3]
+      const tweetId = url.pathname.split('/')[3]
       const response = await T.get('statuses/show/:id', { id: tweetId, tweet_mode: 'extended' })
       const data = response.data
       const text = data.full_text.replace(/\r?\n|\r/g, ' ')
