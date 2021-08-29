@@ -14,6 +14,7 @@ module.exports = {
     'dict': 'dictionary',
     'np': 'nowplaying',
     'ud': 'urbandictionary',
-    'wiki': 'wikipedia'
+    'wiki': 'wikipedia',
+    'n': 'news'
   }
 }
