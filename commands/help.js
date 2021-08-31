@@ -13,7 +13,8 @@ module.exports = class Help extends Command {
         console.error(error)
         return respond(`Error uploading help text. Please notify an admin`)
       } else {
-        return respond(`Help is on the way: ${stdout}`)
+        const res = JSON.parse(stdout)
+        return respond(`Help is on the way: ${res.path}`)
       }
     })
   }
