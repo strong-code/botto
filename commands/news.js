@@ -36,7 +36,7 @@ module.exports = class News extends Command {
     for (let i = 0; i < limit; i++) {
       let article = res.body.articles[i]
       let shortUrl = await this.shorten(article.url)
-      news.push(`${article.title} (${article.source.name}) ${shortUrl}`)
+      news.push(`${article.title} ${shortUrl}`)
     }
 
     return news.join(' | ')
