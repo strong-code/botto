@@ -24,8 +24,9 @@ module.exports = {
     const gallery = res.body.data
     const imgCount = (gallery.images.length > gallery.images_count) ? gallery.images.length : gallery.images_count
     const datetime = new Date(gallery.datetime * 1000).toLocaleString().split(',')[0]
+    const title = gallery.title ? gallery.title : 'Untitled'
 
-    return `[Imgur] ${gallery.title} | ${imgCount} images | ${gallery.views} views ` +
+    return `[Imgur] ${title} | ${imgCount} images | ${gallery.views} views ` +
     `| posted ${datetime}`
   }
 
