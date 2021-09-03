@@ -1,5 +1,6 @@
 const db = require('../util/db.js')
 const Helpers = require('../util/helpers.js')
+const aliases = require('../util/aliases.js')
 
 /*
  * Command handler responsible for routing commands. These include admin only
@@ -66,11 +67,7 @@ module.exports = class CommandHandler {
   }
 
   #respondsTo(command) {
-    const alias = require('../util/aliases.js').aliases[command]
-    if (typeof alias !== 'undefined') {
-      return alias
-    }
-    return command
+    return aliases[command] || command
   }
 
   #makeOptions(bot, from, to, text, message) {

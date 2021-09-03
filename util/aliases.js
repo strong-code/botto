@@ -2,19 +2,17 @@
 // i.e. call `!eth` for the `ether.js` module
 
 module.exports = {
-  aliases: {
-    'g': 'google',
-    'w': 'weather',
-    'r': 'reload',
-    'gif': 'giphy',
-    'c': 'crypto',
-    's': 'stock',
-    'd': 'dictionary',
-    'define': 'dictionary',
-    'dict': 'dictionary',
-    'np': 'nowplaying',
-    'ud': 'urbandictionary',
-    'wiki': 'wikipedia',
-    'n': 'news'
-  }
+  'g': 'google',
+  'w': 'weather',
+  'r': 'reload',
+  'gif': 'giphy',
+  'c': 'crypto',
+  's': 'stock',
+  'd': 'dictionary',
+  'define': 'dictionary',
+  'dict': 'dictionary',
+  'np': 'nowplaying',
+  'ud': 'urbandictionary',
+  'wiki': 'wikipedia',
+  'n': 'news'
 }
