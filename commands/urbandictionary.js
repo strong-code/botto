@@ -22,8 +22,8 @@ module.exports = class UrbanDictionary extends Command {
 
     const res = await needle('get', apiUrl, Helpers.httpOptions)
 
-    if (!res.body.list) {
-      return respond(`No definition found for: ${phrase}`)
+    if (!res.body.list || res.body.list.length == 0) {
+      return respond(`No definition found for "${phraseArray.join(' ')}"`)
     }
     
     const item = res.body.list[0]
