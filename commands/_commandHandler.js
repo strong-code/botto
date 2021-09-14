@@ -74,7 +74,7 @@ module.exports = class CommandHandler {
     return {
       from: from,
       to: to,
-      command: this.#respondsTo(String(text.split(' ')[0]).replace('!', '').trim()),
+      command: this.#respondsTo(String(text.split(' ')[0]).replace('!', '').trim().toLowerCase()),
       args: text.substring(String(text.split(' ')[0]).length).trim().split(' '),
       raw: message,
       text: text
