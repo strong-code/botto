@@ -12,7 +12,7 @@ A very advanced robot
 
 3. Edit `config.js` according to `example.config.js` in the root directory
 
-4. Seed the database with [seed.sql](db/seed.sql), or comment out any modules you do not want (note: you can also !unmount them while botto is running)
+4. Bring up a fresh postgres database with [schema.sql](db/schema.sql). Seed the database with [seed.sql](db/seed.sql), commenting out any modules you do not want (note: you can also !unmount them while botto is running)
 
 5. Launch your botto with `node botto.js`
 
