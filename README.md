@@ -12,7 +12,9 @@ A very advanced robot
 
 3. Edit `config.js` according to `example.config.js` in the root directory
 
-4. Launch your botto with `node botto.js`
+4. Seed the database with [seed.sql](db/seed.sql), or comment out any modules you do not want (note: you can also !unmount them while botto is running)
+
+5. Launch your botto with `node botto.js`
 
 # Design
 
