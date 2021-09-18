@@ -81,7 +81,8 @@ module.exports = class Reply extends Command {
         text += `\n ${row.trigger} | ${row.response} (Added by ${row.creator})`
       })
 
-    const res = await needle('post', 'http://strongco.de/api/paste', {text: text} )
+    // const res = await needle('post', 'http://strongco.de/api/paste', {text: text} )
+    const res = await Helpers.uploadText(text)
 
     return `Currently disabled triggers: ${res.body.path}`
 
