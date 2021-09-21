@@ -43,7 +43,7 @@ module.exports = class News extends Command {
   }
 
   async shorten(url) {
-    const shortenerUrl = 'http://strongco.de/api/shorten'
+    const shortenerUrl = 'https://strongco.de/api/shorten'
     const res = await needle('post', shortenerUrl, {url: url}, {json: true})
     return res.body.url
   }
