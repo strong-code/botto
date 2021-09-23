@@ -4,6 +4,7 @@ const Command = require('../command.js')
 const needle = require('needle')
 const WEB_URL = 'botto.strongco.de'
 const fs = require('fs/promises')
+const { execSync } = require('child_process')
 
 module.exports  = class Health extends Command {
 
@@ -24,8 +25,10 @@ module.exports  = class Health extends Command {
     const version = process.version
     const modules = await this.getModules()
     const web     = await this.getWebHealth()
+    const branch  = this.getGitBranch()
 
-    return `Uptime: ${uptime} | Memory: ${memory}Mb | ${modules} | Node ${version} | ${WEB_URL} is ${web}`
+    return `Uptime: ${uptime} | Memory: ${memory}Mb | ${modules} | ` +
+      `Node ${version} | Git branch ${branch} | ${WEB_URL} is ${web}`
   }
 
   getMemory() {
@@ -64,6 +67,11 @@ module.exports  = class Health extends Command {
     } else { 
       return `down [${res.statusCode}]`
     }
+  }
+
+  getGitBranch() {
+    const branch = execSync('git branch --show-current')
+    return branch.toString().trim()
   }
 
 }

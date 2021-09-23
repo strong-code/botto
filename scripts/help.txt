@@ -1,51 +1,84 @@
 Botto Usage Instructions
 
+All arguments in <carrets> are required, and arguments in [braces] are optional
+
 ------------------------
 PUBLIC COMMANDS
 ------------------------
 
-!google <query>
-Get the top Google search result.
+!admins
+List all admins for current channel along with global admins for botto.
+
+!checkem <nick>
+Tells <nick> to check your attempt at getting dubs.
+
+!crypto [token]
+Check the current price, market cap and market movements of a given token ticker (e.g. BTC, ETH, etc).
+
+!decide <option 1> (or) [option 2]
+Decides yes or no given only one option. Decides between multiple options seperated by 'or'.
+
+!dictionary <word>
+Returns a dictionary entry for a given word.
+
+!gas
+Returns current gas prices and block times for the Ethereum network.
+
+!giphy <term>
+Returns a link to a gif matching the supplied term.
+
+!google [index] <query>
+Returns the top Google search result by default. If an index is supplied, returns that numbered result.
+
+!help
+Returns this text.
+
+!news [query]
+Returns the top headlines from US sources currently released. If a query is supplied, returns up to 3 
+matching headlines. Includes URLs to source articles.
+
+!nowplaying [add <nick>] 
+Returns the last song scrobbled from Last.fm for a registered username. Users can register their Last.fm 
+username to their IRC nick with !nowplaying add <nick>.
 
 !ping
-Respond with "PONG $NICKNAME" to you.
+Responds with "$NICKNAME: PONG" to you.
 
-!twitter <username> < number | random >
+!points [nick]
+Checks the points for a supplied nick, or for yourself if no nick is given.
+
+!remind <count> <unit> <message>
+Reminds you to perform <message> in <count> <units>. For example:
+  !remind 30 seconds Stand up and walk around
+  !remind 2 hours Start cooking dinner
+
+!shout [nick]
+Returns a shout quote from a supplied nick, or at random if no nick is supplied.
+
+!stock <ticker>
+Returns price, volume and percentage change data for a given ticker.
+
+!tell <nick> <message>
+Adds a <message> to botto's tell cache for a given <nick>. The next time botto sees that <nick> chatting,
+he will send your message to them.
+
+!twitter <username> [number | random]
 number: Respond with the specified tweet for that user.
 random: Respond with a random tweet for that user.
 
-!eth
-Get current value of Ether in US Dollars.
+!up <website>
+Will check if supplied <website> is up and which HTTP status code it returns.
 
-!eth val <amount>
-Get current value of a specific number of Ether in US Dollars.
+!urbandictionary <term>
+Returns a matching UrbanDictionary definition for supplied <term>.
 
-!weather <city>
-Get current weather conditions of a city.
+!weather [city]
+Get current weather conditions of a city. If no city is supplied, return the conditions for a user's set
+location. Users can set a location to their nick with:
+  !weather set <city>
 
-!shout
-Get a random shout quote.
-
-!shout <nick>
-Get a random shout quote for a specified nick.
-
-!grep <query>
-Return all instances of <query> found in log files for the current channel.
-
-!giphy <query>
-Return a random gif that matches your query.
-
-!reply add foo <reply> bar
-Add a reply 'bar' for trigger 'foo'. The <reply> is literal and must be used as
-a separator for the trigger and response.
-
-!duckhunt
-Begins a game of duckhunt, in which the "duck" will randomly appear in the channel,
-and the first person to write 'bang' after it appears wins the round.
-
-!tell <nick> <message>
-This will store a message for <nick> until the next time they talk. Helpful if you need
-to tell someone something but they are offline.
+!wikipedia <term>
+Returns the matching Wikipedia entry for <term>.
 
 ------------------------
 OBSERVERS
@@ -59,7 +92,18 @@ Duplicates are ignored.
 EPIC: The word "epic" will spew an unintelligible collection of bullshit. Do not
 try this.
 
-tell: If you have a message waiting for you, botto will ping you and display the message once you talk.
+TELL: If you have a message waiting for you, botto will ping you and display the message once you talk.
+
+POINTS: Any <nick>++ will gain a point. Any <nick>-- will lose a point.
+
+SED: Users can edit previous lines spoken. For example, if they previously typed:
+  The movie starst in 15 minutes
+They can edit it with:
+  s/starst/starts
+The sed command will take entire valid regex selectors.
+
+MARKOV: any line with the term 'botto' in it will trigger a GPT-2 response using the triggering line 
+as input.
 
 ------------------------
 ADMIN/CORE COMMANDS

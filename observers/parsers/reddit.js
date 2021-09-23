@@ -25,7 +25,7 @@ module.exports = {
     const date = new Date(t.created*1000).toLocaleString().split(' ')[0].slice(0,-1)
 
     return `[Reddit] ${t.subreddit_name_prefixed}: "${t.title}" posted by u/${t.author.name} on ${date} `+
-      `| ${t.comments.length} comments | ${t.ups}↑ - ${t.downs}↓` 
+      `| ${t.comments.length.toLocaleString()} comments | ${t.ups.toLocaleString()}↑ - ${t.downs.toLocaleString()}↓` 
   },
 
   parseSubreddit: async function(subreddit) {

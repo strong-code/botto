@@ -1,5 +1,6 @@
 const db = require('../util/db.js')
 const Helpers = require('../util/helpers.js')
+const aliases = require('../util/aliases.js')
 
 /*
  * Command handler responsible for routing commands. These include admin only
@@ -14,26 +15,11 @@ module.exports = class CommandHandler {
   async init() {
     await db.each('SELECT * FROM commands', [], row => {
       let path = (row.admin ? `./admin/${row.name}` : `./${row.name}`)
-      let cmd
-
-      try {
-        cmd = new (require(path))();
-      } catch (e) {
-        console.error(e)
-        cmd = { name: row.name, admin: row.admin, mounted: false }
-      }
-
+      let cmd = new (require(path))();
       CommandHandler.commandList[row.name] = cmd
     })
 
-    for (const v of Object.values(CommandHandler.commandList)) {
-      try {
-        await v.init() 
-      } catch {
-        continue
-      }
-    }
-
+    for (const v of Object.values(CommandHandler.commandList)) { await v.init() }
     const total = Object.values(CommandHandler.commandList)
     console.log(`Loaded ${total.length} total command modules (${total.filter(x => x.admin).length} admin modules)`)
   }
@@ -81,18 +67,14 @@ module.exports = class CommandHandler {
   }
 
   #respondsTo(command) {
-    const alias = require('../util/aliases.js').aliases[command]
-    if (typeof alias !== 'undefined') {
-      return alias
-    }
-    return command
+    return aliases[command] || command
   }
 
   #makeOptions(bot, from, to, text, message) {
     return {
       from: from,
       to: to,
-      command: this.#respondsTo(String(text.split(' ')[0]).replace('!', '').trim()),
+      command: this.#respondsTo(String(text.split(' ')[0]).replace('!', '').trim().toLowerCase()),
       args: text.substring(String(text.split(' ')[0]).length).trim().split(' '),
       raw: message,
       text: text

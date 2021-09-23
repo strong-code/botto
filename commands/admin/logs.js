@@ -44,11 +44,11 @@ module.exports = class Logs extends Command {
     return exec(cmd, (e, out, err) => {
       if (e) {
         console.log(e.message)
-        return respond('Ironically, something went wrong and you need to check logs', true)
+        return respond('Ironically, something went wrong and you need to check logs')
       }
       if (err) {
         console.log('Error retrieving local logs: ' + err)
-        return respond(err, true)
+        return respond(err)
       }
 
       this.uploadLogs(out, (url) => respond(url))

@@ -22,9 +22,11 @@ module.exports = {
     const res = await needle('get', `https://api.imgur.com/3/album/${albumId}`, auth)
 
     const gallery = res.body.data
+    const imgCount = (gallery.images.length > gallery.images_count) ? gallery.images.length : gallery.images_count
     const datetime = new Date(gallery.datetime * 1000).toLocaleString().split(',')[0]
+    const title = gallery.title ? gallery.title : 'Untitled'
 
-    return `[Imgur] ${gallery.title} | ${gallery.images_count} images | ${gallery.views} views ` +
+    return `[Imgur] ${title} | ${imgCount} images | ${gallery.views} views ` +
     `| posted ${datetime}`
   }
 

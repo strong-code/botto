@@ -22,6 +22,10 @@ module.exports = {
     const res = await needle('get', apiUrl, config.options)
     const m = res.body
 
+    if (m.Error) {
+      return m.Error
+    }
+
     return `[IMDB] "${m.Title}" (${m.Year}) | ${m.Rated} | ${m.Runtime} | ${m.Genre} |`+
       ` ★ ${m.imdbRating} | Directed by ${m.Director} | ${m.Plot}`
   }
