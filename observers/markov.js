@@ -5,7 +5,7 @@ const Helpers = require('../util/helpers.js')
 module.exports = class Markov extends Observer {
 
   constructor() {
-    const regex = new RegExp(/^.*botto.*$/i)
+    const regex = new RegExp(/(^|.*\s)botto(\s.*|$)/i)
     super('markov', regex)
   }
   
@@ -24,8 +24,8 @@ module.exports = class Markov extends Observer {
     const limit = Math.ceil(Math.random() * 3) // 1 - 3 sentence limit
     const text = res.body.text
       .split('\n')
-      .filter(s => s.length > 0)
       .map(s => s.trim()) 
+      .filter(s => s.length > 0)
       .slice(0, limit)
       .join(' ')
       // .substring(0, 225)
