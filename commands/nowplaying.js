@@ -35,7 +35,7 @@ module.exports = class NowPlaying extends Command {
       const artist     = nowPlaying.artist['#text']
       const track      = nowPlaying.name
       const album      = nowPlaying.album['#text']
-      const date       = nowPlaying.date ? `(at ${nowPlaying.date['#text']}` : `` // sometimes we dont get date info back
+      const date       = nowPlaying.date ? `(at ${nowPlaying.date['#text']})` : `` // sometimes we dont get date info back
 
       return respond(`♬ ${ircNick} is listening to "${track}" by ${artist} off of "${album}" ♬ ${date}`)
     } catch (e) {
