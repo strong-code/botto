@@ -2,6 +2,8 @@ const MAX_MSG_CACHE_LENGTH = 100
 
 module.exports = class MessageCache {
 
+  constructor() {}
+
   static #MSG_CACHE = {}
 
   static put(from, to, text, time) {
