@@ -5,6 +5,7 @@ const irc = require('irc');
 const commandHandler = new (require('./commands/_commandHandler.js'))();
 const observerHandler = new (require('./observers/_observerHandler.js'))();
 const Ignore = require('./commands/admin/ignore.js');
+const MsgCache = require('./util/messageCache.js');
 
 // Preload the observerHandler and commandHandler
 (async () => {
@@ -35,6 +36,8 @@ ${new Array(35).join('-')}
 
 bot.addListener("message", function(_from, to, text, msg) {
   console.log(` <- [${to}] ${_from}: ${text}`)
+
+  MsgCache.put(_from, to, text, new Date().toISOString())
 
   try {
     if (!Ignore.isIgnored(_from)) {  
