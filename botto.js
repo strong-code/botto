@@ -34,19 +34,19 @@ console.log(`${new Array(35).join('-')}` +
 ${new Array(35).join('-')}
 `)
 
-bot.addListener("message", function(_from, to, text, msg) {
-  console.log(` <- [${to}] ${_from}: ${text}`)
+bot.addListener("message", function(from, to, text, msg) {
+  console.log(` <- [${to}] ${from}: ${text}`)
 
-  MsgCache.put(_from, to, text, new Date().toISOString())
+  MsgCache.put(from, to, text, new Date().toISOString())
 
   try {
-    if (!Ignore.isIgnored(_from)) {  
+    if (!Ignore.isIgnored(from)) {  
       if (text[0] === '!') {
         // Delegate explicit commands starting with a !bang to the handler
-        commandHandler.route(bot, _from, to, text, msg)
+        commandHandler.route(bot, from, to, text, msg)
       }
       // Delegate observables (keywords, mentions, etc) to the handler
-      observerHandler.route(bot, _from, to, text, msg)
+      observerHandler.route(bot, from, to, text, msg)
     }
   } catch (e) {
     console.error(e)
