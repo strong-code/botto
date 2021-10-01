@@ -22,6 +22,7 @@ VALUES
   ('twitter'),
   ('up'),
   ('urbandictionary'),
+  ('version'),
   ('weather'),
   ('wikipedia');
 
