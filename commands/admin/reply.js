@@ -2,7 +2,6 @@ const db = require('../../util/db.js')
 const _ = require('lodash')
 const Command = require('../command.js')
 const ReplyObserver = require('../../observers/reply.js')
-const needle = require('needle')
 const Helpers = require('../../util/helpers.js')
 
 module.exports = class Reply extends Command {
@@ -81,7 +80,6 @@ module.exports = class Reply extends Command {
         text += `\n ${row.trigger} | ${row.response} (Added by ${row.creator})`
       })
 
-    // const res = await needle('post', 'http://strongco.de/api/paste', {text: text} )
     const res = await Helpers.uploadText(text)
 
     return `Currently disabled triggers: ${res.body.path}`
