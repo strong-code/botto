@@ -14,10 +14,10 @@ module.exports = class MessageCache {
     }
 
     if (this.#MSG_CACHE[to].length >= MAX_MSG_CACHE_LENGTH) {
-      this.#MSG_CACHE[to].shift()
+      this.#MSG_CACHE[to].pop()
     }
 
-    this.#MSG_CACHE[to].push(msg)
+    this.#MSG_CACHE[to].unshift(msg)
   }
 
   static get(to) {
