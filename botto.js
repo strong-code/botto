@@ -44,9 +44,10 @@ bot.addListener("message", function(from, to, text, msg) {
       if (text[0] === '!') {
         // Delegate explicit commands starting with a !bang to the handler
         commandHandler.route(bot, from, to, text, msg)
+      } else {
+        // Delegate observables (keywords, mentions, etc) to the handler
+        observerHandler.route(bot, from, to, text, msg)
       }
-      // Delegate observables (keywords, mentions, etc) to the handler
-      observerHandler.route(bot, from, to, text, msg)
     }
   } catch (e) {
     console.error(e)
