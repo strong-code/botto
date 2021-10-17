@@ -2,6 +2,7 @@ const snoowrap = require('snoowrap')
 const config = require('../../config.js').url.reddit
 const r = new snoowrap(config)
 const needle = require('needle')
+const Colors = require('irc').colors
 
 module.exports = {
 
@@ -23,9 +24,11 @@ module.exports = {
   parseThread: async function(thread) {
     const t = await r.getSubmission(thread).fetch()
     const date = new Date(t.created*1000).toLocaleString().split(' ')[0].slice(0,-1)
+    const formattedUps = Colors.wrap('light_green', `${t.ups.toLocaleString()} ↑`)
+    const formattedDowns = Colors.wrap('light_red', `${t.downs.toLocaleString()} ↓`)
 
-    return `[Reddit] ${t.subreddit_name_prefixed}: "${t.title}" posted by u/${t.author.name} on ${date} `+
-      `| ${t.comments.length.toLocaleString()} comments | ${t.ups.toLocaleString()}↑ - ${t.downs.toLocaleString()}↓` 
+    return `[${Colors.wrap('orange', 'Reddit')}] ${t.subreddit_name_prefixed}: "${t.title}" posted by u/${t.author.name}`
+      +` on ${date} | ${t.comments.length.toLocaleString()} comments | ${formattedUps} ${formattedDowns}`
   },
 
   parseSubreddit: async function(subreddit) {

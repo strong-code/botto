@@ -4,6 +4,7 @@ const config = require('../../config').url
 const client = require('amazon-paapi')
 const _ = require('lodash')
 const ratingsUrl = 'https://amazon.com/gp/customer-reviews/widgets/average-customer-review/popover/ref=dpx_acr_pop_?contextId=dpx&asin='
+const Colors = require('irc').colors
 
 module.exports = {
 
@@ -30,7 +31,7 @@ module.exports = {
     const price = item.Offers.Listings[0].Price.Amount
     const desc = _.truncate(item.ItemInfo.Title.DisplayValue, {length: 120})
         
-    let info = `[Amazon] $${price} | `
+    let info = `[${Colors.wrap('orange', 'Amazon')}] $${price} | `
 
     try {
       const res = await needle('get', ratingsUrl + asin, config.options)
@@ -42,7 +43,7 @@ module.exports = {
         throw new Error('Triggered bot detection on ratings URL, ignoring')
       }
 
-      info += `★ ${stars} (${ratings} ratings) | `
+      info += `${Colors.wrap('yellow', `★ ${stars}`)} (${ratings} ratings) | `
     } catch (error) {
       console.log(`Unable to fetch ratings from ratingsUrl\n  ${error.message}`)
     }

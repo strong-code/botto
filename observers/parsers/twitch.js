@@ -4,6 +4,7 @@ const { ApiClient } = require('twitch')
 const { ClientCredentialsAuthProvider } = require('twitch-auth')
 const authProvider = new ClientCredentialsAuthProvider(config.clientId, config.clientSecret)
 const client = new ApiClient({ authProvider })
+const Colors = require('irc').colors
 
 module.exports = {
 
@@ -42,7 +43,8 @@ module.exports = {
     }
 
     const viewers = stream.viewer_count.toLocaleString()
-    return `[Twitch] ${stream.user_name} is playing ${stream.game_name}: "${stream.title}" | ${viewers} viewers (LIVE)`
+    return `[${Colors.wrap('magenta', 'Twitch')}] ${stream.user_name} is playing ${stream.game_name}: `
+      +`"${stream.title}" | ${viewers} viewers (${Colors.wrap('light_red', 'LIVE')})`
   },
 
   clipData: async function(url) {
@@ -57,7 +59,8 @@ module.exports = {
 
     const views = clip.view_count.toLocaleString()
     const date = new Date(clip.created_at).toDateString()
-    return `[Twitch] "${clip.title.trim()}" from ${clip.broadcaster_name} | ${views} views | Clipped on ${date}`
+    return `[${Colors.wrap('magenta', 'Twitch')}] "${clip.title.trim()}" from ${clip.broadcaster_name} |`
+      +` ${views} views | Clipped on ${date}`
   },
 
   transformClipUrl: function(url) {

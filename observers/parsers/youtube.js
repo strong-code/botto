@@ -4,6 +4,7 @@ const config = require('../../config').url
 const moment = require('moment')
 const API_BASE = 'https://www.googleapis.com/youtube/v3'
 const API_KEY = config.youtube.apiKey
+const Colors = require('irc').colors
 
 module.exports = {
 
@@ -55,8 +56,9 @@ module.exports = {
     const dislikes = Number(data.statistics.dislikeCount).toLocaleString()
     const duration = module.exports.formatDuration(data.contentDetails.duration)
 
-    return `[YouTube] "${data.snippet.title}" by ${data.snippet.channelTitle} `
-    +`| ${date} | ${duration} long | ${views} views | ${likes} ↑ - ${dislikes} ↓`
+    return `[${Colors.wrap('light_red', 'YouTube')}] "${data.snippet.title}" by ${data.snippet.channelTitle} `
+    +`| ${date} | ${duration} long | ${views} views | `
+    +`${Colors.wrap('light_green', `${likes} ↑`)} ${Colors.wrap('light_red', `${dislikes} ↓`)}`
   },
 
   extractVideoId: function(url) {

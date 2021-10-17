@@ -1,6 +1,7 @@
 const needle = require('needle')
 const clientId = require('../../config.js').imgur.clientId
 const auth = { headers: { 'Authorization': `Client-ID ${clientId}` } }
+const Colors = require('irc').colors
 
 module.exports = {
 
@@ -26,8 +27,8 @@ module.exports = {
     const datetime = new Date(gallery.datetime * 1000).toLocaleString().split(',')[0]
     const title = gallery.title ? gallery.title : 'Untitled'
 
-    return `[Imgur] ${title} | ${imgCount} images | ${gallery.views} views ` +
-    `| posted ${datetime}`
+    return `[${Colors.wrap('light_green', 'Imgur')}] ${title} | ${imgCount} images | `
+      +`${gallery.views.toLocaleString()} views | posted ${datetime}`
   }
 
 }
