@@ -1,10 +1,10 @@
 const Observer = require('./observer.js')
 const MsgCache = require('../util/messageCache.js')
+const regex = new RegExp(/^s\/(.+)\/(.*)$/)
 
 module.exports = class Sed extends Observer {
 
   constructor() {
-    const regex = new RegExp(/^s\/(.+)\/(.*)$/)
     super('sed', regex)
   }
 
@@ -16,6 +16,11 @@ module.exports = class Sed extends Observer {
 
       // don't want to match the initial s/*/* observer message
       if (msg.text === opts.text) {
+        continue
+      }
+
+      // don't match other s/foo/bar user messages
+      if (regex.test(msg.text)) {
         continue
       }
 
