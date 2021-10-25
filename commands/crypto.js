@@ -2,6 +2,7 @@ const Command  = require('./command.js')
 const needle   = require('needle')
 const _        = require('lodash')
 const config   = require('../config').coinmarketcap
+const Colors   = require('irc').colors
 const BASE_URL = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol='
 
 module.exports = class Crypto extends Command {
@@ -42,13 +43,22 @@ module.exports = class Crypto extends Command {
         prices.market_cap = 0
       }
       const digits = { minimumFractionDigits: 3 }
-      let info = `[${data.name}] 1 ${data.symbol} = $${prices.price.toLocaleString(undefined, digits)} ` +
-        `| Market cap: $${prices.market_cap.toLocaleString().split('.')[0]} `
+      const curPrice = Colors.wrap('yellow', `$${prices.price.toLocaleString(undefined, digits)}`) 
 
-      // Map % change values so we cut off after 2 decimal places
-      prices = _.mapValues(data.quote.USD, (v) => parseFloat(v).toFixed(2))
-      info += `| 1h change: ${prices.percent_change_1h}% | 24h change: ${prices.percent_change_24h}% ` +
-        `| 7d change: ${prices.percent_change_7d}%`
+
+      // Map % change values so we cut off after 2 decimal places and colorize them
+      Object.keys(data.quote.USD)
+        .filter(k => /^percent_change_.*$/.test(k))
+        .forEach(k => {
+          const val = parseFloat(prices[k]).toFixed(2)
+          const color = ( val > 0 ? 'light_green' : 'light_red') 
+          prices[k] = Colors.wrap(color, `${val}%`)
+        })
+
+      const info = `[${data.name}] 1 ${data.symbol} = ${curPrice} ` +
+        `| Market cap: $${prices.market_cap.toLocaleString().split('.')[0]} ` +
+        `| 1h: ${prices.percent_change_1h} | 24h: ${prices.percent_change_24h} ` +
+        `| 7d: ${prices.percent_change_7d}`
 
       cb(info)
     })
