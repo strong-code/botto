@@ -42,9 +42,6 @@ module.exports = class Crypto extends Command {
         // sometimes we don't get mcap data back
         prices.market_cap = 0
       }
-      const digits = { minimumFractionDigits: 3 }
-      const curPrice = Colors.wrap('yellow', `$${prices.price.toLocaleString(undefined, digits)}`) 
-
 
       // Map % change values so we cut off after 2 decimal places and colorize them
       Object.keys(data.quote.USD)
@@ -55,13 +52,37 @@ module.exports = class Crypto extends Command {
           prices[k] = Colors.wrap(color, `${val}%`)
         })
 
+      const curPrice = Colors.wrap('yellow', this.currencyFormat(prices.price))
+
       const info = `[${data.name}] 1 ${data.symbol} = ${curPrice} ` +
-        `| Market cap: $${prices.market_cap.toLocaleString().split('.')[0]} ` +
+        `| Market cap: ${this.currencyFormat(prices.market_cap, { maximumFractionDigits: 0 })} ` +
         `| 1h: ${prices.percent_change_1h} | 24h: ${prices.percent_change_24h} ` +
         `| 7d: ${prices.percent_change_7d}`
 
       cb(info)
     })
+  }
+
+  currencyFormat(num, _opts) {
+    num = Number(num)
+    let decimals = 2
+    let prefix = ''
+
+    if (num < 1) {
+      num = num.toPrecision(2)
+      decimals = num.toString().split('.')[1]?.length
+      prefix = '$'
+    }
+
+    let opts = Object.assign(
+      {
+        maximumFractionDigits: decimals, 
+        minimumFractionDigits: 0,
+        style: 'currency',
+        currency: 'USD'
+      }, _opts)
+
+    return `${prefix}${num.toLocaleString(undefined, opts)}`
   }
 }
 
