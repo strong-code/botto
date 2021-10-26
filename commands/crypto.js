@@ -32,7 +32,7 @@ module.exports = class Crypto extends Command {
       if (res.statusCode != 200) {
         return cb(`[Error ${body.status.error_code}] ${body.status.error_message}`)
       }
-      if (_.isEmpty(body.data)) {
+      if (_.isEmpty(body.data) || !body.data[coin].num_market_pairs) {
         return cb(`Unable to find market data for ${coin}`)
       }
 
