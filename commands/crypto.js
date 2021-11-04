@@ -17,23 +17,23 @@ module.exports = class Crypto extends Command {
       return respond('Usage is !crypto <coin name>')
     }
 
-    this.coinInfo(coin, (info) => respond(info))
+    this.coinInfo(coin, respond)
   }
 
-  coinInfo(coin, cb) {
+  coinInfo(coin, respond) {
     coin = _.toUpper(coin).trim()
     const opts = { headers: { 'X-CMC_PRO_API_KEY': config.apiKey } }
     const endpoint = BASE_URL + coin + '&convert=USD'
 
     needle.get(endpoint, opts, (err, res, body) => {
       if (err) {
-        return cb(err.message)
+        return respond(err.message)
       }
       if (res.statusCode != 200) {
-        return cb(`[Error ${body.status.error_code}] ${body.status.error_message}`)
+        return respond(`[Error ${body.status.error_code}] ${body.status.error_message}`)
       }
       if (_.isEmpty(body.data) || !body.data[coin].num_market_pairs) {
-        return cb(`Unable to find market data for ${coin}`)
+        return respond(`Unable to find market data for ${coin}`)
       }
 
       const data = body.data[coin]
@@ -59,7 +59,7 @@ module.exports = class Crypto extends Command {
         `| 1h: ${prices.percent_change_1h} | 24h: ${prices.percent_change_24h} ` +
         `| 7d: ${prices.percent_change_7d}`
 
-      cb(info)
+      respond(info)
     })
   }
 
