@@ -55,7 +55,7 @@ module.exports = class Crypto extends Command {
       const curPrice = Colors.wrap('yellow', this.currencyFormat(prices.price))
 
       const info = `[${data.name}] 1 ${data.symbol} = ${curPrice} ` +
-        `| Market cap: ${this.currencyFormat(prices.market_cap, { maximumFractionDigits: 0 })} ` +
+        `| Market cap: ${this.currencyFormat(prices.market_cap, { maximumFractionDigits: 0, minimumFractionDigits: 0 })} ` +
         `| 1h: ${prices.percent_change_1h} | 24h: ${prices.percent_change_24h} ` +
         `| 7d: ${prices.percent_change_7d}`
 
@@ -77,7 +77,7 @@ module.exports = class Crypto extends Command {
     let opts = Object.assign(
       {
         maximumFractionDigits: decimals, 
-        minimumFractionDigits: 0,
+        minimumFractionDigits: 2,
         style: 'currency',
         currency: 'USD'
       }, _opts)
