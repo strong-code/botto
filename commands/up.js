@@ -1,6 +1,5 @@
 const needle = require('needle')
 const config = require('../config.js').url
-const _ = require('lodash')
 const Command = require('./command.js')
 
 module.exports = class Up extends Command {
@@ -10,7 +9,7 @@ module.exports = class Up extends Command {
   }
   
   call(bot, opts, respond) {
-    if (_.isEmpty(opts.args)) {
+    if (opts.args[0] === '') {
       return respond('Usage is !up <domain>');
     }
 
