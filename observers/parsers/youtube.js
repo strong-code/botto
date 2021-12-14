@@ -52,13 +52,13 @@ module.exports = {
     const data = res.body.items[0]
     const date = moment(data.snippet.publishedAt).format('MMM Do, YYYY')
     const views = Number(data.statistics.viewCount).toLocaleString()
+    // keep likes for now
     const likes = Number(data.statistics.likeCount).toLocaleString()
-    const dislikes = Number(data.statistics.dislikeCount).toLocaleString()
     const duration = module.exports.formatDuration(data.contentDetails.duration)
 
     return `[${Colors.wrap('light_red', 'YouTube')}] "${data.snippet.title}" by ${data.snippet.channelTitle} `
-    +`| ${date} | ${duration} long | ${views} views | `
-    +`${Colors.wrap('light_green', `${likes} ↑`)} ${Colors.wrap('light_red', `${dislikes} ↓`)}`
+    +`| ${date} | ${duration} long | ${views} views `
+    // +`${Colors.wrap('light_green', `${likes} ↑`)}`
   },
 
   extractVideoId: function(url) {
