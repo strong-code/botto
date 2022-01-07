@@ -21,7 +21,7 @@ module.exports = {
 
     try {
       const ratings = await module.exports.getRatingInfo(asin)
-      info += ratings
+      info += ' ' + ratings
     } catch (e) {
       console.log(`Unable to fetch stars/rating info. Continuing without ratings`)
     }
@@ -42,8 +42,9 @@ module.exports = {
     try {
       const data = await client.GetItems(config.amazon, requestOpts)
       const item = data.ItemsResult.Items[0]
-      const price = item.Offers.Listings[0].Price.Amount
+      const price = item.Offers.Listings[0].Price.Amount 
       const desc = _.truncate(item.ItemInfo.Title.DisplayValue, {length: 120})
+      return `[${Colors.wrap('orange', 'Amazon')}] $${price} | ${desc}`
     } catch (e) {
       if (e.status === 429) {
         const error = JSON.parse(e.response.error.text).Errors[0]
@@ -51,7 +52,6 @@ module.exports = {
       }
     }
         
-    return `[${Colors.wrap('orange', 'Amazon')}] $${price} | `
   },
 
   getRatingInfo: async function(asin) {
@@ -64,7 +64,7 @@ module.exports = {
       throw new Error('Triggered bot detection on ratings URL, ignoring')
     }
 
-    return `${Colors.wrap('yellow', `★ ${stars}`)} (${ratings} ratings) | `
+    return `${Colors.wrap('yellow', `★ ${stars}`)} (${ratings} ratings)`
   },
 
   asinRegex: /(?:dp|o|gp|product|-)\/(B[0-9]{2}[0-9A-Z]{7}|[0-9]{9}(?:X|[0-9]))/ 
