@@ -21,7 +21,7 @@ module.exports = {
 
     try {
       const ratings = await module.exports.getRatingInfo(asin)
-      info += ' ' + ratings
+      info += ' | ' + ratings
     } catch (e) {
       console.log(`Unable to fetch stars/rating info. Continuing without ratings`)
     }
