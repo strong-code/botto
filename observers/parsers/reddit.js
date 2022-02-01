@@ -27,8 +27,9 @@ module.exports = {
   parseComment: async function(comment) {
     const c = await r.getComment(comment).fetch()
     const [date, ups, downs] = module.exports.parsePostInfo(c)
+    const body = (c.body.length > 200 ? `${c.body.substr(0,200)}...` : c.body)
     
-    return `[${Colors.wrap('orange', 'Reddit')}] u/${c.author_fullname}: "${c.body.substr(0,200)}..."`
+    return `[${Colors.wrap('orange', 'Reddit')}] u/${c.author_fullname}: "${body}"`
       + ` | ${date} | ${ups} ${downs}`
   },
 
