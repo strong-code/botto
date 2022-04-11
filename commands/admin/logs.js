@@ -11,7 +11,7 @@ module.exports = class Logs extends Command {
   }
 
   call(bot, opts, respond) {
-    if (!this.adminCallable) return
+    if (!this.adminCallable(opts)) return
 
     const options = { lines: '', since: '' }
     const argString = _.join(opts.args, ' ').trim()

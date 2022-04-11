@@ -7,7 +7,7 @@ module.exports = class Irc extends Command {
   }
 
   call(bot, opts, respond) {
-    if (!this.adminCallable) return
+    if (!this.adminCallable(opts)) return
 
     if (opts.args) {
       switch (opts.args[0]) {

@@ -7,7 +7,7 @@ module.exports = class Restart extends Command {
   }
 
   call(bot, opts, respond) {
-    if (!this.adminCallable) return
+    if (!this.adminCallable(opts)) return
 
     respond()
 

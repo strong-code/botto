@@ -13,7 +13,7 @@ module.exports  = class Health extends Command {
   }
 
   async call(bot, opts, respond) {
-    if (!this.adminCallable) return
+    if (!this.adminCallable(opts)) return
 
     const healthStatus = await this.getHealth()
     return respond(healthStatus)

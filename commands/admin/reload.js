@@ -15,7 +15,7 @@ module.exports = class Reload extends Command {
   }
 
   async call(bot, opts, respond) {
-    if (!this.adminCallable) return
+    if (!this.adminCallable(opts)) return
 
     const moduleName = opts.args[0];
     let numReloaded = 0;

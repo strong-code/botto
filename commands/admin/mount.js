@@ -9,7 +9,7 @@ module.exports = class Mount extends Command {
   }
 
   call(bot, opts, respond) {
-    if (!this.adminCallable) return
+    if (!this.adminCallable(opts)) return
 
     const module = opts.args[0]
     const cmd = CommandHandler.commandList[module]
