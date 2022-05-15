@@ -1,8 +1,9 @@
 const needle = require('needle');
 const config = require('../config').url
 const API_KEY = require('../config').stock.apiKey
-const BASE_URL = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE' 
+const BASE_URL = 'https://cloud.iexapis.com/stable/stock' 
 const Command = require('./command.js')
+const Colors = require('irc').colors
 
 module.exports = class Stock extends Command {
   
@@ -22,21 +23,19 @@ module.exports = class Stock extends Command {
   }
 
   async stockInfo(ticker) {
-    const API_URL = `${BASE_URL}&symbol=${ticker}&apikey=${API_KEY}`
-
+    const API_URL = `${BASE_URL}/${ticker}/quote?token=${API_KEY}`
     const res = await needle('get', API_URL, config)
-    const data = res.body['Global Quote']
 
-    if (Object.keys(data).length === 0) {
-      return `Unable to fetch stock data for ticker: ${ticker}`
+    if (res.statusCode == 404) {
+      return `Unable to find price data for ticker $${ticker}`
     }
 
-    const price = parseFloat(data['05. price'])
-    const vol = data['06. volume'].toLocaleString()
-    const change = data['09. change']
-    const percent_change = data['10. change percent']
+    const p = res.body
+    const color = ( p.change >= 0 ? 'light_green' : 'light_red' )
+    const price = Colors.wrap('yellow', `$${p.latestPrice}`)
 
-    return `${ticker.toUpperCase()} - $${price} | Volume: ${vol} | Change: ${change} pts (${percent_change})`
+    return `${p.companyName}: ${price} | Vol: ${p.volume.toLocaleString()} | `
+      + `Change: ${Colors.wrap(color, p.change)} pts (${Colors.wrap(color, p.changePercent)}%)`
   }
 
 }
