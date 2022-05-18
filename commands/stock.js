@@ -34,7 +34,7 @@ module.exports = class Stock extends Command {
     const color = ( p.change >= 0 ? 'light_green' : 'light_red' )
     const price = Colors.wrap('yellow', `$${p.latestPrice}`)
     // sometimes volume returns as a null value
-    const vol = ( p.volume ? `Vol: ${p.volume.toLocalString()} |` : '')
+    const vol = ( p.volume === null ? `Vol: ${p.volume.toLocalString()} |` : '' )
 
     return `${p.companyName}: ${price} | ${vol}`
       + `Change: ${Colors.wrap(color, p.change)} pts (${Colors.wrap(color, p.changePercent)}%)`
