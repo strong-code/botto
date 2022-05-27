@@ -1,7 +1,6 @@
 const needle = require('needle')
-const { writeFile, readFile } = require('fs/promises')
 const Command = require('./command.js')
-const API_URL = 'https://api.algorithmia.com/v1/web/algo/josephmiller/VQGAN_CLIP_Text_to_Image/1.1.2'
+const API_URL = 'https://hf.space/embed/dalle-mini/dalle-mini/api/predict/'
 
 module.exports = class Paint extends Command {
 
@@ -10,26 +9,17 @@ module.exports = class Paint extends Command {
   }
 
   async call(bot, opts, respond) {
-    const res = await needle('post', API_URL, { prompt: opts.args.join(' ') }, 
+    respond('Please give me a moment to finish my painting...')
+
+    const res = await needle('post', API_URL, { data: [opts.args.join(' ')], fn_index: 0, session_hash: "s08878x31cp" }, 
       {
         headers: { 
-          'Host': 'api.algorithmia.com',
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0',
           'Accept': 'application/json',
           'Accept-Language': 'en-US,en;q=0.5',
           'Accept-Encoding': 'gzip, deflate, br',
-          'Referer': 'http://axal-arm.s3-website-eu-west-1.amazonaws.com/',
           'Content-Type': 'application/json',
-          'Authorization': 'Simple simjNGR47E12ZVInXco8f5+A4TK1',
-          'Origin': 'http://axal-arm.s3-website-eu-west-1.amazonaws.com',
-          'Content-Length': '32',
-          'DNT': '1',
-          'Connection': 'keep-alive',
-          'Sec-Fetch-Dest': 'empty',
-          'Sec-Fetch-Mode': 'cors',
-          'Sec-Fetch-Site': 'cross-site',
-          'Pragma': 'no-cache',
-          'Cache-Control': 'no-cache'
+          'Connection': 'keep-alive'
         }
     })
 
@@ -38,13 +28,17 @@ module.exports = class Paint extends Command {
       return respond(`${error.error_type}: ${error.message}. Please try again later`)
     }
 
+    const idx = Math.floor(Math.random() * (res.body.data[0].length - 1))
+    const imgData = res.body.data[0][idx].replace(/^data:image\/png;base64,/, "")
+
     const data = {
       file: {
-        buffer: Buffer.from(res.body.result, 'base64'),
-        filename: 'image.jpg',
-        content_type: 'image/jpg'
+        buffer: Buffer.from(imgData, 'base64'),
+        filename: 'image.png',
+        content_type: 'image/png'
       }
     }
+
     const upload = await needle('POST', 'https://strongco.de/api/paste', data, { multipart: true })
     
     return respond(`${opts.from}, I present to you my latest masterpiece: ${upload.body.path}`)
