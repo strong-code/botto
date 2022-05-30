@@ -23,9 +23,9 @@ module.exports = class Paint extends Command {
         }
     })
 
-    if (res.body.error) {
-      const error = res.body.error
-      return respond(`${error.error_type}: ${error.message}. Please try again later`)
+    if (res.body.error || !res.body.data) {
+      const e = res.body.error || { error_type: 'API timeout', message: 'API failed to return a response' }
+      return respond(`${e.error_type}: ${e.message}. Please try again later`)
     }
 
     const idx = Math.floor(Math.random() * (res.body.data[0].length - 1))
