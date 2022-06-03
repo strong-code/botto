@@ -3,8 +3,9 @@ const Helpers = require('../util/helpers.js')
 
 module.exports = class Command {
 
-  constructor(name) {
+  constructor(name, cd = 0) {
     this.name = name
+    this.cd = cd*1000
   }
 
   async init() {
@@ -21,6 +22,20 @@ module.exports = class Command {
     }
 
     return true
+  }
+
+  callable() {
+    if (this.cd <= 0) return true
+
+    if (this.timer) {
+      console.log(`    ↳ ${this.name} command on cooldown`)
+      return false
+    } else {
+      this.timer = setTimeout(() => {
+        delete this.timer
+      }, this.cd)
+      return true
+    }
   }
 
   mount() {

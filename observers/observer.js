@@ -2,9 +2,10 @@ const db = require('../util/db.js')
 
 module.exports = class Observer {
 
-  constructor(name, regex) {
+  constructor(name, regex, cd = 0) {
     this.name = name
     this.regex = regex
+    this.cd = cd*1000
   }
 
   async init() {
@@ -15,7 +16,17 @@ module.exports = class Observer {
   }
 
   callable(opts) {
-    return this.regex.test(opts.text)
+    if (this.cd <= 0) return true
+
+    if (this.timer) {
+      console.log(`    ↳ ${this.name} observer on cooldown`)
+      return false
+    } else {
+      this.timer = setTimeout(() => {
+        delete this.timer
+      }, this.cd)
+      return this.regex.test(opts.text)
+    }
   }
 
   mount() {

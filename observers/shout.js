@@ -5,8 +5,8 @@ const Observer = require('./observer.js')
 module.exports = class Shout extends Observer {
 
   constructor() {
-    const regex = new RegExp(/^[^a-z]*([A-Z]+[^a-z]*){4,}$|^who\ssaid\sthat$/)
-    super('shout', regex)
+    const regex = new RegExp(/(?=.*[A-Z]{3,})^[^a-z]{4,}$|^who\ssaid\sthat$/)
+    super('shout', regex, 5)
   }
 
   call(opts, respond) {
