@@ -1,6 +1,6 @@
 const needle = require('needle')
 const Command = require('./command.js')
-const API_URL = 'https://hf.space/embed/dalle-mini/dalle-mini/api/predict/'
+const API_URL = 'https://bf.dallemini.ai/generate'
 
 module.exports = class Paint extends Command {
 
@@ -11,7 +11,7 @@ module.exports = class Paint extends Command {
   async call(bot, opts, respond) {
     respond('Please give me a moment to finish my painting...')
 
-    const res = await needle('post', API_URL, { data: [opts.args.join(' ')], fn_index: 0, session_hash: "s08878x31cp" }, 
+    const res = await needle('post', API_URL, { prompt: opts.args.join(' ') },
       {
         headers: { 
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0',
@@ -23,17 +23,16 @@ module.exports = class Paint extends Command {
         }
     })
 
-    if (res.body.error || !res.body.data) {
-      const e = res.body.error || { error_type: 'API timeout', message: 'API failed to return a response' }
-      return respond(`${e.error_type}: ${e.message}. Please try again later`)
+    if (res.body.error || !res.body.images) {
+      const e = res.body.error || { error_type: 'API timeout', message: 'API failed to return a response (check !logs for error)' }
+      return respond(`[${res.statusCode}] ${e.error_type}: ${e.message}. Please try again later`)
     }
 
-    const idx = Math.floor(Math.random() * (res.body.data[0].length - 1))
-    const imgData = res.body.data[0][idx].replace(/^data:image\/png;base64,/, "")
+    const idx = Math.floor(Math.random() * (res.body.images.length - 1))
 
     const data = {
       file: {
-        buffer: Buffer.from(imgData, 'base64'),
+        buffer: Buffer.from(res.body.images[idx], 'base64'),
         filename: 'image.png',
         content_type: 'image/png'
       }
