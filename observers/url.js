@@ -32,8 +32,10 @@ module.exports = class Url extends Observer {
   }
 
   async call(opts, respond) {
+    let url
+
     try {
-      const url = parser.parse(opts.text.match(this.regex)[0].trim())
+      url = parser.parse(opts.text.match(this.regex)[0].trim())
     } catch (e) {
       if (e instanceof TypeError) return
     }
