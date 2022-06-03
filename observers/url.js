@@ -32,7 +32,11 @@ module.exports = class Url extends Observer {
   }
 
   async call(opts, respond) {
-    const url = parser.parse(opts.text.match(this.regex)[0].trim())
+    try {
+      const url = parser.parse(opts.text.match(this.regex)[0].trim())
+    } catch (e) {
+      if (e instanceof TypeError) return
+    }
 
     if (!url.hostname) { url.hostname = url.href } // hacky but whatever
 
