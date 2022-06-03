@@ -16,8 +16,6 @@ module.exports = class Observer {
   }
 
   callable(opts) {
-    if (this.cd <= 0) return true
-
     if (this.timer) {
       console.log(`    ↳ ${this.name} observer on cooldown`)
       return false
