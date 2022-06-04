@@ -15,16 +15,21 @@ module.exports = class Observer {
     })
   }
 
+  // This check runs before every call() invocation in _observerHandler
   callable(opts) {
-    if (this.timer) {
-      console.log(`    ↳ ${this.name} observer on cooldown`)
-      return false
-    } else {
-      this.timer = setTimeout(() => {
-        delete this.timer
-      }, this.cd)
-      return this.regex.test(opts.text)
+    if (this.regex.test(opts.text)) {
+      if (this.timer) {
+        console.log(`    ↳ ${this.name} observer on cooldown`)
+        return false
+      } else {
+        this.timer = setTimeout(() => {
+          delete this.timer
+        }, this.cd)
+        return true
+      }
     }
+
+    return false
   }
 
   mount() {
