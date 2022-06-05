@@ -64,6 +64,13 @@ bot.addListener("invite", (chan, from, message) => {
   }
 })
 
+bot.addListener("kick", (chan, nick, by, reason, message) => {
+  if (nick == 'botto') {
+    console.log(`Kicked from ${chan} by ${by}: ${reason}. Attemping to rejoin...`)
+    bot.join(chan)
+  }
+})
+
 bot.addListener("error", function(err) {
   console.error("[ERROR] ", err)
 })
