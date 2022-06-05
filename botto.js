@@ -1,11 +1,12 @@
-const _config = require('./config.js').core;
-const config = (process.argv[2] === 'test' ? _config.test : _config.default);
-const fs = require('fs');
-const irc = require('irc');
-const commandHandler = new (require('./commands/_commandHandler.js'))();
-const observerHandler = new (require('./observers/_observerHandler.js'))();
-const Ignore = require('./commands/admin/ignore.js');
-const MsgCache = require('./util/messageCache.js');
+const _config = require('./config.js').core
+const config = (process.argv[2] === 'test' ? _config.test : _config.default)
+const fs = require('fs')
+const irc = require('irc')
+const commandHandler = new (require('./commands/_commandHandler.js'))()
+const observerHandler = new (require('./observers/_observerHandler.js'))()
+const Ignore = require('./commands/admin/ignore.js')
+const MsgCache = require('./util/messageCache.js')
+const Helpers = require('./util/helpers.js'); // ; is needed here for SEAF
 
 // Preload the observerHandler and commandHandler
 (async () => {
@@ -54,6 +55,13 @@ bot.addListener("message", function(from, to, text, msg) {
     bot.say(to, 'Something went wrong, check !logs for more info')
   }
 
+})
+
+bot.addListener("invite", (chan, from, message) => {
+  if (Helpers.isAdmin(from, chan)) {
+    console.log(`Accepting invite to ${chan} from ${from}`)
+    bot.join(chan)
+  }
 })
 
 bot.addListener("error", function(err) {
