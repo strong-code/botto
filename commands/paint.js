@@ -23,6 +23,10 @@ module.exports = class Paint extends Command {
         }
     })
 
+    if (res.statusCode == 500) {
+      return respond(`[${res.statusCode}] Painting queue full. Please try again later`)
+    }
+
     if (res.body.error || !res.body.images) {
       const e = res.body.error || { error_type: 'API timeout', message: 'API failed to return a response (check !logs for error)' }
       return respond(`[${res.statusCode}] ${e.error_type}: ${e.message}. Please try again later`)
