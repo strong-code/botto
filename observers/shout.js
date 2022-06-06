@@ -6,7 +6,7 @@ module.exports = class Shout extends Observer {
 
   constructor() {
     const regex = new RegExp(/(?=.*[A-Z]{3,})^[^a-z]{4,}$|^who\ssaid\sthat$/)
-    super('shout', regex, 5)
+    super('shout', regex, 8)
   }
 
   call(opts, respond) {
