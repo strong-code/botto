@@ -11,7 +11,7 @@ module.exports = {
   hostMatch: /^(www\.)?(youtube\.com)|(youtu\.be)$/,
 
   parse: async function(url) {
-    if (!url.search && url.host !== 'youtu.be') {
+    if (!url.search && url.pathname.startsWith('/c/')) {
       return await module.exports.parseChannel(url)
     } else {
       return await module.exports.parseVideo(url)
@@ -59,6 +59,10 @@ module.exports = {
   },
 
   extractVideoId: function(url) {
+    if (url.pathname.startsWith('/shorts/')) {
+      return url.pathname.split('/')[2]
+    }
+
     if (url.host === 'youtu.be') {
       return url.pathname.substring(1)
     } else {
