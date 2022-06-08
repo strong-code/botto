@@ -8,15 +8,21 @@ module.exports = class Shout extends Command {
   }
 
   call(bot, opts, respond) {
-    if (opts.args[0].length) {
-      return this.getShoutForNick(opts.args[0], respond)
-    } else {
-      return this.getShout(respond)
-    }
+    return this.getShout(opts.args.join(' '), respond)
   }
 
-  async getShout(respond) {
-    const row = await db.one('SELECT * FROM shouts ORDER BY random() LIMIT 1', [])
+  async getShout(query, respond) {
+    let row
+
+    if (query.indexOf(';') > -1) {
+      query = ''
+    }
+
+    if (query) {
+      row = await db.one(`SELECT * FROM shouts WHERE message LIKE '%${query.toUpperCase()}%' ORDER BY random() LIMIT 1`)
+    } else {
+      row = await db.one('SELECT * FROM shouts ORDER BY random() LIMIT 1', [])
+    }
     return respond(row.message)
   }
 
