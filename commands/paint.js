@@ -23,7 +23,7 @@ module.exports = class Paint extends Command {
         }
     })
 
-    if (res.statusCode == 500) {
+    if (/50\d/.test(res.statusCode)) {
       return respond(`[${res.statusCode}] Painting queue full. Please try again later`)
     }
 
