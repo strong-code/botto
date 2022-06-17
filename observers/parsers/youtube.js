@@ -8,7 +8,7 @@ const Colors = require('irc').colors
 
 module.exports = {
 
-  hostMatch: /^(www\.)?(youtube\.com)|(youtu\.be)$/,
+  hostMatch: /^(www\.)?(music\.)?(youtube\.com)|(youtu\.be)$/,
 
   parse: async function(url) {
     if (!url.search && url.pathname.startsWith('/c/')) {
