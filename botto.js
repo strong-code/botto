@@ -6,7 +6,8 @@ const commandHandler = new (require('./commands/_commandHandler.js'))()
 const observerHandler = new (require('./observers/_observerHandler.js'))()
 const Ignore = require('./commands/admin/ignore.js')
 const MsgCache = require('./util/messageCache.js')
-const Helpers = require('./util/helpers.js'); // ; is needed here for SEAF
+const Helpers = require('./util/helpers.js')
+const kickCounter = {}; // ; is needed here for SEAF
 
 // Preload the observerHandler and commandHandler
 (async () => {
@@ -66,8 +67,19 @@ bot.addListener("invite", (chan, from, message) => {
 
 bot.addListener("kick", (chan, nick, by, reason, message) => {
   if (nick == 'botto') {
-    console.log(`Kicked from ${chan} by ${by}: ${reason}. Attemping to rejoin...`)
-    bot.join(chan)
+    if (kickCounter[chan] > 3) {
+      console.log(`Attempted to rejoin 3 times, cooldown for 1 minute...`)
+      setTimeout(() => {
+        kickCounter[chan] = 0
+        console.log(`Rejoin cooldown expired, attempting to rejoin ${chan}`)
+        bot.join(chan)
+      }, 60000)
+      return
+    } else {
+      kickCounter[chan] = (kickCounter[chan] || 0) + 1
+      console.log(`Kicked from ${chan} by ${by}: ${reason}. Attemping to rejoin... (${kickCounter[chan]}/3)`)
+      bot.join(chan)
+    }
   }
 })
 
