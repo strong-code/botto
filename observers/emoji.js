@@ -1,3 +1,4 @@
+// Corresponding emoji list https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json
 const emoji = require('node-emoji')
 const Observer = require('./observer.js')
 
