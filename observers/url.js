@@ -42,7 +42,7 @@ module.exports = class Url extends Observer {
 
     if (!url.hostname) { url.hostname = url.href } // hacky but whatever
 
-    if (this.isIgnorable(url)) {
+    if (!url.host || this.isIgnorable(url)) {
       return
     }
 
