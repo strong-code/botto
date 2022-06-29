@@ -1,6 +1,6 @@
 const db = require('../util/db.js')
 const Command = require('./command.js')
-const TellObserver = require('../observers/tell.js')
+const TellCache = require('../util/tellCache.js')
 
 module.exports = class Tell extends Command {
 
@@ -21,14 +21,14 @@ module.exports = class Tell extends Command {
 
   async saveMessage(chan, sender, receiver, msg, respond) {
     await this.toDisk(chan, sender, receiver, msg)
-    TellObserver.refresh()
+    TellCache.refresh()
     return respond(`Message saved. I will tell ${receiver} next time they are around.`)
   }
 
   async toDisk(chan, sender, receiver, msg) {
     await db.none(
       'INSERT INTO tells (chan, sender, receiver, message, created_at) VALUES ($1, $2, $3, $4, $5)',
-      [chan, sender, receiver, msg, new Date().toISOString()]
+      [chan, sender, receiver, msg, new Date()]
     )
 
     console.log('Tell message saved to disk')
