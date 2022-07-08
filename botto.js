@@ -20,6 +20,8 @@ const bot = new irc.Client(config.server, config.botName, {
   channels: config.channels
 });
 
+const BanHandler = new (require('./util/banHandler.js'))(bot)
+
 console.log(`${new Array(35).join('-')}` +
   String.raw`
    _           _   _        
@@ -84,6 +86,10 @@ bot.addListener("kick", (chan, nick, by, reason, message) => {
 })
 
 bot.addListener("error", function(err) {
-  console.error("[ERROR] ", err)
+  if (err.args[2] == 'Cannot join channel (+b)') {
+    BanHandler.addBan(err.args[1])
+  } else {
+    console.error("[ERROR] ", err)
+  }
 })
 
