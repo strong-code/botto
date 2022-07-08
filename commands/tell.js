@@ -1,6 +1,7 @@
 const db = require('../util/db.js')
 const Command = require('./command.js')
 const TellCache = require('../util/tellCache.js')
+const moment = require('moment')
 
 module.exports = class Tell extends Command {
 
@@ -26,9 +27,10 @@ module.exports = class Tell extends Command {
   }
 
   async toDisk(chan, sender, receiver, msg) {
+    const created_at = moment().format('YYYY-MM-DD HH:mm:ss')
     await db.none(
       'INSERT INTO tells (chan, sender, receiver, message, created_at) VALUES ($1, $2, $3, $4, $5)',
-      [chan, sender, receiver, msg, new Date()]
+      [chan, sender, receiver, msg, created_at]
     )
 
     console.log('Tell message saved to disk')

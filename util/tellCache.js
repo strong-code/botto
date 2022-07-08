@@ -13,7 +13,7 @@ module.exports = class TellCache {
 
     await db.each('SELECT * FROM tells WHERE sent = false', [], row => {
       let receiver = row.receiver
-      let at = moment(row.created_at).fromNow()
+      let at = moment(row.created_at)
       let tell = { chan: row.chan, sender: row.sender, msg: row.message, at: at }
       total++
 

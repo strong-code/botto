@@ -1,6 +1,7 @@
 const db = require('../util/db.js')
 const Observer = require('./observer.js')
 const TellCache = require('../util/tellCache.js')
+const moment = require('moment')
 
 module.exports = class Tell extends Observer {
 
@@ -31,7 +32,7 @@ module.exports = class Tell extends Observer {
   sendMessage(receiver, tell, cb) {
     db.none('UPDATE tells SET sent = true WHERE receiver = $1 AND message = $2', [receiver, tell.msg])
     console.log(`Tell marked as sent`)
-    return cb(`${receiver}, ${tell.sender} says: ${tell.msg} (${tell.at})`)
+    return cb(`${receiver}, ${tell.sender} says: ${tell.msg} (${tell.at.fromNow()})`)
   }
 
 }
