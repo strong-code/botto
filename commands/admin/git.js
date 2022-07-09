@@ -39,7 +39,9 @@ module.exports = class Git extends Command {
   }
 
   status(bot, opts, respond) {
-    exec('git status -sb', function (err, stdout, stderr) {
+    const cmd = `echo -n "[$(git rev-parse --abbrev-ref HEAD)]" ; echo " $(git log --pretty=format:'%h %s' -n1)"`
+
+    exec(cmd, function (err, stdout, stderr) {
       if (err) {
         return respond(`${err.message}; Check logs for more info`)
       }
