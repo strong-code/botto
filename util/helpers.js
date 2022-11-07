@@ -46,4 +46,14 @@ module.exports = class Helpers {
     return `${str.substr(0, length)}${trail}`
   }
 
+  // Perform cb() against array of usernames in supplied channel
+  static async usersInChan(bot, chan, cb) {
+    bot.addListener(`names${chan}`, (nicks) => {
+      cb(Object.keys(nicks))
+      bot.removeAllListeners(`names${chan}`)
+    })
+
+    bot.send('NAMES', chan)
+  }
+
 }

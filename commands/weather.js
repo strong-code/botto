@@ -13,14 +13,11 @@ module.exports = class Weather extends Command {
   }
 
   async call(bot, opts, respond) {
+    let weather
+
     if (!opts.args[0]) {
-      const city = await this.getUserLocation(opts.from)
-      if (!city) {
-        return respond('No city set for your nick. Set one with !weather set <city>')
-      } else {
-        const weather = await this.getWeather(city)
-        return respond(weather)
-      }
+      weather = await this.getWeatherForNick(opts.from)
+      return respond(weather)
     }
     
     if (opts.args[0] === 'set') {
@@ -29,9 +26,27 @@ module.exports = class Weather extends Command {
       const updated = await this.setLocation(opts.from, loc)
       return respond(updated)
     } else {
-      const city = _.join(opts.args, '+')
+      Helpers.usersInChan(bot, opts.to, async (nicks) => {
+        if (nicks.includes(opts.args[0])) {
+          weather = await this.getWeatherForNick(opts.args[0])
+          return respond(weather)
+        } else {
+          const city = opts.args.join('+')
+          weather = await this.getWeather(city)
+          return respond(weather)
+        }
+      })
+    }
+  }
+
+  async getWeatherForNick(nick) {
+    const city = await this.getUserLocation(nick)
+
+    if (!city) {
+      return `No city set for ${nick}. They can set one with !weather set <city>`
+    } else {
       const weather = await this.getWeather(city)
-      return respond(weather)
+      return weather
     }
   }
 
