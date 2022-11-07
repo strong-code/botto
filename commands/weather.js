@@ -27,8 +27,9 @@ module.exports = class Weather extends Command {
       return respond(updated)
     } else {
       Helpers.usersInChan(bot, opts.to, async (nicks) => {
-        if (nicks.includes(opts.args[0])) {
-          weather = await this.getWeatherForNick(opts.args[0])
+        let match = nicks.find(n => opts.args[0].toLowerCase() == n.toLowerCase())
+        if (match) {
+          weather = await this.getWeatherForNick(match)
           return respond(weather)
         } else {
           const city = opts.args.join('+')
