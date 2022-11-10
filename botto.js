@@ -69,6 +69,7 @@ bot.addListener("invite", (chan, from, message) => {
 
 bot.addListener("kick", (chan, nick, by, reason, message) => {
   if (nick == 'botto') {
+    console.log(`Kicked from ${chan} by ${by} [${reason}]`)
     if (kickCounter[chan] > 2) {
       console.log(`Attempted to rejoin 3 times, cooldown for 1 minute...`)
       setTimeout(() => {
@@ -79,7 +80,7 @@ bot.addListener("kick", (chan, nick, by, reason, message) => {
       return
     } else {
       kickCounter[chan] = (kickCounter[chan] || 0) + 1
-      console.log(`Kicked from ${chan} by ${by}: ${reason}. Attemping to rejoin... (${kickCounter[chan]}/3)`)
+      console.log(`Attemping to rejoin ${chan}... (${kickCounter[chan]}/3)`)
       bot.join(chan)
     }
   }

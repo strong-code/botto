@@ -9,6 +9,7 @@ module.exports = class BanHandler {
         console.log(`Successfully rejoined ${chan}`)
         this.bans = this.bans.filter(c => c != chan)
       }
+      this.bot.removeAllListeners(`join${chan}`)
     })
   }
 
