@@ -37,7 +37,7 @@ module.exports = class Stock extends Command {
     const vol = ( p.volume === null ? '' : `Vol: ${p.volume.toLocaleString()} |` )
 
     return `${p.companyName}: ${price} | ${vol}`
-      + `Change: ${Colors.wrap(color, p.change)} pts (${Colors.wrap(color, changePercent)}%)`
+      + ` Change: ${Colors.wrap(color, p.change)} pts (${Colors.wrap(color, changePercent)}%)`
   }
 
 }
