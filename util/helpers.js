@@ -1,6 +1,7 @@
 const config = require("../config.js")
 const _ = require('lodash')
 const needle = require('needle')
+const { execSync } = require('child_process')
 const STRONGCODE_API = require('../config.js').logs.api
 
 module.exports = class Helpers {
@@ -54,6 +55,21 @@ module.exports = class Helpers {
     })
 
     bot.send('NAMES', chan)
+  }
+
+  static didYouMean(seed) {
+    let results = execSync(`find ./commands/ -name '${seed}*' -printf "%f\n"`).toString().split('\n')
+    results = results
+      .filter(x => x.length > 0)
+      .map(x => x.substring(0, x.length - 3))
+      .map(x => '!'+x)
+      .join(', ')
+
+    if (results.length == 0) {
+      return `I don't know that command`
+    } else {
+      return `Did you mean ${results} or something else?`
+    }
   }
 
 }

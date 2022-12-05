@@ -33,6 +33,9 @@ module.exports = class CommandHandler {
         this.#logEvent(cmd, opts, response)
         return bot.say(opts.to, response)
       }) 
+    } else {
+      const cmdSeed = opts.command.replace('!', '')[0]
+      return bot.say(opts.to, Helpers.didYouMean(cmdSeed))
     }
   }
 
