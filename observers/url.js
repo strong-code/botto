@@ -95,7 +95,7 @@ module.exports = class Url extends Observer {
   }
 
   isImage(url) {
-    const ignorable = ['jpg', 'png', 'gif', 'webm', 'jpeg', 'mp3', 'mp4']
+    const ignorable = ['jpg', 'png', 'gif', 'webm', 'jpeg', 'mp3', 'mp4', 'mov']
     const ending = _.last(url.href.split('.'))
 
     return ignorable.indexOf(ending) > -1
