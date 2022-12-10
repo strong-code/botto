@@ -5,12 +5,12 @@ const Observer = require('./observer.js')
 module.exports = class Shout extends Observer {
 
   constructor() {
-    const regex = new RegExp(/(?=.*[A-Z]{3,})^[^a-z]{4,}$|^who\ssaid\sthat$/)
+    const regex = new RegExp(/(?=.*[A-Z]{3,})^[^a-z]{4,}$|^who\ssaid\sthat.*/)
     super('shout', regex, 8)
   }
 
   call(opts, respond) {
-    if (opts.text === 'who said that') {
+    if (opts.text.match(/^who\ssaid\sthat.*/)) {
       if (this.lastShout) {
         const lastAt = moment(this.lastShout.date_spoken).format('dddd, MMMM Do YYYY')
         return respond(`${this.lastShout.nick} said that in ${this.lastShout.chan} on ${lastAt}`)
