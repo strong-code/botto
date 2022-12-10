@@ -81,7 +81,7 @@ bot.addListener("kick", (chan, nick, by, reason, message) => {
     } else {
       kickCounter[chan] = (kickCounter[chan] || 0) + 1
       console.log(`Attemping to rejoin ${chan}... (${kickCounter[chan]}/3)`)
-      bot.join(chan)
+      setTimeout(() => { bot.join(chan) }, 500) // insta rejoins can cause problems
     }
   }
 })
