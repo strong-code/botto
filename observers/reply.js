@@ -5,7 +5,7 @@ module.exports = class Reply extends Observer {
 
   constructor() {
     const regex = new RegExp(/.*/)
-    super('reply', regex)
+    super('reply', regex, 5)
   }
 
   #lastReply = undefined
