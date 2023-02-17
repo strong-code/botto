@@ -18,6 +18,10 @@ module.exports = class Youtube extends Command {
     const query = opts.args.join(' ')
     const res = await needle('get', `${API_BASE}&q=${query}&key=${config.apiKey}`)
 
+    if (!res.body.items || res.body.items.length === 0) {
+      return respond('Unable to find any matching videos')
+    }
+
     const url = 'https://youtu.be/' + res.body.items[0].id.videoId
     const vid = res.body.items[0].snippet
 
