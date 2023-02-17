@@ -35,7 +35,7 @@ module.exports = class Helpers {
   }
 
   // Uploads supplied text to strongco.de API and returns paste url
-  static uploadText(text) {
+  static async uploadText(text) {
     return needle('post', STRONGCODE_API, `text=${text}`)
   }
 
