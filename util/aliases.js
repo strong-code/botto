@@ -14,5 +14,6 @@ module.exports = {
   'np': 'nowplaying',
   'ud': 'urbandictionary',
   'wiki': 'wikipedia',
-  'n': 'news'
+  'n': 'news',
+  'yt': 'youtube'
 }
