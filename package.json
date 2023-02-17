@@ -31,7 +31,8 @@
     "pg-promise": "^10.10.2",
     "snoowrap": "^1.21.0",
     "twit": "~2.2.11",
-    "twitch": "^4.3.8"
+    "twitch": "^4.3.8",
+    "unescape": "^1.0.1"
   },
   "engines": {
     "node": "~12.0"
