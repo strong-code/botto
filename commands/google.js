@@ -30,7 +30,7 @@ module.exports = class Google extends Command {
 
     const res = await needle('get', API_URL, config)
 
-    if (res.body.searchInformation.totalRestults === '0') {
+    if (!res.body.items || res.body.searchInformation.totalRestults === '0') {
       return 'No results found'
     }
 
