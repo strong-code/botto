@@ -6,6 +6,10 @@ module.exports = {
   hostMatch: /^(www\.)?imdb\.com$/,
 
   parse: async function(url) {
+    if (url.pathname.split('/')[1] !== 'title') {
+      throw Error('Non-movie url, using default parser')
+    }
+
     const movieId = url.pathname.split('/')[2]
 
     if (!movieId) {
