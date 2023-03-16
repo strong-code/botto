@@ -57,7 +57,7 @@ module.exports = class Helpers {
   }
 
   static didYouMean(seed) {
-    let results = execSync(`find ./commands/ -name '${seed}*' -printf "%f\n"`).toString().split('\n')
+    let results = execSync(`find ./commands/ -name '${seed}*' -type f -printf "%f\n"`).toString().split('\n')
     results = results
       .filter(x => x.length > 0)
       .map(x => x.substring(0, x.length - 3))
