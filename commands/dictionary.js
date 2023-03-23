@@ -52,6 +52,10 @@ module.exports = class Dictionary extends Command {
       }
 
       le.entries.forEach(e => {
+        if (typeof e.senses === 'undefined') {
+          throw new Error(`No definitions found for "${word}" (type unspecified)`)
+        }
+
         definitions[type] = e.senses[0].definitions[0]
       })
     })
