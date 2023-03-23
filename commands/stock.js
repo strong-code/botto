@@ -4,6 +4,7 @@ const API_KEY = require('../config').stock.apiKey
 const BASE_URL = 'https://cloud.iexapis.com/stable/stock' 
 const Command = require('./command.js')
 const Colors = require('irc').colors
+const Helpers = require('../util/helpers.js')
 
 module.exports = class Stock extends Command {
   
@@ -34,10 +35,13 @@ module.exports = class Stock extends Command {
     const color = ( p.change >= 0 ? 'light_green' : 'light_red' )
     const price = Colors.wrap('yellow', `$${p.latestPrice}`)
     const changePercent = (p.changePercent * 100).toFixed(2)
-    const vol = ( p.volume === null ? '' : `Vol: ${p.volume.toLocaleString()} |` )
+    const vol = ( p.volume === null ? '' : ` | Vol: ${p.volume.toLocaleString()}` )
+    const url = await Helpers.shortenUrl(`https://finance.yahoo.com/quote/${ticker}`)
 
-    return `${p.companyName}: ${price} | ${vol}`
-      + ` Change: ${Colors.wrap(color, p.change)} pts (${Colors.wrap(color, changePercent)}%)`
+    return `${p.companyName}: ${price}`
+      + `${vol}`
+      + ` | Change: ${Colors.wrap(color, p.change)} pts (${Colors.wrap(color, changePercent)}%)`
+      + ` | ${url}`
   }
 
 }

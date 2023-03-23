@@ -2,7 +2,7 @@ const config = require("../config.js")
 const _ = require('lodash')
 const needle = require('needle')
 const { execSync } = require('child_process')
-const STRONGCODE_API = require('../config.js').logs.api
+const API_BASE = require('../config.js').apiBase
 
 module.exports = class Helpers {
 
@@ -35,7 +35,14 @@ module.exports = class Helpers {
 
   // Uploads supplied text to strongco.de API and returns paste url
   static async uploadText(text) {
-    return needle('post', STRONGCODE_API, `text=${text}`)
+    return needle('post', `${API_BASE}/paste`, `text=${text}`)
+  }
+
+  // Return shortened URL from strongco.de
+  static async shortenUrl(url) {
+    console.log(`${API_BASE}/shorten`)
+    const res = await needle('post', `${API_BASE}/shorten`, {url: url})
+    return res.body.url
   }
 
   static truncate(str, length, trail = '') {
