@@ -15,5 +15,6 @@ module.exports = {
   'ud': 'urbandictionary',
   'wiki': 'wikipedia',
   'n': 'news',
-  'yt': 'youtube'
+  'yt': 'youtube',
+  'appl': 'applaud'
 }
