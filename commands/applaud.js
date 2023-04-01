@@ -21,7 +21,7 @@ module.exports = class Applaud extends Command {
 
     Helpers.usersInChan(bot, opts.to, (nicks) => {
       if (nicks.includes(target)) {
-        return bot.action(opts.to, `applauds ${target} ${ending} ���`)
+        return bot.action(opts.to, `applauds ${target} ${ending} 👏 👏 👏`)
       }
     })
   }
