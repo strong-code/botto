@@ -1,4 +1,4 @@
-const needle = require('needle')
+const { exec } = require('child_process')
 const config = require('../config.js').url
 const Command = require('./command.js')
 
@@ -17,24 +17,29 @@ module.exports = class Up extends Command {
   }
 
   check(domain, respond) {
-    const url = 'https://isitup.org/' + domain + '.json'
+    const cmd = `curl -LI ${domain} 2>/dev/null | grep -o '^HTTP.*' | tail -1 | cut -d ' ' -f2`
 
-    needle.get(url, config.options, (err, res) => {
-      if (err) {
-        return respond(err.message)
+    exec(cmd, (_, out, err) => {
+      out = out.trim()
+      let stat 
+
+      switch (true) {
+        case /^2.*/.test(out):
+          stat = 'is up'
+          break
+        case /^4.*/.test(out):
+          stat = 'was not found or is unreachable'
+          break
+        case /^5.*/.test(out):
+          stat = 'is offline'
+          break
+        default:
+          stat = `Unable to get a response for ${domain}`
+          return respond(`Unable to get response for ${domain} (invalid domain)`)
+          break
       }
 
-      const status = res.body['status_code']
-      const http_status = res.body['response_code']
-      const response_time = res.body['response_time']
-
-      if (status === 1) {
-        return respond(`[HTTP ${http_status}] ${domain} is up (response time: ${response_time} seconds)`)
-      } else if (status === 2) {
-        return respond(`${domain} is currently offline`)
-      } else {
-        return respond(`${domain} is not a valid domain`)
-      }
+      return respond(`[HTTP ${out}] ${domain} ${stat}`)
     })
   }
 }
