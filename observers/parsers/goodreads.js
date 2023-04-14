@@ -13,10 +13,11 @@ module.exports = {
     const $ = cheerio.load(html.body)
     const title = $('head > title').text().trim()
     const desc = $('meta[property="og:description"]').attr('content').trim()
-    const rating = $('span[itemprop = "ratingValue"]').text().trim()
-    const reviews = parseInt($('meta[itemprop = "ratingCount"]').attr('content').trim()).toLocaleString()
+    const rating = parseFloat($('.RatingStatistics__rating').text().trim()).toFixed(1)
+    const reviewText = $('div.RatingStatistics__meta span.u-dot-before').text()
+    const reviews = reviewText.match(/^\d,?\d*\sreviews/)
     
-    return `[Goodreads] ${title} | ${Colors.wrap('yellow', `★ ${rating}`)} / 5 | ${reviews} reviews | ${desc}`
+    return `[Goodreads] ${title} | ${Colors.wrap('yellow', `★ ${rating}`)} / 5 | ${reviews[0]} | ${desc}`
   }
 
 }
