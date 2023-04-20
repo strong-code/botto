@@ -1,7 +1,9 @@
 const config = require("../config.js")
 const _ = require('lodash')
 const needle = require('needle')
+const fs = require('fs')
 const { execSync } = require('child_process')
+const FormData = require('form-data')
 const API_BASE = require('../config.js').apiBase
 
 module.exports = class Helpers {
@@ -36,6 +38,12 @@ module.exports = class Helpers {
   // Uploads supplied text to strongco.de API and returns paste url
   static async uploadText(text) {
     return needle('post', `${API_BASE}/paste`, `text=${text}`)
+  }
+
+  // Uploads supplied file to strongco.de API and returns paste url 
+  static async uploadFile(filepath) {
+    const data = { file: { file: filepath, content_type: 'text/plain' } }
+    return needle('post', `${API_BASE}/paste`, data, { multipart: true} )
   }
 
   // Return shortened URL from strongco.de

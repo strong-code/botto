@@ -33,3 +33,6 @@ package-lock.json
 
 # /bin dir
 bin/
+
+# /tmp dir
+/tmp
