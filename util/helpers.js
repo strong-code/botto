@@ -1,9 +1,7 @@
 const config = require("../config.js")
 const _ = require('lodash')
 const needle = require('needle')
-const fs = require('fs')
 const { execSync } = require('child_process')
-const FormData = require('form-data')
 const API_BASE = require('../config.js').apiBase
 
 module.exports = class Helpers {
