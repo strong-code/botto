@@ -30,7 +30,8 @@ module.exports = class Ignore extends Command {
 
   async listIgnored(chan, respond) {
     await this.#refresh()
-    return respond('BAD USERS LIST: ' + _.join(Ignore.ignoredUsers, ', '))
+    const ignoredNicks = Ignore.ignoredUsers.flatMap((o) => o.nick)
+    return respond('BAD USERS LIST: ' + ignoredNicks.join(', '))
   }
 
   ignoreUser(bot, requester, target, chan, respond) {
@@ -45,7 +46,7 @@ module.exports = class Ignore extends Command {
       )
       .then(() => {
         this.#refresh()
-        respond(`Ignoring user: ${target}. Bot privilege has been revoked`)
+        respond(`Ignoring user: ${target}@${data.host}. Bot privilege has been revoked`)
       })
       .catch(e => respond(`There is no one named '${target}' in this channel`))
     })
@@ -74,8 +75,8 @@ module.exports = class Ignore extends Command {
   async #refresh() {
     Ignore.ignoredUsers = []
 
-    await db.each('SELECT nick FROM ignored_users', [], row => {
-      Ignore.ignoredUsers.push(row.nick)
+    await db.each('SELECT nick, host FROM ignored_users', [], row => {
+      Ignore.ignoredUsers.push({nick: row.nick, host: row.host})
     })
     console.log(`Refreshed ignoredUser list with ${Ignore.ignoredUsers.length} users`)
   }
@@ -86,7 +87,7 @@ module.exports = class Ignore extends Command {
       return false
     }
 
-    return Ignore.ignoredUsers.includes(nick)
+    return Ignore.ignoredUsers.some(u => u.nick === nick || u.host === host)
   }
 
 };
