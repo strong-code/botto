@@ -24,8 +24,13 @@ module.exports = class Sed extends Observer {
         continue
       }
 
-      if (r.test(msg.text)) {
-        return respond(msg.text.replace(r, replacement))
+      try {
+        if (r.test(msg.text)) {
+          return respond(msg.text.replace(r, replacement))
+        }
+      } catch (e) {
+        console.log(e)
+        return respond('Invalid regex, nothing to replace')
       }
     }
   }
