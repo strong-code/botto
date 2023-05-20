@@ -1,6 +1,7 @@
 const Observer = require('./observer.js')
 const MsgCache = require('../util/messageCache.js')
 const regex = new RegExp(/^s\/(.+)\/(.*)$/)
+const vm = require('vm')
 
 module.exports = class Sed extends Observer {
 
@@ -24,13 +25,23 @@ module.exports = class Sed extends Observer {
         continue
       }
 
+      const ctx = vm.createContext({
+        match: null,
+        msg: msg,
+        r: r,
+        replacement: replacement
+      })
+
+      const script = new vm.Script('match = r.test(msg.text)')
+
       try {
-        if (r.test(msg.text)) {
+        script.runInContext(ctx, { timeout: 5000 })
+        if (ctx.match) {
           return respond(msg.text.replace(r, replacement))
         }
       } catch (e) {
         console.log(e)
-        return respond('Invalid regex, nothing to replace')
+        return respond('Timeout exceeded (5000ms). Stop trying to break me')
       }
     }
   }
