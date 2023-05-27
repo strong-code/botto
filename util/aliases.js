@@ -16,5 +16,6 @@ module.exports = {
   'wiki': 'wikipedia',
   'n': 'news',
   'yt': 'youtube',
-  'appl': 'applaud'
+  'appl': 'applaud',
+  'tl': 'translate'
 }
