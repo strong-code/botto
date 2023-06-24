@@ -45,7 +45,7 @@ bot.addListener("message", function(from, to, text, msg) {
 
   try {
     if (!Ignore.isIgnored(msg.nick, msg.host)) {  
-      if (text[0] === '!') {
+      if (text[0] === '!' && text.length >= 2) {
         // Delegate explicit commands starting with a !bang to the handler
         commandHandler.route(bot, from, to, text, msg)
       } else {

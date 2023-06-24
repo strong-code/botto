@@ -87,7 +87,13 @@ module.exports = class Ignore extends Command {
       return false
     }
 
-    return Ignore.ignoredUsers.some(u => u.nick === nick || u.host === host)
+    // Special check for default hostmasks, to allow for fuzzy matches
+    // e.g. match '42FB06A4:639776FF:9FEBD2AC:IP' to '*:9FEBD2AC:IP'
+    if (/^\w*[:\.]\w*[:\.]\w*[:\.]IP$/.test(host)) {
+      host = host.split(':').slice(2).join(':')
+    }
+
+    return Ignore.ignoredUsers.some(u => u.nick === nick || u.host.includes(host))
   }
 
 };
