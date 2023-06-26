@@ -46,7 +46,6 @@ module.exports = class Helpers {
 
   // Return shortened URL from strongco.de
   static async shortenUrl(url) {
-    console.log(`${API_BASE}/shorten`)
     const res = await needle('post', `${API_BASE}/shorten`, {url: url})
     return res.body.url
   }
