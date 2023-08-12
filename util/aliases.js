@@ -17,5 +17,6 @@ module.exports = {
   'n': 'news',
   'yt': 'youtube',
   'appl': 'applaud',
-  'tl': 'translate'
+  'tl': 'translate',
+  'choose': 'decide'
 }
