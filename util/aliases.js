@@ -18,5 +18,6 @@ module.exports = {
   'yt': 'youtube',
   'appl': 'applaud',
   'tl': 'translate',
-  'choose': 'decide'
+  'choose': 'decide',
+  'channels': 'chans'
 }
