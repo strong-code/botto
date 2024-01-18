@@ -1,5 +1,4 @@
 const db = require('../../util/db.js');
-const _  = require('lodash');
 const Command = require('../command.js')
 
 module.exports = class Ignore extends Command {
@@ -88,9 +87,15 @@ module.exports = class Ignore extends Command {
     }
 
     // Special check for default hostmasks, to allow for fuzzy matches
-    // e.g. match '42FB06A4:639776FF:9FEBD2AC:IP' to '*:9FEBD2AC:IP'
+    // e.g. match '42FB06A4:639776FF:9FEBD2AC:IP' to '*::9FEBD2AC:IP'
     if (/^\w*[:\.]\w*[:\.]\w*[:\.]IP$/.test(host)) {
-      host = host.split(':').slice(2).join(':')
+      if (host.split(':').length >= 3) { 
+        // colon-delimited host
+        host = host.split(':').slice(2).join(':')
+      } else { 
+        // period-delimited host
+        host = host.split('.').slice(2).join('.')
+      }
     }
 
     return Ignore.ignoredUsers.some(u => u.nick === nick || u.host.includes(host))
