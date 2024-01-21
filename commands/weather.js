@@ -1,6 +1,5 @@
 const weather = require('../config.js').weather
 const needle  = require('needle')
-const _       = require('lodash')
 const db      = require('../util/db.js')
 const Command = require('./command.js')
 const Helpers = require('../util/helpers.js')
@@ -61,8 +60,8 @@ module.exports = class Weather extends Command {
 
     const loc = res.body.location
     const current = res.body.current
-    const desc = _.toLower(current.weather_descriptions[0])
-    current.emoji = await this.getWeatherEmoji(city) 
+    const desc = current.weather_descriptions[0].toLowerCase()
+    current.emoji = await this.getWeatherEmoji(city)
 
     return `Weather for ${loc.name}, ${loc.region}: ${current.emoji} ${current.temperature}° (feels like ${current.feelslike}°) ` +
     `and ${desc} | Wind is ${current.wind_speed}mph ${current.wind_dir} | Humidity is at ${current.humidity}% ` +
