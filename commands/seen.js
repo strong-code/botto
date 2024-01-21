@@ -1,5 +1,6 @@
 const Command = require('./command.js')
 const redis = require('redis')
+const Helpers = require('../util/helpers.js')
 
 module.exports = class Seen extends Command {
 
@@ -12,6 +13,10 @@ module.exports = class Seen extends Command {
 
     if (!nick) {
       return respond('Usage is !seen <nick>')
+    }
+
+    if (Helpers.usersInChan(bot, opts.to, (users) => users.includes(nick))) {
+      return respond(`${nick} is in the channel right now`)
     }
 
     const client = await redis.createClient().connect()
