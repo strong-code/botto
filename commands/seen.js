@@ -1,5 +1,5 @@
 const Command = require('./command.js')
-const redis = require('redis')
+const RedisClient = require('../util/redis.js')
 const Helpers = require('../util/helpers.js')
 
 module.exports = class Seen extends Command {
@@ -15,12 +15,13 @@ module.exports = class Seen extends Command {
       return respond('Usage is !seen <nick>')
     }
 
-    if (Helpers.usersInChan(bot, opts.to, (users) => users.includes(nick))) {
-      return respond(`${nick} is in the channel right now`)
-    }
+    Helpers.usersInChan(bot, opts.to, (users) => {
+      if (users.includes(nick)) {
+        return respond(`${nick} is in the channel right now`)
+      }
+    })
 
-    const client = await redis.createClient().connect()
-    const lastEvent = await client.hGetAll(nick)
+    const lastEvent = await RedisClient.hGetAll(nick)
 
     if (Object.entries(lastEvent).length === 0) {
       return respond(`I've never seen ${nick}`)
@@ -28,8 +29,6 @@ module.exports = class Seen extends Command {
 
     const str = this.fmtEvent(lastEvent)
     respond(`${nick} ${str} at ${lastEvent.time}`)
-
-    await client.disconnect()
   }
 
   fmtEvent(lastEvent) {
@@ -47,10 +46,10 @@ module.exports = class Seen extends Command {
         }
         break
       case 'quit':
-        str = ` was last seen quitting`
+        str = `was last seen quitting`
         break
       case 'kick':
-        str = ` was last seen getting kicked from ${lastEvent.chan}`
+        str = `was last seen getting kicked from ${lastEvent.chan}`
         break
       case 'kill':
         str = `was killed from the server`

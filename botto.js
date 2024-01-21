@@ -7,6 +7,7 @@ const observerHandler = new (require('./observers/_observerHandler.js'))()
 const Ignore = require('./commands/admin/ignore.js')
 const MsgCache = require('./util/messageCache.js')
 const Helpers = require('./util/helpers.js')
+const RedisClient = require('./util/redis.js')
 const kickCounter = {}; // ; is needed here for SEAF
 
 // Preload the observerHandler and commandHandler
@@ -21,7 +22,7 @@ const bot = new irc.Client(config.server, config.botName, {
 });
 
 const BanHandler = new (require('./util/banHandler.js'))(bot)
-const RedisClient = new (require('./util/redis.js'))(bot) 
+RedisClient.init(bot)
 
 console.log(`${new Array(35).join('-')}` +
   String.raw`
