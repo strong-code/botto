@@ -2,7 +2,7 @@ const moment = require('moment')
 const db = require('../../util/db.js')
 const Command = require('../command.js')
 const needle = require('needle')
-const WEB_URL = 'botto.strongco.de'
+const WEB_URL = 'http://botto.strongco.de'
 const fs = require('fs/promises')
 const { execSync } = require('child_process')
 
