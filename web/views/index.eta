@@ -1,1 +1,64 @@
-<h1>This is a test using <%= it.name %></h1>
+<h1><u>Botto</u></h1>
+<p>
+  <font color="red">RED</font> indicates an unmounted command/observer<br>
+</p>
+<p>
+  Last command issued was <i><%= it.lastCommand.message %></i> by <%= it.lastCommand.nick %> in <%= it.lastCommand.sent_to %>
+</p>
+<p>
+  Last observer triggered was <i>"<%= it.lastObserver.message %>"</i> to which botto responded <i>"<%= it.lastObserver.response %>"</i> by <%= it.lastObserver.nick %> in <%= it.lastObserver.sent_to %>
+</p>
+
+<h3><u>Commands</u></h3>
+<p>
+  <i>
+    <%= it.commands.filter(c => c.mounted).length %> mounted, <%= it.commands.filter(c => !c.mounted).length %> unmounted
+  </i>
+</p>
+
+<% Object.keys(it.commands).forEach(k => { %>
+  <% if (it.commands[k].mounted) { %>
+    !<%= it.commands[k].name %> <br>
+  <% } else { %>
+    <font color="red">
+      !<%= it.commands[k].name %> <br>
+    </font>
+  <% } %>
+<% }) %>
+
+<p>
+
+<h3><u>Admin Commands</u></h3>
+<p>
+  Admin commands are only callable by channel or global admins
+</p>
+
+<% Object.keys(it.adminCommands).forEach(k => { %>
+  !<%= it.commands[k].name %> <br>
+<% }) %>
+
+<p>
+
+<h3><u>Observers</u></h3>
+<p>
+  <i>
+    <%= it.observers.filter(o => o.mounted).length %> mounted, <%= it.observers.filter(o => !o.mounted).length %> unmounted
+  </i>
+</p>
+
+<% Object.keys(it.observers).forEach(k => { %>
+  <% if (it.observers[k].mounted) { %>
+    <%= it.observers[k].name %> <br>
+  <% } else { %>
+    <font color="red">
+      <%= it.observers[k].name %> <br>
+    </font>
+  <% } %>
+<% }) %>
+
+______________________________________________
+<p>
+  <i>
+    Webserver stats: <%= it.memory %>Mb memory usage, <%= it.uptime %> uptime
+  </i>
+</p>

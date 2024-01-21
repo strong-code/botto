@@ -1,11 +1,11 @@
 const moment = require('moment')
 const redis = require('redis')
+const VALID_EVENTS = ['join', 'part', 'quit', 'kick', 'kill', 'message', 'nick', 'action']
 
 module.exports = class RedisClient {
 
   constructor(bot) {
     this.bot = bot
-    this.VALID_EVENTS = ['join', 'part', 'quit', 'kick', 'kill', 'message', 'nick', 'action']
     this.client = redis.createClient().on('error', err => console.log('Redis Client error:', err));
     (async () => {
       await this.client.connect()
@@ -59,11 +59,11 @@ module.exports = class RedisClient {
       this.recordEvent(from, to, now, 'action', text) 
     })
 
-    console.log(`Redis client initiated and connected with ${this.VALID_EVENTS.length} event listeners`)
+    console.log(`Redis client initiated and connected with ${VALID_EVENTS.length} event listeners`)
   }
 
   async recordEvent(nick, chan, time, type, eventString) {
-    if (!this.VALID_EVENTS.find(t => type === t)) {
+    if (!VALID_EVENTS.find(t => type === t)) {
       console.log(`${type} is not a valid type - not recording event`)
       return
     }
