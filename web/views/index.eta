@@ -34,7 +34,7 @@
 </p>
 
 <% Object.keys(it.adminCommands).forEach(k => { %>
-  !<%= it.commands[k].name %> <br>
+  !<%= it.adminCommands[k].name %> <br>
 <% }) %>
 
 <p>
