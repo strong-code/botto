@@ -68,6 +68,22 @@ module.exports = class Helpers {
     bot.send('NAMES', chan)
   }
 
+  // Promise that returns true/false if specified nick is in given chan
+  static async userInChan(bot, chan, nick) { 
+    const p = new Promise((resolve, _) => {
+      bot.addListener(`names${chan}`, (nicks) => {
+        bot.removeAllListeners(`names${chan}`)
+        if (Object.keys(nicks).includes(nick)) {
+          resolve(true)
+        }
+        resolve(false)
+      })
+    })
+
+    bot.send('NAMES', chan)
+    return p
+  }
+
   static didYouMean(seed) {
     let results = execSync(`find ./commands/ -name '${seed}*' -type f -printf "%f\n"`).toString().split('\n')
     results = results

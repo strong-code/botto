@@ -15,11 +15,9 @@ module.exports = class Seen extends Command {
       return respond('Usage is !seen <nick>')
     }
 
-    Helpers.usersInChan(bot, opts.to, (users) => {
-      if (users.includes(nick)) {
-        return respond(`${nick} is in the channel right now`)
-      }
-    })
+    if (await Helpers.userInChan(bot, opts.to, nick)) {
+      return respond(`${nick} is in the channel right now`)
+    }
 
     const lastEvent = await RedisClient.hGetAll(nick)
 
