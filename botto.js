@@ -21,6 +21,7 @@ const bot = new irc.Client(config.server, config.botName, {
 });
 
 const BanHandler = new (require('./util/banHandler.js'))(bot)
+const RedisClient = new (require('./util/redis.js'))(bot) 
 
 console.log(`${new Array(35).join('-')}` +
   String.raw`
