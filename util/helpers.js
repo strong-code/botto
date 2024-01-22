@@ -58,16 +58,6 @@ module.exports = class Helpers {
     return `${str.substr(0, length)}${trail}`
   }
 
-  // Perform cb() against array of usernames in supplied channel
-  static async usersInChan(bot, chan, cb) {
-    bot.addListener(`names${chan}`, (nicks) => {
-      cb(Object.keys(nicks))
-      bot.removeAllListeners(`names${chan}`)
-    })
-
-    bot.send('NAMES', chan)
-  }
-
   // Promise that returns true/false if specified nick is in given chan
   static async userInChan(bot, chan, nick) { 
     const p = new Promise((resolve, _) => {

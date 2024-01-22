@@ -7,7 +7,7 @@ module.exports = class Applaud extends Command {
     super('applaud')
   }
 
-  call(bot, opts, respond) {
+  async call(bot, opts, respond) {
     let target = opts.args[0]
     const endings = [
       'for doing an amazing job!',
@@ -19,10 +19,8 @@ module.exports = class Applaud extends Command {
 
     const ending = endings[Math.floor(Math.random() * endings.length)]
 
-    Helpers.usersInChan(bot, opts.to, (nicks) => {
-      if (nicks.includes(target)) {
-        return bot.action(opts.to, `applauds ${target} ${ending} 👏 👏 👏`)
-      }
-    })
+    if (await Helpers.userInChan(bot, opts.to, target)) {
+      return bot.action(opts.to, `applauds ${target} ${ending} 👏 👏 👏`)
+    }
   }
 }

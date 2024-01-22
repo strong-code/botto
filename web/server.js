@@ -39,5 +39,5 @@ app.get('/', async (req, res) => {
 })
 
 app.listen(8181, () => {
-  console.log(`Listening on port 8181`)
+  console.log(`Webserver started on local port 8181 - http://botto.strongco.de`)
 })

@@ -7,14 +7,12 @@ module.exports = class Checkem extends Command {
     super('tuck')
   }
 
-  call(bot, opts, respond) {
+  async call(bot, opts, respond) {
     let target = opts.args[0]
 
-    Helpers.usersInChan(bot, opts.to, (nicks) => {
-      if (nicks.includes(target)) {
-        return bot.action(opts.to, `tucks ${target} into bed and wishes them a good night ❤️`)
-      }
-    })
+    if (await Helpers.userInChan(bot, opts.to, target)) {
+      return bot.action(opts.to, `tucks ${target} into bed and wishes them a good night ❤️`)
+    }
   }
 }
 

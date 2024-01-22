@@ -25,17 +25,15 @@ module.exports = class Weather extends Command {
       const updated = await this.setLocation(opts.from, loc)
       return respond(updated)
     } else {
-      Helpers.usersInChan(bot, opts.to, async (nicks) => {
-        let match = nicks.find(n => opts.args[0].toLowerCase() == n.toLowerCase())
-        if (match) {
-          weather = await this.getWeatherForNick(match)
-          return respond(weather)
-        } else {
-          const city = opts.args.join('+')
-          weather = await this.getWeather(city)
-          return respond(weather)
-        }
-      })
+      const nick = opts.args[0]
+      if (await Helpers.userInChan(bot, opts.to, nick)) {
+        weather = await this.getWeatherForNick(nick.toLowerCase())
+        return respond(weather)
+      } else {
+        const city = opts.args.join('+')
+        weather = await this.getWeather(city)
+        return respond(weather)
+      }
     }
   }
 
