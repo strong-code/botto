@@ -56,7 +56,7 @@ module.exports = class Seen extends Command {
         str = `was last seen saying "${lastEvent.eventString}" in ${lastEvent.chan}`
         break
       case 'nick':
-        str = `was last seen changing their name to ${lastEvent.chan}`
+        str = `was last seen changing their nickname: ${lastEvent.eventString}`
         break
       case 'action':
         str = `was last seen emoting: ${lastEvent.eventString}`
