@@ -13,22 +13,18 @@ module.exports = class Logs extends Command {
   call(bot, opts, respond) {
     if (!this.adminCallable(opts)) return
 
-    const options = { lines: '', since: '' }
+    const options = { lines: '-n 100' }
     const argString = _.join(opts.args, ' ').trim()
-
-    if (opts.args[0] === '') {
-      return respond("Usage: '!logs 5' for last 5 lines. '!lines 5m ago' for time range logs. These can be combined")
-    }
 
     if (this.isNumber(argString)) {
       options.lines = `-n ${argString}`
     }
 
     if (this.isTimeRange(argString)) {
-      options.since = `--since "${argString}"`
+      options[since] = `--since "${argString}"`
     }
 
-    this.getJournalLogs(options, (paste) => respond(paste)) 
+    this.getJournalLogs(options, (paste) => respond(`Last ${options.lines.split('-n ')[1]} lines: ${paste}`)) 
   }
 
   async uploadLogs(data, respond) {
