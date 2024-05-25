@@ -1,8 +1,7 @@
 const Command = require('./command.js')
 const needle = require('needle');
 const config = require('../config').url.options
-const creds = require('../config').oxford
-const BASE_URL = 'https://od-api.oxforddictionaries.com/api/v2/entries/en-gb/'
+const BASE_URL = 'https://api.dictionaryapi.dev/api/v2/entries/en/'
 
 module.exports = class Dictionary extends Command {
 
@@ -28,36 +27,25 @@ module.exports = class Dictionary extends Command {
   }
 
   async getDefinition(word) {
-
-    config.headers['app_id'] = creds.id
-    config.headers['app_key'] = creds.apiKey
-    const API_URL = `${BASE_URL}${word}?fields=definitions&strictMatch=false`
+    const API_URL = `${BASE_URL}${word}`
 
     const res = await needle('get', API_URL, config)
     
+    if (res.body.title === "No Definitions Found") {
+      return res.body.message
+    }
+
     if (res.body.error) {
       return res.body.error
     }
 
-    const data = res.body.results[0]
+    const data = res.body
     const definitions = {}
 
-    data.lexicalEntries.forEach(le => {
-      const type = le.lexicalCategory.text
-      definitions[type] = ''
-      
-      // sometimes the lexicalEntries don't contain definitions?
-      if (typeof le.entries === 'undefined') {
-        throw new Error(`No definitions found for "${word}"`)
-      }
-
-      le.entries.forEach(e => {
-        if (typeof e.senses === 'undefined') {
-          throw new Error(`No definitions found for "${word}" (type unspecified)`)
-        }
-
-        definitions[type] = e.senses[0].definitions[0]
-      })
+    data.forEach(e => {
+      let part = e['meanings'][0]['partOfSpeech']
+      let def = e['meanings'][0]['definitions'][0]['definition']
+      definitions[part] = def
     })
 
     let defstr = ''
