@@ -1,16 +1,23 @@
-const _ = require('lodash')
 const moment = require('moment')
 const regex = /(\d+) (seconds?|minutes?|hours?|days?) (.+)/
+const Helpers = require('../util/helpers.js')
 const Command = require('./command.js')
-const reminders = {}
+const Redis = require('../util/redis.js')
+const reminders = {};
 
 module.exports = class Remind extends Command {
 
   constructor() {
+    (async () => {
+      const existingReminders = await Redis.hGetAll('reminders')
+      console.log('Existing reminders from redis:')
+      console.log(existingReminders)
+    })();
     super('remind')
   }
   
   call(bot, opts, respond) {
+    console.log(moment().milliseconds())
     if (opts.args[0] === 'clear') {
       const cleared = this.clearReminders(opts.from)
       return respond(cleared)
@@ -22,7 +29,7 @@ module.exports = class Remind extends Command {
     }
 
     try {
-      let [, count, unit, reminder] = regex.exec(_.join(opts.args, ' '))
+      let [, count, unit, reminder] = regex.exec(opts.args.join(' '))
 
       this.createReminder(opts.from, count, unit, reminder, respond)
       
@@ -39,31 +46,43 @@ module.exports = class Remind extends Command {
 
   }
 
-  createReminder(user, count, unit, reminder, respond) {
-    const convertedCount = this.toMillis(count, unit)
+  async flushToRedis() {
+    const stringifiedReminders = JSON.stringify(reminders)
+    console.log(stringifiedReminders)
+    await Redis.hSet('reminders', stringifiedReminders)
+  }
 
-    if (convertedCount > Math.pow(2,31)-1) { // limitation of setTimeout max millis
+  createReminder(user, count, unit, reminder, respond) {
+    if (!/^(second|minute|hour|day)s?$/.test(unit)) {
+      return respond('Unit must be second(s), minute(s), hour(s) or day(s)')
+    } 
+
+    const duration = moment.duration(count, unit).asMilliseconds()
+
+    if (duration > Math.pow(2,31)-1) { // limitation of setTimeout max millis
       return respond('Just use a calendar at that point')
     }
 
     const r = setTimeout(() => {
       respond(`${user}: ${reminder} (from ${count} ${unit} ago)`)
       this.clearReminder(user, reminder)
-    }, convertedCount)
+    }, duration)
 
-    const end = moment().add(convertedCount, 'ms')
+    const end = moment().add(duration, 'ms')
 
-    const obj = { text: reminder, reminder: r, end: end }
+    const obj = { text: reminder, reminderId: r, end: end }
 
     if (reminders[user]) {
       reminders[user].push(obj) 
     } else {
       reminders[user] = [obj]
     }
+
+    this.flushToRedis()
   }
 
   listReminders(user) {
-    if (!reminders[user] || _.isEmpty(reminders[user])) {
+    if (!reminders[user] || reminders[user] === []) {
       return "You don't have any reminders set"
     }
 
@@ -81,7 +100,7 @@ module.exports = class Remind extends Command {
     reminders[user].forEach((r, i) => {
       if (r.text === text) {
         reminders[user].splice(i, 1)
-        console.log(`Cleared reminder for ${user} (${r,text})`)
+        console.log(`Cleared reminder for ${user} (${text})`)
       }
     })
   }
@@ -89,23 +108,11 @@ module.exports = class Remind extends Command {
   clearReminders(user) {
     if (typeof reminders[user] === 'undefined') { return }
 
-    reminders[user].forEach(r => clearTimeout(r.reminder))
+    reminders[user].forEach(r => clearTimeout(r.reminderId))
     reminders[user] = []
 
     return 'All reminders have been cleared'
   }
 
-  toMillis(count, unit) {
-    let secs = count
-
-    if (/^minute(s?)$/.test(unit)) {
-      secs = count * 60
-    } else if (/^hour(s?)$/.test(unit)) {
-      secs = count * 3600
-    } else if (/^day(s?)$/.test(unit)) {
-      secs = count * 86400
-    }
-    return secs * 1000
-  }
 }
 
