@@ -37,6 +37,7 @@ module.exports = class Stock extends Command {
 
     const stock = res.body.data[0]
 
+    const name = stock.name || stock.ticker
     const color = ( parseFloat(stock.day_change) >= 0 ? 'light_green' : 'light_red' )
     const price = Colors.wrap('yellow', `$${stock.price}`)
     const change = Colors.wrap(color, parseFloat(stock.price - stock.previous_close_price).toFixed(2))
@@ -46,7 +47,7 @@ module.exports = class Stock extends Command {
     const low = stock.day_low 
     const url = await Helpers.shortenUrl(`https://finance.yahoo.com/quote/${ticker}`)
 
-    return `${stock.name}: ${price}`
+    return `${name}: ${price}`
       + ` | Change: ${change} pts (${changePercent})%`
       + ` | High: $${high} Low: $${low}`
       + ` | Vol: ${vol}`
