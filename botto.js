@@ -43,7 +43,7 @@ ${new Array(35).join('-')}
 bot.addListener("message", function(from, to, text, msg) {
   console.log(` <- [${to}] ${from}: ${text}`)
 
-  MsgCache.put(from, to, text, new Date().toISOString())
+  MsgCache.put(to, text)
 
   try {
     if (!Ignore.isIgnored(msg.nick, msg.host)) {  

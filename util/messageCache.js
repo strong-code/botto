@@ -1,27 +1,26 @@
+const Redis = require('./redis.js')
 const MAX_MSG_CACHE_LENGTH = 100
 
 module.exports = class MessageCache {
 
   constructor() {}
 
-  static #MSG_CACHE = {}
+  static async put(to, text) {
+    const list = `${to}:msgCache`
 
-  static put(from, to, text, time) {
-    const msg = {from: from, text: text, time: time}
-
-    if (!this.#MSG_CACHE[to]) {
-      this.#MSG_CACHE[to] = []
+    if (Redis.lLen(list) >= MAX_MSG_CACHE_LENGTH) {
+      if (Math.floor(Math.random() * 5) + 1 === 1) {
+        console.log(`Trimming Redis list for ${list}`)
+        Redis.lTrim(list, 0, MAX_MSG_CACHE_LENGTH)
+      }
     }
 
-    if (this.#MSG_CACHE[to].length >= MAX_MSG_CACHE_LENGTH) {
-      this.#MSG_CACHE[to].pop()
-    }
-
-    this.#MSG_CACHE[to].unshift(msg)
+    Redis.rPush(list, text)
   }
 
-  static get(to) {
-    return this.#MSG_CACHE[to]
+  static async get(to) {
+    const list = `${to}:msgCache`
+    return await Redis.lRange(list, 0, MAX_MSG_CACHE_LENGTH)
   }
 
 }

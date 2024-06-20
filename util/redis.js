@@ -90,6 +90,22 @@ module.exports = {
 
   hSet: async(k, obj) => {
     return await client.hSet(k, obj)
+  },
+
+  rPush: async(list, msg) => {
+    return await client.rPush(list, msg)
+  },
+
+  lRange: async(list, start, end) => {
+    return await client.lRange(list, start, end)
+  },
+
+  lLen: async(list) => {
+    return await client.lLen(list)
+  },
+
+  lTrim: async(list) => {
+    return await client.lTrim(list)
   }
 
 }

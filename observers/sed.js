@@ -9,11 +9,11 @@ module.exports = class Sed extends Observer {
     super('sed', regex)
   }
 
-  call(opts, respond) {
+  async call(opts, respond) {
     const [_, rgx, replacement] = opts.text.split('/')
     const r = new RegExp(rgx)
 
-    for (let msg of MsgCache.get(opts.to)) {
+    for (let msg of await MsgCache.get(opts.to)) {
 
       // don't want to match the initial s/*/* observer message
       if (msg.text === opts.text) {
@@ -21,7 +21,7 @@ module.exports = class Sed extends Observer {
       }
 
       // don't match other s/foo/bar user messages
-      if (regex.test(msg.text)) {
+      if (regex.test(msg)) {
         continue
       }
 
@@ -32,12 +32,12 @@ module.exports = class Sed extends Observer {
         replacement: replacement
       })
 
-      const script = new vm.Script('match = r.test(msg.text)')
+      const script = new vm.Script('match = r.test(msg)')
 
       try {
         script.runInContext(ctx, { timeout: 5000 })
         if (ctx.match) {
-          return respond(msg.text.replace(r, replacement))
+          return respond(msg.replace(r, replacement))
         }
       } catch (e) {
         console.log(e)
