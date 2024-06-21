@@ -7,7 +7,7 @@ const Colors = require('irc').colors
 
 module.exports = {
 
-  hostMatch: /^(www\.)?(mobile\.)?twitter\.com$/,
+  hostMatch: /^(www\.)?(mobile\.)?(twitter|x)\.com$/,
 
   parse: async function(url) {
     if (!url.path.includes('/status/')) {
