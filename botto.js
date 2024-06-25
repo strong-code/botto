@@ -46,7 +46,7 @@ bot.addListener("message", function(from, to, text, msg) {
   MsgCache.put(to, text)
 
   try {
-    if (!Ignore.isIgnored(msg.nick, msg.host) || msg.user != '~anrdoirc') {
+    if (!Ignore.isIgnored(msg.nick, msg.host) && msg.user != '~androirc') {
       if (text[0] === '!' && text.length >= 2) {
         // Delegate explicit commands starting with a !bang to the handler
         commandHandler.route(bot, from, to, text, msg)
