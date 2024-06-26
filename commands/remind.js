@@ -31,9 +31,11 @@ module.exports = class Remind extends Command {
     try {
       let [, count, unit, reminder] = regex.exec(opts.args.join(' '))
 
-      this.createReminder(opts.from, count, unit, reminder, respond)
-      
-      respond(`I will remind you in ${count} ${unit}`)
+      const r = this.createReminder(opts.from, count, unit, reminder, respond)
+
+      if (r) {
+        respond(`I will remind you in ${count} ${unit}`)
+      }
     } catch (e) {
       console.log(e)
       // TypeError thrown when regex cant match array destructuring
@@ -79,6 +81,8 @@ module.exports = class Remind extends Command {
     }
 
     this.flushToRedis()
+
+    return r
   }
 
   listReminders(user) {
