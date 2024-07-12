@@ -13,7 +13,9 @@ module.exports = class Sed extends Observer {
     const [_, rgx, replacement] = opts.text.split('/')
     const r = new RegExp(rgx)
 
-    for (let msg of await MsgCache.get(opts.to)) {
+    const msgCache = await MsgCache.get(opts.to)
+
+    for (let msg of msgCache.reverse()) {
 
       // don't want to match the initial s/*/* observer message
       if (msg.text === opts.text) {
