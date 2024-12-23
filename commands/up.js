@@ -13,11 +13,24 @@ module.exports = class Up extends Command {
       return respond('Usage is !up <domain>');
     }
 
-    this.check(opts.args[0], respond)
+    let domain
+
+    try {
+      const regex = new RegExp(/[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/)
+      domain = opts.args[0].match(regex)[0]
+    } catch (e) {
+      return respond(`Malformed URL: ${domain}`)
+    }
+
+    if (!domain) {
+      return
+    }
+
+    this.check(domain, respond)
   }
 
   check(domain, respond) {
-    const cmd = `curl -LI ${domain} 2>/dev/null | grep -o '^HTTP.*' | tail -1 | cut -d ' ' -f2`
+    const cmd = `curl -4 -LI ${domain} 2>/dev/null | grep -o '^HTTP.*' | tail -1 | cut -d ' ' -f2`
 
     exec(cmd, (_, out, err) => {
       out = out.trim()
