@@ -1,6 +1,6 @@
 const fs = require('fs');
 const _  = require('lodash');
-const db = require('../core/_db.js');
+const db = require('../util/db.js')
 
 module.exports = {
 
