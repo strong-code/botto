@@ -14,7 +14,7 @@ module.exports = class Search extends Command {
   }
 
   async call(bot, opts, respond) {
-    const query = opts.args.join(' ').replace(/[^a-zA-Z0-9\s]/, '')
+    const query = opts.args.join(' ').replace(/[^a-zA-Z0-9\s]/g, '')
 
     if (query.length < 3) {
       return respond('Must provide a longer string to search for')
