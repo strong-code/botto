@@ -58,6 +58,13 @@ module.exports = class Quote extends Command {
         }
         
         break
+      case 'last':
+        const last = await this.getLastQuote(opts.to)
+        if (last) {
+          return respond(`[#${last.id}] ${last.message}`)
+        }
+
+        break
       default:
         if (!isNaN(opts.args[0])) {
           const idQuote = await this.quoteGetById(opts.args[0])
@@ -127,6 +134,13 @@ module.exports = class Quote extends Command {
 
   async quoteRandom(chan) {
     return db.oneOrNone('SELECT * FROM quotes WHERE chan = $1 ORDER BY RANDOM() LIMIT 1', [chan])
+    .then((row) => {
+      return row
+    })
+  }
+
+  async getLastQuote(chan) {
+    return db.oneOrNone('SELECT * FROM quotes WHERE chan = $1 ORDER BY id DESC LIMIT 1', [chan])
     .then((row) => {
       return row
     })
