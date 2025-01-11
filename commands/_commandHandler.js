@@ -43,6 +43,7 @@ module.exports = class CommandHandler {
     if (opts.to === '#botto') return
 
     console.log(`    ↳ ${opts.command} command triggered by ${opts.from} -> ${response}`)
+
     db.none(
       'INSERT INTO command_events (time, command_id, message, nick, sent_to, response) VALUES ($1, $2, $3, $4, $5, $6)',
       [new Date().toISOString(), cmd.id, opts.text, opts.from, opts.to, response]
