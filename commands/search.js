@@ -32,6 +32,10 @@ module.exports = class Search extends Command {
 
     const { stdout, stderr } = await execPromise(cmd)
 
+    if (stdout.length == 0) {
+      return 'absolutely nothing. Try a different query'
+    }
+
     if (stderr) {
       console.log(stderr)
       return 'Something went wrong. This error has been logged'
