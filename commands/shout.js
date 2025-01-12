@@ -19,7 +19,8 @@ module.exports = class Shout extends Command {
     }
 
     if (query) {
-      row = await db.one(`SELECT * FROM shouts WHERE message LIKE '%${query.toUpperCase()}%' ORDER BY random() LIMIT 1`)
+      let pattern = `%${query.toUpperCase()}%`
+      row = await db.one('SELECT * FROM shouts WHERE message LIKE $1 ORDER BY random() LIMIT 1', [pattern])
     } else {
       row = await db.one('SELECT * FROM shouts ORDER BY random() LIMIT 1', [])
     }
