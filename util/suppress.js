@@ -10,7 +10,7 @@ module.exports = {
 
   init: async() => {
     await db.each('SELECT * FROM suppressed WHERE module = $1 AND chan = $2', [modname, chan], row => {
-      suppressed.add(row.module)
+      suppressed.add(`${row.module}.${row.chan}`)
     })
     console.log(`Loaded ${suppressed.size} suppression rules.`)
   },
