@@ -113,3 +113,8 @@ CREATE TABLE IF NOT EXISTS observer_events (
   CONSTRAINT fk_observer FOREIGN KEY(observer_id) REFERENCES observers(id)
 );
 
+-- Definition for suppressed modules table.
+CREATE TABLE IF NOT EXISTS suppressed (
+  module VARCHAR(55) NOT NULL,
+  chan VARCHAR(55) NOT NULL
+);
