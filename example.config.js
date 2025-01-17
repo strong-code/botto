@@ -48,7 +48,7 @@ exports.url = {
     apiKey: ""
   },
   reddit: {
-    userAgent: "",
+    userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1677.0 Safari/537.36"
     clientId: "",
     clientSecret: "",
     username: "",
@@ -61,10 +61,10 @@ exports.url = {
 
 // Holy shit why does this library use snake_case for variable names
 exports.twitter = {
-	consumer_key: "",
-	consumer_secret: "",
-	access_token: "",
-	access_token_secret: "",
+	consumer_key: "INSERT_YOUR_KEY",
+	consumer_secret: "INSERT_YOUR_SECRET",
+	access_token: "INSERT_YOUR_ACCESS_TOKEN",
+	access_token_secret: "INSERT_YOUR_ACCESS_TOKEN_SECRET",
 	app_only_auth: false
 };
 
@@ -78,4 +78,12 @@ exports.google = {
 
 exports.coinmarketcap = {
   apiKey: ""
+}
+
+exports.imgur = {
+  clientId: ""
+}
+
+exports.twitch = {
+  clientId: ""
 }
