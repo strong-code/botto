@@ -2,23 +2,21 @@ const db = require('../util/db.js')
 
 let suppressed = new Set();
 
-function isSuppressed(modname, chan) {
-  return suppressed.has(`${modname}.${chan}`)
-}
-
 module.exports = {
 
-  init: async() => {
-    await db.each('SELECT * FROM suppressed WHERE module = $1 AND chan = $2', [modname, chan], row => {
+  async init() {
+    await db.each('SELECT * FROM suppressed', [], row => {
       suppressed.add(`${row.module}.${row.chan}`)
     })
     console.log(`Loaded ${suppressed.size} suppression rules.`)
   },
 
-  isSuppressed: isSuppressed,
+  isSuppressed(modname, chan) {
+    return suppressed.has(`${modname}.${chan}`)
+  },
 
-  add: (modname, chan, respond) => {
-    if (isSuppressed(modname, chan)) {
+  add(modname, chan, respond) {
+    if (this.isSuppressed(modname, chan)) {
       respond(`${modname} is already suppressed in ${chan}.`)
     } else {
       suppressed.add(`${modname}.${chan}`)
@@ -27,8 +25,8 @@ module.exports = {
     }
   },
 
-  remove: (modname, chan, respond) => {
-    if (isSuppressed(modname, chan)) {
+  remove(modname, chan, respond) {
+    if (this.isSuppressed(modname, chan)) {
       suppressed.delete(`${modname}.${chan}`)
       db.none('DELETE FROM suppressed WHERE module = $1 AND chan = $2', [modname, chan])
       respond(`${modname} is no longer suppressed in ${chan}.`)
