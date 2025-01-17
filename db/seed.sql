@@ -48,7 +48,6 @@ VALUES
   ('emoji'),
   ('epic'),
   ('markov'),
-  ('observer'),
   ('points'),
   ('reply'),
   ('sed'),
