@@ -35,4 +35,12 @@ module.exports = {
     }
   },
 
+  getForChan(chan) {
+    console.log(suppressed)
+    return Array.from(suppressed)
+      .filter(x => x.split('.')[1] == chan)
+      .map(x => x.split('.')[0])
+      .join(', ')
+  }
+
 }

@@ -12,6 +12,14 @@ module.exports = class Mount extends Command {
   call(bot, opts, respond) {
     if (!this.adminCallable(opts)) return
 
+    if (opts.args[0] == 'showall') {
+      const suppList = suppress.getForChan(opts.to)
+      if (suppList == '') {
+        return respond(`No modules currently suppressed for ${opts.to}`)
+      }
+      return respond(`Currently suppressed modules for ${opts.to}: ${suppList}`)
+    }
+
     let modname
     let chan
     let remove = false
