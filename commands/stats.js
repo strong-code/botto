@@ -24,17 +24,25 @@ module.exports = class Stats extends Command {
 
     const stats = await this.getStats(interval)
     const topCmds = `${stats.topCmds[0][0]} (${stats.topCmds[0][1]}), ${stats.topCmds[1][0]} (${stats.topCmds[1][1]}), ${stats.topCmds[2][0]} (${stats.topCmds[2][1]})`
-    return respond(`Stats for ${interval}: ${stats.total} total commands issued. Top 3 commands: ${topCmds}. Top 3 command users: ${stats.topChatters}`) 
+    const topObs = `${stats.topObs[0][0]} (${stats.topObs[0][1]}), ${stats.topObs[1][0]} (${stats.topObs[1][1]}), ${stats.topObs[2][0]} (${stats.topObs[2][1]})`
+
+    const response = `Stats for ${interval}: ${stats.totalCmds} total commands issued. Top 3 commands: ${topCmds}. Top 3 command users: ${stats.topChatters}. ` +
+    `${stats.totalObs} total observers triggered. Top 3 observers: ${topObs}`
+
+    return respond(response)
   }
 
   async getStats(interval) {
-    const [total, topCmds] = await this.getTopCommands(interval)
+    const [totalCmds, topCmds] = await this.getTopCommands(interval)
+    const [totalObs, topObs] = await this.getTopObservers(interval)
     const topChatters = await this.getTopChatters(interval)
 
 
     return {
-      total: total,
+      totalCmds: totalCmds,
+      totalObs: totalObs,
       topCmds: topCmds,
+      topObs: topObs,
       topChatters: topChatters
     }
   }
@@ -70,6 +78,27 @@ module.exports = class Stats extends Command {
         .slice(0,3)
 
       return [total, topCmds]
+    })
+  }
+
+  async getTopObservers(interval) {
+    return await db.manyOrNone(
+      'SELECT observers.name AS name, observer_events.* FROM observers JOIN observer_events ON observers.id = observer_events.observer_id WHERE observer_events.time >= NOW() - INTERVAL $1',
+      [interval]
+    )
+    .then(rows => {
+      const total = rows.length
+      const obsCount = {}
+
+      rows.forEach(o => {
+        obsCount[o.name] = (obsCount[o.name] || 0) + 1
+      })
+
+      const topObservers = Object.entries(obsCount)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0,3)
+
+      return [total, topObservers]
     })
   }
 }
