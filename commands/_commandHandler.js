@@ -1,6 +1,7 @@
 const db = require('../util/db.js')
 const Helpers = require('../util/helpers.js')
 const aliases = require('../util/aliases.js')
+const suppress = require('../util/suppress.js')
 
 /*
  * Command handler responsible for routing commands. These include admin only
@@ -26,8 +27,12 @@ module.exports = class CommandHandler {
 
   route(bot, from, to, text, message) {
     const opts = this.#makeOptions(bot, from, to, text, message)
-    const cmd = CommandHandler.commandList[opts.command]
 
+    if (suppress.isSuppressed(opts.command, opts.to)) {
+      return;
+    }
+
+    const cmd = CommandHandler.commandList[opts.command]
     if (cmd && cmd.mounted) {
       return cmd.call(bot, opts, (response) => {
         this.#logEvent(cmd, opts, response)

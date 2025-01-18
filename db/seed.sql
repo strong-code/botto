@@ -38,6 +38,7 @@ VALUES
   ('reload', true),
   ('reply', true),
   ('restart', true),
+  ('suppress', true),
   ('unmount', true);
 
 -- Seed all observers

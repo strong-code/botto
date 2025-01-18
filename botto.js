@@ -8,12 +8,14 @@ const Ignore = require('./commands/admin/ignore.js')
 const MsgCache = require('./util/messageCache.js')
 const Helpers = require('./util/helpers.js')
 const RedisClient = require('./util/redis.js')
+const suppress = require('./util/suppress.js')
 const kickCounter = {}; // ; is needed here for SEAF
 
-// Preload the observerHandler and commandHandler
+// Preload stuff
 (async () => {
   await commandHandler.init()
   await observerHandler.init()
+  await suppress.init()
 })();
 
 // Initiate the bot and the observers

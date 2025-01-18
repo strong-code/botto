@@ -1,4 +1,5 @@
 const db = require('../util/db.js')
+const suppress = require('../util/suppress.js')
 
 /*
  * Observer handler responsible for routing "observables". An observable is
@@ -33,11 +34,10 @@ module.exports = class ObserverHandler {
 
     // set receiver to the channel if it came from one, otherwise to whoever sent it
     const receiver = (to[0] === '#' ? opts.to : opts.from)
-
     try {
       for (let observer of Object.values(ObserverHandler.observerList)) {
 
-        if (!observer.mounted) {
+        if (!observer.mounted || suppress.isSuppressed(observer.name, opts.to)) {
           continue
         }
 
