@@ -104,8 +104,12 @@ module.exports = {
     return await client.lLen(list)
   },
 
-  lTrim: async(list) => {
-    return await client.lTrim(list)
+  lTrim: async(list, start, end) => {
+    return await client.lTrim(list, start, end)
+  },
+
+  del: async(list) => {
+    return await client.del(list)
   }
 
 }

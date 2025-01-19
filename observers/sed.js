@@ -15,7 +15,7 @@ module.exports = class Sed extends Observer {
 
     const msgCache = await MsgCache.get(opts.to)
 
-    for (let msg of msgCache.reverse()) {
+    for (let msg of msgCache) {
 
       // don't want to match the initial s/*/* observer message
       if (msg.text === opts.text) {
@@ -23,7 +23,7 @@ module.exports = class Sed extends Observer {
       }
 
       // don't match other s/foo/bar user messages
-      if (regex.test(msg)) {
+      if (/^s\/.*\/.*/.test(msg)) {
         continue
       }
 

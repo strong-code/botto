@@ -13,14 +13,14 @@ module.exports = class MessageCache {
     if (Redis.lLen(quotes) >= MAX_MSG_CACHE_LENGTH) {
       if (Math.floor(Math.random() * 5) + 1 === 1) {
         console.log(`Trimming Redis list for ${quotes}`)
-        Redis.lTrim(quotes, 0, MAX_MSG_CACHE_LENGTH)
+        Redis.lTrim(quotes, (MAX_MSG_CACHE_LENGTH * -1), -1)
       }
     }
 
     if (Redis.lLen(list) >= MAX_MSG_CACHE_LENGTH) {
       if (Math.floor(Math.random() * 5) + 1 === 1) {
         console.log(`Trimming Redis list for ${list}`)
-        Redis.lTrim(list, 0, MAX_MSG_CACHE_LENGTH)
+        Redis.lTrim(list, (MAX_MSG_CACHE_LENGTH * -1), -1)
       }
     }
 
@@ -38,6 +38,10 @@ module.exports = class MessageCache {
   static async getQuoteList(to, nick) {
     const quotes = `${to}:${nick}`
     return await Redis.lRange(quotes, 0, MAX_MSG_CACHE_LENGTH)
+  }
+
+  static clear(to) {
+    Redis.del(`${to}:msgCache`)
   }
 
 }
