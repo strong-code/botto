@@ -34,7 +34,8 @@ module.exports = {
       url.href = parts.join('/')
     }
 
-    return url.href.split('#')[0] + '.json'
+    // return url.href.split('#')[0] + '.json'
+    return `https://a.4cdn.org${url.path}.json`
   },
 
   getComment: async function(json, board, id) {
