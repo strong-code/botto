@@ -11,7 +11,7 @@ module.exports = class Ignore extends Command {
     this.#refresh()
   }
 
-  call(bot, opts, respond) {
+  async call(bot, opts, respond) {
     if (!this.adminCallable(opts)) return
 
     const command = opts.args[0]
@@ -23,7 +23,7 @@ module.exports = class Ignore extends Command {
     } else if (command === 'del') {
       return this.unignoreUser(opts.args[1], opts.to, respond)
     } else if (command === 'check') {
-      return this.check(opts.args[1], opts.to, respond)
+      return await this.check(bot, opts.args[1].trim(), respond)
     }
   }
 
@@ -63,12 +63,15 @@ module.exports = class Ignore extends Command {
     return respond(`No longer ignoring user: ${target}. Please be better behaved from now on.`)
   }
 
-  check(nick, chan, respond) {
-    if (Ignore.isIgnored(nick)) {
-      return respond(`User ${nick} is currently ignored`)
-    } else {
-      return respond(`User ${nick} is NOT currently ignored`)
-    }
+  async check(bot, nick, respond) {
+    bot.whois(nick, (data) => {
+      if (Ignore.isIgnored(nick, data.host)) {
+        console.log(`${nick}@${data.host} is currently ignored`)
+        return respond(`User ${nick} is currently ignored`)
+      } else {
+        return respond(`User ${nick} is NOT currently ignored`)
+      }
+    })
   }
 
   async #refresh() {
