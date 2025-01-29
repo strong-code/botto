@@ -23,11 +23,9 @@ module.exports = class Stats extends Command {
     }
 
     const stats = await this.getStats(interval)
-    const topCmds = `${stats.topCmds[0][0]} (${stats.topCmds[0][1]}), ${stats.topCmds[1][0]} (${stats.topCmds[1][1]}), ${stats.topCmds[2][0]} (${stats.topCmds[2][1]})`
-    const topObs = `${stats.topObs[0][0]} (${stats.topObs[0][1]}), ${stats.topObs[1][0]} (${stats.topObs[1][1]}), ${stats.topObs[2][0]} (${stats.topObs[2][1]})`
 
-    const response = `Stats for ${interval}: ${stats.totalCmds} total commands issued. Top 3 commands: ${topCmds}. Top 3 command users: ${stats.topChatters}. ` +
-    `${stats.totalObs} total observers triggered. Top 3 observers: ${topObs}`
+    const response = `Stats for ${interval}: ${stats.totalCmds} total commands issued. Top commands: ${stats.topCmds}. Top command users: ${stats.topChatters}. ` +
+    `${stats.totalObs} total observers triggered. Top observers: ${stats.topObs}`
 
     return respond(response)
   }
@@ -76,6 +74,7 @@ module.exports = class Stats extends Command {
       const topCmds = Object.entries(cmdCount)
         .sort((a, b) => b[1] - a[1])
         .slice(0,3)
+        .map(cmd => `${cmd[0]} (${cmd[1]})`).join(", ")
 
       return [total, topCmds]
     })
@@ -97,6 +96,7 @@ module.exports = class Stats extends Command {
       const topObservers = Object.entries(obsCount)
         .sort((a, b) => b[1] - a[1])
         .slice(0,3)
+        .map(obs => `${obs[0]} (${obs[1]})`).join(", ")
 
       return [total, topObservers]
     })
