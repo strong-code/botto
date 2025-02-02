@@ -67,6 +67,6 @@ module.exports = {
     return `${Colors.wrap('yellow', `★ ${stars}`)} (${ratings} ratings)`
   },
 
-  asinRegex: /(?:dp|o|gp|product|-)\/(B[0-9]{2}[0-9A-Z]{7}|[0-9]{9}(?:X|[0-9]))/ 
+  asinRegex: /(?:dp|o|gp|product|-)\/(B[0-9]{1,2}[0-9A-Z]{7,8}|[0-9]{9}(?:X|[0-9]))/ 
 
 }
