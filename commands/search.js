@@ -30,19 +30,19 @@ module.exports = class Search extends Command {
     const dir = `${logDir}/${chan}`
     const cmd = `grep -r "${query}" ${dir} | sort -t/ -nrs -k5n -k6M -k7 > ${OUTPUT_FILE}`
 
-    const { stdout, stderr } = await execPromise(cmd)
+    return execPromise(cmd).then((stdout, stderr) => {
+      if (stderr) {
+        console.log(stderr)
+        return 'Something went wrong. This error has been logged'
+      }
 
-    if (stdout.length == 0) {
-      return 'absolutely nothing. Try a different query'
-    }
+      return stdout
+    }).then(stdout => {
+      if (stdout.length == 0) return 'absolutely nothing. Try a different query'
 
-    if (stderr) {
-      console.log(stderr)
-      return 'Something went wrong. This error has been logged'
-    }
-
-    const res = await Helpers.uploadFile(OUTPUT_FILE)
-
-    return res.body.path
+      return Helpers.uploadFile(OUTPUT_FILE)
+    }).then(res => {
+      return res.body.path
+    })
   }
 }
