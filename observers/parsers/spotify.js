@@ -29,7 +29,7 @@ module.exports = {
 
       const track = res.body.name
       const album = res.body.album.name
-      const albumRelease = res.body.album.release_date
+      const albumRelease = res.body.album.release_date.split('-')[0]
       const artist = res.body.artists[0].name
       const popularity = res.body.popularity
 
