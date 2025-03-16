@@ -92,8 +92,8 @@ module.exports = {
     return await client.hSet(k, obj)
   },
 
-  rPush: async(list, msg) => {
-    return await client.rPush(list, msg)
+  lPush: async(list, msg) => {
+    return await client.lPush(list, msg)
   },
 
   lRange: async(list, start, end) => {
