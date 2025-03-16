@@ -2,12 +2,14 @@
 <p>
   <font color="red">RED</font> indicates an unmounted command/observer<br>
 </p>
+<!-- 
 <p>
   Last command issued was <i><%= it.lastCommand.message %></i> by <%= it.lastCommand.nick %> in <%= it.lastCommand.sent_to %>
 </p>
 <p>
   Last observer triggered was <i>"<%= it.lastObserver.message %>"</i> to which botto responded <i>"<%= it.lastObserver.response %>"</i> by <%= it.lastObserver.nick %> in <%= it.lastObserver.sent_to %>
 </p>
+-->
 
 <h3><u>Commands</u></h3>
 <p>
