@@ -5,6 +5,8 @@ const qs = require('querystring')
 const _ = require('lodash')
 const config = require('../config.js').url
 const fs = require('fs')
+const db = require('../util/db.js')
+const moment = require('moment')
 const Observer = require('./observer.js')
 
 module.exports = class Url extends Observer {
@@ -42,9 +44,13 @@ module.exports = class Url extends Observer {
 
     if (!url.hostname) { url.hostname = url.href } // hacky but whatever
 
-    if (!url.host || this.isIgnorable(url)) {
+    const posted = await this.previouslyPosted(url, opts.from, opts.to, respond)
+
+    if (posted || !url.host || this.isIgnorable(url)) {
       return
     }
+
+    console.log('GOIT HERE')
 
     const pageParser = this.hasOwnParser(url)
 
@@ -128,13 +134,35 @@ module.exports = class Url extends Observer {
     title = _.truncate(title, {length: 150}).trim()
     title = title.replace(/[\r\n\t]/g, " ")
 
-    if (title = 'Attention Required! | Cloudflare') {
+    if (title == 'Attention Required! | Cloudflare') {
       // DigitalOcean VPN hits cloudflare captcha challenge
       console.log('Hit CloudFlare captcha test - unable to parse page title')
       return
     }
 
     return title
+  }
+
+  async previouslyPosted(url, nick, chan, respond) {
+    url = url.href.split('?')[0]
+
+    return await db.oneOrNone('SELECT * FROM urls WHERE url = $1 AND chan = $2', [url, chan])
+      .then(row => {
+        if (!row) {
+          db.none(
+            'INSERT INTO urls (time, url, count, original_poster, chan) VALUES ($1, $2, $3, $4, $5)',
+            [new Date().toISOString(), url, 1, nick, chan]
+          )
+          return false
+        } else {
+          const firstLinked = moment(row.time).calendar('MMM DD YYYY')
+          respond(`⚠️ OLD LINK ⚠️ ${nick}, that was already shared by ${row.original_poster} (linked ${row.count} times already, first linked ${firstLinked})`)
+          db.none(
+            'UPDATE urls SET count = $1 WHERE url = $2 AND chan = $3', [row.count+1, url, chan]
+          )
+          return true
+        }
+      })
   }
 
 }

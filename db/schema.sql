@@ -118,3 +118,12 @@ CREATE TABLE IF NOT EXISTS suppressed (
   module VARCHAR(55) NOT NULL,
   chan VARCHAR(55) NOT NULL
 );
+
+-- Definition for url table
+CREATE TABLE IF NOT EXISTS urls (
+  time TIMESTAMP NOT NULL,
+  url TEXT NOT NULL,
+  count SMALLINT,
+  original_poster VARCHAR(55) NOT NULL,
+  chan VARCHAR(55) NOT NULL
+);
