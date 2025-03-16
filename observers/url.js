@@ -50,8 +50,6 @@ module.exports = class Url extends Observer {
       return
     }
 
-    console.log('GOIT HERE')
-
     const pageParser = this.hasOwnParser(url)
 
     if (pageParser) {
