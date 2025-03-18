@@ -142,7 +142,7 @@ module.exports = class Url extends Observer {
   }
 
   async previouslyPosted(url, nick, chan, respond) {
-    url = url.href.split('?')[0]
+    url = url.href.replace(/^(https?\:\/\/)?(www\.)?/i, '')
 
     return await db.oneOrNone('SELECT * FROM urls WHERE url = $1 AND chan = $2', [url, chan])
       .then(row => {
