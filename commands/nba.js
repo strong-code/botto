@@ -2,6 +2,7 @@ const Command = require('./command.js')
 const needle = require('needle')
 const Colors = require('irc').colors
 const SCOREBOARD_ENDPOINT = 'https://nba-prod-us-east-1-mediaops-stats.s3.amazonaws.com/NBA/liveData/scoreboard/todaysScoreboard_00.json'
+const BOXSCORE_ENDPOINT = 'https://cdn.nba.com/static/json/liveData/boxscore/boxscore_0022401009.json'
 
 module.exports = class NBA extends Command {
 
@@ -13,6 +14,11 @@ module.exports = class NBA extends Command {
   }
 
   async call(bot, opts, respond) {
+    if (opts.args[0] === 'box') {
+      const resp = await this.parseBoxScoreData()
+      return respond(resp)
+    }
+
     const res = await needle('GET', SCOREBOARD_ENDPOINT)
     const data = JSON.parse(res.body).scoreboard.games
     const [finished, inProgress] = this.parseGameData(data)
@@ -39,6 +45,7 @@ module.exports = class NBA extends Command {
     const inProgress = []
 
     data.forEach(game => {
+      console.log(game.gameId)
       const gameInfo = {
         gameId: game.gameId,
         gameStatusText: game.gameStatusText.trim(),
@@ -65,8 +72,39 @@ module.exports = class NBA extends Command {
     return [finished, inProgress]
   }
 
+  async parseBoxScoreData() {
+    const ENDPOINT = 'https://nba-prod-us-east-1-mediaops-stats.s3.amazonaws.com/NBA/liveData/boxscore/boxscore_0022400627.json'
+    const res = await needle('GET', ENDPOINT)
+    return this.parseOnCourt(res.body.game)
+  }
+
+  parseOnCourt(game) {
+    const home = {
+      team: `${game.homeTeam.teamCity} ${game.homeTeam.teamName}`,
+      onCourt: []
+    }
+    const away = {
+      team: `${game.awayTeam.teamCity} ${game.awayTeam.teamName}`,
+      onCourt: []
+    }
+
+    game.homeTeam.players.forEach(p => {
+      if (p.oncourt === '1') {
+        home.onCourt.push(p.nameI)
+      }
+    })
+
+    game.awayTeam.players.forEach(p => {
+      if (p.oncourt === '1') {
+        away.onCourt.push(p.nameI)
+      }
+    })
+
+    return `${home.team} - ${home.onCourt.join(', ')} || ${away.team} - ${away.onCourt.join(', ')}`
+  }
+
   inClutchTime(game) {
-    if (game.gameStatusText === 'Final') {
+    if (game.gameStatusText === 'Final' || game.gameStatusText.charAt(1) !== '4') {
       return false
     }
 
