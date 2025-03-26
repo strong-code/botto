@@ -16,30 +16,31 @@ module.exports = class Sed extends Observer {
     const msgCache = await MsgCache.get(opts.to)
 
     for (let msg of msgCache) {
+      let [, user, text] = msg.match(/(<\w+>)\:\s(.*)/)
 
       // don't want to match the initial s/*/* observer message
-      if (msg.text === opts.text) {
+      if (text === opts.text) {
         continue
       }
 
       // don't match other s/foo/bar user messages
-      if (/^s\/.*\/.*/.test(msg)) {
+      if (/^s\/.*\/.*/.test(text)) {
         continue
       }
 
       const ctx = vm.createContext({
         match: null,
-        msg: msg,
+        text: text,
         r: r,
         replacement: replacement
       })
 
-      const script = new vm.Script('match = r.test(msg)')
+      const script = new vm.Script('match = r.test(text)')
 
       try {
         script.runInContext(ctx, { timeout: 5000 })
         if (ctx.match) {
-          return respond(msg.replace(r, replacement))
+          return respond(`${user} ${text.replace(r, replacement)}`)
         }
       } catch (e) {
         console.log(e)

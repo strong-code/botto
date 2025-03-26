@@ -24,8 +24,9 @@ module.exports = class MessageCache {
       }
     }
 
+    const msg = `<${from}>: ${text}`
     Redis.lPush(quotes, text)
-    Redis.lPush(list, text)
+    Redis.lPush(list, msg)
   }
 
   // All messages in a chan
