@@ -6,6 +6,7 @@ module.exports = class BanHandler {
 
     this.bot.addListener("join", (chan, nick, message) => {
       if (nick == 'botto' && this.bans.indexOf(chan) !== -1) {
+        this.bot.say('#botto', `Successfully rejoin ${chan}`)
         console.log(`Successfully rejoined ${chan}`)
         this.bans = this.bans.filter(c => c != chan)
       }
