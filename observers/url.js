@@ -71,10 +71,7 @@ module.exports = class Url extends Observer {
   // TODO: move this into config or something
   isIgnorable(url) {
     const ignorables = [
-      'instagram.com',
-      'rei.com',
-      'nike.com',
-      'vimeo.com'
+      'nike.com'
     ]
 
     for (let h of ignorables) {
