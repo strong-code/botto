@@ -10,8 +10,7 @@ module.exports = class Remind extends Command {
   constructor() {
     (async () => {
       const existingReminders = await Redis.hGetAll('reminders')
-      console.log('Existing reminders from redis:')
-      console.log(existingReminders)
+      console.log(`Loaded ${Object.values(existingReminders).length} existing reminders`)
     })();
     super('remind')
   }
