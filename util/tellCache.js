@@ -24,7 +24,7 @@ module.exports = class TellCache {
       }
     })
 
-    console.log(`Tell message cache warmed with ${total} messages`)
+    console.log(`Loaded tell cache warmed with ${total} messages`)
   }
 
   static tellsFor(nick) {
