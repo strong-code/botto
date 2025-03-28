@@ -14,7 +14,6 @@ module.exports = class BanHandler {
         console.log(`Successfully rejoined ${chan}`)
         await Redis.sRem(BAN_SET, chan)
       }
-      this.bot.removeAllListeners(`join${chan}`)
     })
   }
 
