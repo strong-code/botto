@@ -110,6 +110,22 @@ module.exports = {
 
   del: async(list) => {
     return await client.del(list)
+  },
+
+  sAdd: async(set, val) => {
+    return await client.sAdd(set, val)
+  },
+
+  sRem: async(set, val) => {
+    return await client.sRem(set, val)
+  },
+
+  sMembers: async(set) => {
+    return await client.sMembers(set)
+  },
+
+  sCard: async(set) => {
+    return await client.sCard(set)
   }
 
 }

@@ -1,40 +1,53 @@
+const Redis = require('./redis.js')
+const BAN_SET = 'CHANNEL_BANS'
+
 module.exports = class BanHandler {
 
   constructor(bot) {
-    this.bans = []
     this.bot = bot
 
-    this.bot.addListener("join", (chan, nick, message) => {
-      if (nick == 'botto' && this.bans.indexOf(chan) !== -1) {
-        this.bot.say('#botto', `Successfully rejoin ${chan}`)
+    this.bot.addListener("join", async (chan, nick, message) => {
+      let currBans = await Redis.sMembers(BAN_SET)
+
+      if (nick == 'botto' && currBans.includes(chan)) {
+        this.bot.say('#botto', `Successfully rejoined ${chan}`)
         console.log(`Successfully rejoined ${chan}`)
-        this.bans = this.bans.filter(c => c != chan)
+        await Redis.sRem(BAN_SET, chan)
       }
       this.bot.removeAllListeners(`join${chan}`)
     })
   }
 
-  addBan(chan) {
-    if (this.bans.indexOf(chan) !== -1) {
+  async getBans() {
+    return await Redis.sMembers(BAN_SET)
+  }
+
+  async addBan(chan) {
+    const currBans = await Redis.sMembers(BAN_SET)
+
+    if (currBans.includes(chan)) {
       return
     } else {
+      await Redis.sAdd(BAN_SET, chan)
       console.log(`Added ${chan} to ban watcher list`)
-      this.bans.push(chan)
     }
 
     this.#attemptRejoins()
   }
 
-  showBans() {
-    return this.bans.join(', ')
+  static async showBans() {
+    const currBans = await Redis.sMembers(BAN_SET)
+    return currBans.join(', ')
   }
 
-  #attemptRejoins() {
-    if (this.rejoinTimer || this.bans.length == 0) {
+  async #attemptRejoins() {
+    const currBans = await Redis.sMembers(BAN_SET)
+
+    if (this.rejoinTimer || currBans.length == 0) {
       return
     }
 
-    this.bans.forEach((chan) => {
+    currBans.forEach((chan) => {
       this.bot.join(chan)
     })
 
