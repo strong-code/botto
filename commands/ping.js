@@ -18,7 +18,6 @@ module.exports = class Ping extends Command {
           if (msg.command === 'NOTICE' && msg.args[1].startsWith('\x01PING ')) {
             const receivedTimestamp = parseInt(msg.args[1].replace(/\x01PING (\d+)\x01/, '$1'), 10);
             const latency = (Date.now() - receivedTimestamp) / 1000
-            console.log(`Latency with ${msg.nick}: ${latency} ms`);
             respond(`${opts.args[0]} has a latency of ${latency} seconds`)
             bot.removeListener('raw', wrapper)
           }
