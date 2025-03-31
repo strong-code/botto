@@ -20,7 +20,7 @@ module.exports = class Stock extends Command {
     const data = this.parseInfo(res.body.chart.result[0])
     const color = ( data.dollarChange > 0 ? 'light_green' : 'light_red' )
 
-    return respond(`[${data.symbol}] (${data.name}) ${Colors.wrap('yellow', data.price)} | 24 hour change: ${Colors.wrap(color, data.dollarChange)} (${Colors.wrap(color, data.percentChange)})`)
+    return respond(`[${data.symbol}] (${data.name}) ${Colors.wrap('yellow', data.price)} | 24 hour change: ${Colors.wrap(color, `$${data.dollarChange}`)} (${Colors.wrap(color, data.percentChange)})`)
   }
 
   parseInfo(payload) {
@@ -39,7 +39,7 @@ module.exports = class Stock extends Command {
       symbol: symbol,
       name: name,
       price: price,
-      dollarChange: `$${Math.round(dollarChange * 100) / 100}`,
+      dollarChange: Math.round(dollarChange * 100) / 100,
       percentChange: `${Math.round(percentChange * 100) / 100} %`
     }
   }
