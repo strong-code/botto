@@ -1,10 +1,7 @@
 const needle = require('needle');
-const config = require('../config').url
-const API_KEY = require('../config').stock.apiKey
-const BASE_URL = 'https://api.stockdata.org/v1/data/quote' 
+const BASE_URL = 'https://query1.finance.yahoo.com/v8/finance/chart/'
 const Command = require('./command.js')
 const Colors = require('irc').colors
-const Helpers = require('../util/helpers.js')
 
 module.exports = class Stock extends Command {
   
@@ -13,45 +10,38 @@ module.exports = class Stock extends Command {
   }
 
   async call(bot, opts, respond) {
-    const ticker = opts.args[0]
+    const url = `${BASE_URL}${opts.args[0]}?range=1y&interval=1d`
+    const res = await needle('GET', url)
 
-    if (ticker === '') {
-      return respond('Usage is !stock <ticker>')
+    if (res.body.chart.error) {
+      return respond(`${res.body.chart.error.code}: ${res.body.chart.error.description}`)
     }
 
-    const info = await this.stockInfo(ticker)
-    return respond(info)
+    const data = this.parseInfo(res.body.chart.result[0])
+    const color = ( data.dollarChange > 0 ? 'light_green' : 'light_red' )
+
+    return respond(`[${data.symbol}] (${data.name}) ${Colors.wrap('yellow', data.price)} | 24 hour change: ${Colors.wrap(color, data.dollarChange)} (${Colors.wrap(color, data.percentChange)})`)
   }
 
-  async stockInfo(ticker) {
-    const API_URL = `${BASE_URL}?symbols=${ticker}&api_token=${API_KEY}` 
-    const res = await needle('get', API_URL, config)
-    
-    if (res.statusCode == 401 || res.statusCode == 429) {
-      return 'Rate limit exceeded. Try again later'
+  parseInfo(payload) {
+    const symbol = payload.meta.symbol
+    const name = payload.meta.shortName
+    const price = `$${payload.meta.regularMarketPrice}`
+
+    const closes = payload.indicators.quote[0].close
+    const lastClose = closes[closes.length - 1]
+    const prevClose = closes[closes.length - 2]
+
+    const dollarChange = lastClose - prevClose
+    const percentChange = (dollarChange / prevClose) * 100
+
+    return {
+      symbol: symbol,
+      name: name,
+      price: price,
+      dollarChange: `$${Math.round(dollarChange * 100) / 100}`,
+      percentChange: `${Math.round(percentChange * 100) / 100} %`
     }
-
-    if (res.statusCode == 404 || res.body.data.length == 0) {
-      return `Unable to find price data for ticker $${ticker}`
-    }
-
-    const stock = res.body.data[0]
-
-    const name = stock.name || stock.ticker
-    const color = ( parseFloat(stock.day_change) >= 0 ? 'light_green' : 'light_red' )
-    const price = Colors.wrap('yellow', `$${stock.price}`)
-    const change = Colors.wrap(color, parseFloat(stock.price - stock.previous_close_price).toFixed(2))
-    const changePercent = Colors.wrap(color, stock.day_change) 
-    const vol = stock.volume.toLocaleString() 
-    const high = stock.day_high 
-    const low = stock.day_low 
-    const url = await Helpers.shortenUrl(`https://finance.yahoo.com/quote/${ticker}`)
-
-    return `${name}: ${price}`
-      + ` | Change: ${change} pts (${changePercent})%`
-      + ` | High: $${high} Low: $${low}`
-      + ` | Vol: ${vol}`
-      + ` | ${url}`
   }
 
 }
