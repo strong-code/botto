@@ -45,7 +45,6 @@ module.exports = class NBA extends Command {
     const inProgress = []
 
     data.forEach(game => {
-      console.log(game.gameId)
       const gameInfo = {
         gameId: game.gameId,
         gameStatusText: game.gameStatusText.trim(),
@@ -109,7 +108,7 @@ module.exports = class NBA extends Command {
     }
 
     let [quarter, minsLeft] = game.gameStatusText.split(' ')
-    minsLeft = parseInt(minsLeft.split(':')[0])
+    minsLeft = parseInt(minsLeft.split(':')[0]) || 0
 
     // TODO: check for OT quarter layout
     if (Math.abs(game.homeTeam.score -game.awayTeam.score) <= 5 && quarter == 'Q4' && minsLeft <= 4) {
