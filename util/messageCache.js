@@ -30,9 +30,9 @@ module.exports = class MessageCache {
   }
 
   // All messages in a chan
-  static async get(to) {
+  static async get(to, total = -1) {
     const list = `${to}:msgCache`
-    return await Redis.lRange(list, 0, -1)
+    return await Redis.lRange(list, 0, total)
   }
 
   // All quotes for a user in a chan
