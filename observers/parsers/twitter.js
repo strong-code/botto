@@ -1,7 +1,6 @@
 const needle = require('needle')
+const BEARER_TOKEN = require('../../config.js').twitter.bearer_token
 const config = require('../../config').url
-const Twit = require('twit')
-const T = new Twit(require('../../config').twitter)
 const cheerio = require('cheerio')
 const Colors = require('irc').colors
 
@@ -16,15 +15,38 @@ module.exports = {
 
     try {
       const tweetId = url.pathname.split('/')[3]
-      const response = await T.get('statuses/show/:id', { id: tweetId, tweet_mode: 'extended' })
-      const data = response.data
-      const text = data.full_text.replace(/\r?\n|\r/g, ' ')
-      const username = data.user.screen_name + (data.user.verified ? ' ✓ ' : '')
-      return `[${Colors.wrap('light_blue', 'Twitter')}] @${username}: ${text}`
+      const username = url.pathname.split('/')[1]
+      const tweet = await module.exports.getJson(tweetId)
+      // const username = data.user.screen_name + (data.user.verified ? ' ✓ ' : '')
+      return `[${Colors.wrap('light_blue', 'Twitter')}] @${username}: ${tweet.text}`
     } catch (e) {
-      console.log(`Error retrieving tweet with Twit library, trying with HTTP request. \n ${e}`)
+      console.log(`Error retrieving tweet with API access, trying with HTTP request. \n ${e}`)
       const info = await module.exports.getHttp(url)
       return info
+    }
+  },
+
+  getJson: async function(tweetId) {
+    const url = `https://api.twitter.com/2/tweets/${tweetId}`
+    const params = {
+      'tweet.fields': 'text,author_id,created_at',
+      'expansions': 'author_id',
+      'user.fields': 'name,username'
+    }
+    const opts = { headers: { 'Authorization': `Bearer ${BEARER_TOKEN}` } }
+    const res = await needle('GET', url, params, opts)
+
+    if (res.statusCode !== 200) {
+      throw new Error(`Request failed: ${res.statusCode}`)
+    }
+
+    console.log(res.body.data)
+
+    return {
+      text: res.body.data.text.replace(/(\r\n|\n|\r)/gm, ""),
+      name: res.body.data.author_name,
+      username: res.body.data.author_username,
+      created_at: res.body.data.created_at
     }
   },
 
