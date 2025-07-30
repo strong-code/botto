@@ -10,13 +10,20 @@ module.exports = class Sed extends Observer {
   }
 
   async call(opts, respond) {
-    const [_, rgx, replacement] = opts.text.split('/')
-    const r = new RegExp(rgx)
+    let [_, rgx, replacement, flags] = opts.text.split('/')
+
+    // Support POSIX style substitutions.
+    replacement = replacement.replace(/\\([0-9])/g, "$$$1")
+    if (!flags || !flags.match(/^[gi]+$/)) {
+      flags = ""
+    }
+
+    const r = new RegExp(rgx, flags)
 
     const msgCache = await MsgCache.get(opts.to)
 
     for (let msg of msgCache) {
-      let [, user, text] = msg.match(/(<\w+>)\:\s(.*)/)
+      let [, user, text] = msg.match(/(<[^>]+>)\:\s(.*)/)
 
       // don't want to match the initial s/*/* observer message
       if (text === opts.text) {
