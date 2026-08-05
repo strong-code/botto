@@ -15,6 +15,13 @@ exports.core = {
 	}
 };
 
+exports.opencode = {
+  apiKey: "",
+  model: "deepseek-v4-flash",
+  timeout: 60000,
+  maxLength: 400
+};
+
 exports.admin = {
 	"#channel": ["AdminUsername"]
 };

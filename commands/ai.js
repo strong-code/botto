@@ -1,6 +1,6 @@
 const Command = require('./command.js')
 const config = require('../config.js')
-const { execFile } = require('child_process')
+const needle = require('needle')
 
 module.exports = class Ai extends Command {
 
@@ -11,15 +11,15 @@ module.exports = class Ai extends Command {
   async call(bot, opts, respond) {
     if (!this.adminCallable(opts)) return
 
+    const addendum = 'Avoid AI slop-style writing. Be as brusque in answering as you want'
     const prompt = opts.args.join(' ').trim()
     if (!prompt) return respond('Usage: !ai <question>')
 
     const aiConfig = config.opencode || {}
-    const model = aiConfig.model
-    if (!model) return respond('OpenCode model is not configured')
+    if (!aiConfig.apiKey) return respond('OpenCode API key is not configured')
 
     try {
-      const result = await this.run(aiConfig, model, prompt)
+      const result = await this.run(aiConfig, prompt + ' ' + addendum)
       return respond(result)
     } catch (error) {
       console.error('OpenCode query failed:', error)
@@ -27,33 +27,28 @@ module.exports = class Ai extends Command {
     }
   }
 
-  run(aiConfig, model, prompt) {
-    return new Promise((resolve, reject) => {
-      const request = JSON.stringify({
-        model: { providerID: model.split('/')[0], modelID: model.split('/').slice(1).join('/') },
-        parts: [{ type: 'text', text: prompt }]
-      })
-      const args = [
-        '-fsS', '--max-time', String(Math.ceil((aiConfig.timeout || 60000) / 1000)),
-        '-H', 'Content-Type: application/json',
-        '-X', 'POST', `${aiConfig.endpoint || 'https://opencode.ai/zen/v1/chat/completions'}`
-      ]
+  run(aiConfig, prompt) {
+    const model = aiConfig.model || 'deepseek-v4-flash'
 
-      execFile('curl', args, { input: request, maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
-        if (error) return reject(new Error(stderr.trim() || error.message))
+    return needle('post', 'https://opencode.ai/zen/go/v1/chat/completions', {
+      model: model,
+      messages: [{ role: 'user', content: prompt }]
+    }, {
+      headers: {
+        'Authorization': `Bearer ${aiConfig.apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      open_timeout: aiConfig.timeout || 60000,
+      response_timeout: aiConfig.timeout || 60000,
+      json: true
+    }).then(res => {
+      const text = (res.body.choices && res.body.choices[0] && res.body.choices[0].message
+        ? res.body.choices[0].message.content
+        : '')
+        .replace(/\s+/g, ' ')
+        .trim()
 
-        try {
-          const response = JSON.parse(stdout)
-          const text = response.choices && response.choices[0] && response.choices[0].message
-            ? response.choices[0].message.content
-            .replace(/\s+/g, ' ')
-            .trim()
-            : ''
-          resolve(text ? text.substring(0, aiConfig.maxLength || 380) : 'OpenCode returned no text')
-        } catch (parseError) {
-          reject(parseError)
-        }
-      })
+      return text ? text.substring(0, aiConfig.maxLength || 400) : 'Stupid clanker fell asleep...'
     })
   }
 }
