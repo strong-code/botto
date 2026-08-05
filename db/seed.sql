@@ -29,6 +29,7 @@ VALUES
 -- Seed all admin commands
 INSERT INTO commands (name, admin)
 VALUES
+  ('ai', true),
   ('git', true),
   ('health', true),
   ('ignore', true),
