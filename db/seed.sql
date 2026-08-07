@@ -19,6 +19,7 @@ VALUES
   ('shout'),
   ('stock'),
   ('tell'),
+  ('time'),
   ('twitter'),
   ('up'),
   ('urbandictionary'),

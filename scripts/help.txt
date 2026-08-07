@@ -69,6 +69,9 @@ random: Respond with a random tweet for that user.
 !up <website>
 Will check if supplied <website> is up and which HTTP status code it returns.
 
+!time <city>
+Get the current local time of a city.
+
 !urbandictionary <term>
 Returns a matching UrbanDictionary definition for supplied <term>.
 
