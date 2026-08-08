@@ -41,8 +41,8 @@ VALUES
   ('reply', true),
   ('restart', true),
   ('suppress', true),
-  ('unmount', true);
-
+  ('unmount', true),
+  ('update', true);
 -- Seed all observers
 INSERT INTO observers (name)
 VALUES

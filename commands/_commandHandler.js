@@ -1,3 +1,5 @@
+const fs = require('fs')
+const path = require('path')
 const db = require('../util/db.js')
 const Helpers = require('../util/helpers.js')
 const aliases = require('../util/aliases.js')
@@ -21,6 +23,18 @@ module.exports = class CommandHandler {
     })
 
     for (const v of Object.values(CommandHandler.commandList)) { await v.init() }
+
+    // Register and load any command files on disk that aren't in the database
+    // yet, so new commands are picked up after a git pull + restart without
+    // any manual database seeding.
+    const { added, failed } = await CommandHandler.sync()
+    if (added.length > 0) {
+      console.log(`Auto-registered new command modules: ${added.join(', ')}`)
+    }
+    if (failed.length > 0) {
+      console.log(`Skipped unloadable command modules: ${failed.join(', ')}`)
+    }
+
     const total = Object.values(CommandHandler.commandList)
     console.log(`Loaded ${total.length} total command modules (${total.filter(x => x.admin).length} admin modules)`)
   }
@@ -75,6 +89,52 @@ module.exports = class CommandHandler {
       } 
     }
     return false
+  }
+
+  // Scan the filesystem for command modules that aren't already registered in
+  // the database or loaded into the handler. Registers any new ones and loads
+  // them on the fly, so new commands can be hot-added without a restart.
+  // Returns { added: [...], failed: [...] }.
+  static async sync() {
+    const added = []
+    const failed = []
+
+    const scan = async (dir, admin) => {
+      for (const file of fs.readdirSync(dir)) {
+        if (!file.endsWith('.js') || file.startsWith('_') || file === 'command.js') {
+          continue
+        }
+
+        const name = file.slice(0, -3)
+        if (CommandHandler.commandList[name]) {
+          continue
+        }
+
+        const row = await db.oneOrNone('SELECT * FROM commands WHERE name = $1', [name])
+        if (!row) {
+          await db.none('INSERT INTO commands (name, admin) VALUES ($1, $2)', [name, admin])
+        }
+
+        const reqPath = (admin ? `./admin/${name}` : `./${name}`)
+        try {
+          const cmd = new (require(reqPath))()
+          await cmd.init()
+          CommandHandler.commandList[name] = cmd
+          added.push(name)
+        } catch (e) {
+          console.error(`Failed to load new command "${name}":`, e)
+          failed.push(name)
+          if (!row) {
+            await db.none('DELETE FROM commands WHERE name = $1', [name])
+          }
+        }
+      }
+    }
+
+    await scan(__dirname, false)
+    await scan(path.join(__dirname, 'admin'), true)
+
+    return { added, failed }
   }
 
   #respondsTo(command) {

@@ -1,3 +1,4 @@
+const fs = require('fs')
 const db = require('../util/db.js')
 const suppress = require('../util/suppress.js')
 
@@ -21,6 +22,18 @@ module.exports = class ObserverHandler {
     })
 
     for (const v of Object.values(ObserverHandler.observerList)) { await v.init() }
+
+    // Register and load any observer files on disk that aren't in the database
+    // yet, so new observers are picked up after a git pull + restart without
+    // any manual database seeding.
+    const { added, failed } = await ObserverHandler.sync()
+    if (added.length > 0) {
+      console.log(`Auto-registered new observer modules: ${added.join(', ')}`)
+    }
+    if (failed.length > 0) {
+      console.log(`Skipped unloadable observer modules: ${failed.join(', ')}`)
+    }
+
     console.log(`Loaded ${Object.keys(ObserverHandler.observerList).length} observer modules`)
   }
 
@@ -83,6 +96,46 @@ module.exports = class ObserverHandler {
     }
 
     return false
+  }
+
+  // Scan the filesystem for observer modules that aren't already registered in
+  // the database or loaded into the handler. Registers any new ones and loads
+  // them on the fly, so new observers can be hot-added without a restart.
+  // Returns { added: [...], failed: [...] }.
+  static async sync() {
+    const added = []
+    const failed = []
+
+    for (const file of fs.readdirSync(__dirname)) {
+      if (!file.endsWith('.js') || file.startsWith('_') || file === 'observer.js') {
+        continue
+      }
+
+      const name = file.slice(0, -3)
+      if (ObserverHandler.observerList[name]) {
+        continue
+      }
+
+      const row = await db.oneOrNone('SELECT * FROM observers WHERE name = $1', [name])
+      if (!row) {
+        await db.none('INSERT INTO observers (name) VALUES ($1)', [name])
+      }
+
+      try {
+        const observer = new (require(`./${name}.js`))()
+        await observer.init()
+        ObserverHandler.observerList[name] = observer
+        added.push(name)
+      } catch (e) {
+        console.error(`Failed to load new observer "${name}":`, e)
+        failed.push(name)
+        if (!row) {
+          await db.none('DELETE FROM observers WHERE name = $1', [name])
+        }
+      }
+    }
+
+    return { added, failed }
   }
 
 }

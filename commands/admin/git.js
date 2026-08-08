@@ -29,8 +29,8 @@ module.exports = class Git extends Command {
         return respond(`${Helpers.strip(err.message)} Check logs for more info`)
       }
 
-      if (stdout === 'Already up to date') {
-        return resopnd(stdout)
+      if (stdout.includes('Already up to date')) {
+        return respond(stdout.trim())
       }
 
       const res = await Helpers.uploadText(stdout)
