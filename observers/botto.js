@@ -1,31 +1,22 @@
-const fs = require('fs');
 const _  = require('lodash');
-const db = require('../util/db.js')
+const Observer = require('./observer.js')
 
-module.exports = {
+module.exports = class Botto extends Observer {
 
-  call: function(opts, respond) {
+  constructor() {
+    const regex = new RegExp(/(^|.*\s)botto(\s.*|$)/i)
+    super('botto', regex)
+  }
+
+  call(opts, respond) {
     const text = opts.text.split(' ');
     if (_.includes(text, 'botto') && text[0] !== '!bottoreply') {
       //return getResponse(respond);
     }
-  },
-
-  getResponse: function(respond) {
-    return db.executeQuery('SELECT * FROM botto_replies ORDER BY RANDOM() LIMIT 1', function(result) {
-      if (result.rows && result.rows[0]) {
-        return respond(result.rows[0]['message']);
-      }
-    });
   }
 
-};
+  getResponse(respond) {
+    // TODO: restore botto_replies table/query if needed
+  }
 
-// const me = `┈╭━━━━━━━━━━━╮┈
-// ┈┃╭━━━╮┊╭━━━╮┃┈
-// ╭┫┃┈🦄┈┃┊┃┈🦄┈┃┣
-// ┃┃╰━━━╯┊╰━━━╯┃┃
-// ╰┫╭━╮╰━━━╯╭━╮┣╯
-// ┈┃┃┣┳┳┳┳┳┳┳┫┃┃┈
-// ┈┃┃╰┻┻┻┻┻┻┻╯┃┃┈
-// ┈╰━━━━━━━━━━━╯┈`
+}

@@ -1,8 +1,13 @@
-var _duckHunt = require('../commands/duckhunt.js');
+const _duckHunt = require('../commands/duckhunt.js');
+const Observer = require('./observer.js')
 
-module.exports = {
+module.exports = class DuckHunt extends Observer {
 
-  call: function (opts, respond) {
+  constructor() {
+    super('duckhunt', /^bang$/i)
+  }
+
+  call(opts, respond) {
     if (opts.text === 'bang') {
       return _duckHunt.handleShot(opts.from, respond);
     }
