@@ -70,7 +70,7 @@ module.exports = class Weather extends Command {
   async getWeatherEmoji(city) {
     try {
       const res = await needle('get', `wttr.in/${city}?format='%c\n'`, Helpers.httpOptions)
-      return res.body[1]
+      return res.body[1].replace(/!/g, '')
     } catch (e) {
       console.error(e)
       return ''
