@@ -1,6 +1,6 @@
 const needle = require('needle')
 const Command = require('./command.js')
-const API_URL = 'https://bf.dallemini.ai/generate'
+const config = require('../config.js')
 
 module.exports = class Paint extends Command {
 
@@ -11,34 +11,40 @@ module.exports = class Paint extends Command {
   async call(bot, opts, respond) {
     respond('Please give me a moment to finish my painting...')
 
-    const res = await needle('post', API_URL, { prompt: opts.args.join(' ') },
-      {
-        headers: { 
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0',
-          'Accept': 'application/json',
-          'Accept-Language': 'en-US,en;q=0.5',
-          'Accept-Encoding': 'gzip, deflate, br',
-          'Content-Type': 'application/json',
-          'Connection': 'keep-alive'
-        }
-    })
+    const gemini = config.gemini || {}
+    const apiKey = gemini.apiKey
+    const model = gemini.model || 'nano-banana-2-lite'
 
-    if (/50\d/.test(res.statusCode)) {
-      return respond(`[${res.statusCode}] Painting queue full. Please try again later`)
+    if (!apiKey) return respond('Gemini API key is not configured')
+
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`
+    const res = await needle('post', url, {
+      contents: [{ parts: [{ text: opts.args.join(' ') }] }],
+      generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+    }, { json: true })
+
+    if (res.statusCode < 200 || res.statusCode >= 300 || res.body.error) {
+      const error = res.body.error || { message: 'Gemini API failed to return a response' }
+      return respond(`[${res.statusCode}] ${error.message}. Please try again later`)
     }
 
-    if (res.body.error || !res.body.images) {
-      const e = res.body.error || { error_type: 'API timeout', message: 'API failed to return a response (check !logs for error)' }
-      return respond(`[${res.statusCode}] ${e.error_type}: ${e.message}. Please try again later`)
+    const parts = res.body.candidates && res.body.candidates[0] && res.body.candidates[0].content
+      ? res.body.candidates[0].content.parts
+      : []
+    const image = parts.find(part => part.inlineData && part.inlineData.data)
+
+    if (!image) {
+      return respond('Gemini API did not return an image. Please try again later')
     }
 
-    const idx = Math.floor(Math.random() * (res.body.images.length - 1))
+    const mimeType = image.inlineData.mimeType || 'image/png'
+    const extension = mimeType.split('/')[1] || 'png'
 
     const data = {
       file: {
-        buffer: Buffer.from(res.body.images[idx], 'base64'),
-        filename: 'image.png',
-        content_type: 'image/png'
+        buffer: Buffer.from(image.inlineData.data, 'base64'),
+        filename: `image.${extension}`,
+        content_type: mimeType
       }
     }
 

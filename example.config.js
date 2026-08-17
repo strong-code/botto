@@ -22,6 +22,11 @@ exports.opencode = {
   maxLength: 400
 };
 
+exports.gemini = {
+  apiKey: "",
+  model: "nano-banana-2-lite"
+};
+
 exports.admin = {
 	"#channel": ["AdminUsername"]
 };
