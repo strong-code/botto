@@ -10,7 +10,7 @@ module.exports = class BanHandler {
       let currBans = await Redis.sMembers(BAN_SET)
 
       if (nick == 'botto' && currBans.includes(chan)) {
-        this.bot.say('#botto', `Successfully rejoined ${chan}`)
+        this.bot.say('#botto', `Successfully rejoined ${chan} - ${new Date().toLocaleString()}`)
         console.log(`Successfully rejoined ${chan}`)
         await Redis.sRem(BAN_SET, chan)
       }
