@@ -1,6 +1,5 @@
 const needle = require('needle')
 const Command = require('./command.js')
-const config = require('../config.js')
 
 module.exports = class Paint extends Command {
 
@@ -9,47 +8,37 @@ module.exports = class Paint extends Command {
   }
 
   async call(bot, opts, respond) {
+    const prompt = opts.args.join(' ').trim()
+    if (!prompt) {
+      return respond('Usage is !paint <prompt>')
+    }
+
     respond('Please give me a moment to finish my painting...')
 
-    const gemini = config.gemini || {}
-    const apiKey = gemini.apiKey
-    const model = gemini.model || 'nano-banana-2-lite'
+    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?model=flux&nologo=true`
+    const res = await needle('get', url, { follow: 3 })
 
-    if (!apiKey) return respond('Gemini API key is not configured')
-
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`
-    const res = await needle('post', url, {
-      contents: [{ parts: [{ text: opts.args.join(' ') }] }],
-      generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
-    }, { json: true })
-
-    if (res.statusCode < 200 || res.statusCode >= 300 || res.body.error) {
-      const error = res.body.error || { message: 'Gemini API failed to return a response' }
-      return respond(`[${res.statusCode}] ${error.message}. Please try again later`)
+    if (res.statusCode < 200 || res.statusCode >= 300 || !res.body || !res.body.length) {
+      return respond(`[${res.statusCode}] Failed to generate image. Please try again later`)
     }
 
-    const parts = res.body.candidates && res.body.candidates[0] && res.body.candidates[0].content
-      ? res.body.candidates[0].content.parts
-      : []
-    const image = parts.find(part => part.inlineData && part.inlineData.data)
-
-    if (!image) {
-      return respond('Gemini API did not return an image. Please try again later')
-    }
-
-    const mimeType = image.inlineData.mimeType || 'image/png'
-    const extension = mimeType.split('/')[1] || 'png'
+    const contentType = res.headers['content-type'] || 'image/jpeg'
+    const extension = contentType.includes('png') ? 'png' : 'jpg'
 
     const data = {
       file: {
-        buffer: Buffer.from(image.inlineData.data, 'base64'),
+        buffer: res.body,
         filename: `image.${extension}`,
-        content_type: mimeType
+        content_type: contentType
       }
     }
 
     const upload = await needle('POST', 'https://strongco.de/api/paste', data, { multipart: true })
-    
+
+    if (!upload.body || !upload.body.path) {
+      return respond('Failed to upload generated image. Please try again later')
+    }
+
     return respond(`${opts.from}, I present to you my latest masterpiece: ${upload.body.path}`)
   }
 

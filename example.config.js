@@ -24,7 +24,7 @@ exports.opencode = {
 
 exports.gemini = {
   apiKey: "",
-  model: "nano-banana-2-lite"
+  model: "gemini-3.1-flash-lite-image"
 };
 
 exports.admin = {
