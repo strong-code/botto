@@ -1,7 +1,8 @@
 const config = require("../config.js")
 const _ = require('lodash')
 const needle = require('needle')
-const { execSync } = require('child_process')
+const fs = require('fs')
+const path = require('path')
 const API_BASE = require('../config.js').apiBase
 
 module.exports = class Helpers {
@@ -75,11 +76,24 @@ module.exports = class Helpers {
   }
 
   static didYouMean(seed) {
-    let results = execSync(`find ./commands/ -name '${seed}*' -type f -printf "%f\n"`).toString().split('\n')
-    results = results
-      .filter(x => x.length > 0)
-      .map(x => x.substring(0, x.length - 3))
-      .map(x => '!'+x)
+    // No shell: list command files directly so a crafted command character
+    // (quote, backtick, $...) can never escape into a shell command.
+    const prefix = String(seed || '')
+    const dirs = [
+      path.join(__dirname, '..', 'commands'),
+      path.join(__dirname, '..', 'commands', 'admin')
+    ]
+
+    let files = []
+    for (const dir of dirs) {
+      try {
+        files = files.concat(fs.readdirSync(dir))
+      } catch (_) { /* missing dir: skip */ }
+    }
+
+    const results = files
+      .filter(x => x.endsWith('.js') && !x.startsWith('_') && x !== 'command.js' && x.startsWith(prefix))
+      .map(x => '!' + x.substring(0, x.length - 3))
       .join(', ')
 
     if (results.length == 0) {

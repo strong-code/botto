@@ -15,6 +15,13 @@ exports.core = {
 	}
 };
 
+exports.ai = {
+  model: "gemini-3.8-flash-high",
+  agyPath: "agy",
+  timeout: 90000,
+  maxLength: 400
+};
+
 exports.opencode = {
   apiKey: "",
   model: "deepseek-v4-flash",
