@@ -10,6 +10,10 @@ const config = {
   idleTimeoutMillis: 30000
 }
 
+if (process.env.DB_HOST) {
+  config.host = process.env.DB_HOST
+}
+
 const db = pgp(config)
 
 module.exports = db
