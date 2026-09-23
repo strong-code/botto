@@ -1,61 +1,65 @@
 const needle = require('needle')
-const BEARER_TOKEN = require('../../config.js').twitter.bearer_token
 const config = require('../../config').url
 const cheerio = require('cheerio')
 const Colors = require('irc').colors
 
 module.exports = {
-
   hostMatch: /^(www\.)?(mobile\.)?(twitter|x)\.com$/,
-
   parse: async function(url) {
-    if (!url.path.includes('/status/')) {
+    const match = url.pathname.match(/^\/(?:([A-Za-z0-9_]{1,15})\/status|i\/web\/status)\/(\d+)(?:\/.*)?$/)
+    if (!match) {
       throw Error('Not a tweet page, using default parser')
     }
 
+    // The embed endpoint accepts /i/status/ID, but not /i/web/status/ID.
+    const postUrl = `https://x.com/${match[1] || 'i'}/status/${match[2]}`
     try {
-      const tweetId = url.pathname.split('/')[3]
-      const username = url.pathname.split('/')[1]
-      const tweet = await module.exports.getJson(tweetId)
-      // const username = data.user.screen_name + (data.user.verified ? ' ✓ ' : '')
-      return `[${Colors.wrap('light_blue', 'Twitter')}] @${username}: ${tweet.text}`
+      const post = await module.exports.getOEmbed(postUrl)
+      return `[${Colors.wrap('light_blue', 'Twitter')}] @${post.username}: ${post.text}`
     } catch (e) {
-      console.log(`Error retrieving tweet with API access, trying with HTTP request. \n ${e}`)
-      const info = await module.exports.getHttp(url)
-      return info
+      console.log(`oEmbed unavailable (${e && e.message ? e.message : String(e)}); trying public page metadata`)
+      return module.exports.getHttp(postUrl, match[1] === 'i' ? null : match[1])
     }
   },
 
-  getJson: async function(tweetId) {
-    const url = `https://api.twitter.com/2/tweets/${tweetId}`
-    const params = {
-      'tweet.fields': 'text,author_id,created_at',
-      'expansions': 'author_id',
-      'user.fields': 'name,username'
-    }
-    const opts = { headers: { 'Authorization': `Bearer ${BEARER_TOKEN}` } }
-    const res = await needle('GET', url, params, opts)
-
+  getOEmbed: async function(postUrl) {
+    const res = await needle('get', 'https://publish.x.com/oembed',
+      { url: postUrl, omit_script: 1 }, config.options)
     if (res.statusCode !== 200) {
-      throw new Error(`Request failed: ${res.statusCode}`)
+      throw Error(`oEmbed returned HTTP ${res.statusCode}`)
     }
 
-    console.log(res.body.data)
-
-    return {
-      text: res.body.data.text.replace(/(\r\n|\n|\r)/gm, ""),
-      name: res.body.data.author_name,
-      username: res.body.data.author_username,
-      created_at: res.body.data.created_at
+    const body = res.body
+    const author = body && typeof body.author_url === 'string' &&
+      body.author_url.match(/^https:\/\/(?:x|twitter)\.com\/([A-Za-z0-9_]{1,15})\/?$/)
+    if (!author || typeof body.html !== 'string') {
+      throw Error('oEmbed response is missing author or HTML')
     }
+
+    const $ = cheerio.load(body.html)
+    const paragraph = $('blockquote.twitter-tweet p').first()
+    paragraph.find('br').replaceWith(' ')
+    paragraph.find('img[alt]').each(function() {
+      $(this).replaceWith($('<span></span>').text($(this).attr('alt')))
+    })
+    const text = paragraph.text().replace(/\s+/g, ' ').trim()
+    if (!text) {
+      throw Error('oEmbed response is missing post text')
+    }
+    return { username: author[1], text }
   },
 
-  getHttp: async function(url) {
-    const res = await needle('get', url.href, config.options)
+  getHttp: async function(postUrl, username) {
+    const res = await needle('get', postUrl, config.options)
+    if (res.statusCode !== 200) {
+      throw Error(`Public post page returned HTTP ${res.statusCode}`)
+    }
     const $ = cheerio.load(res.body)
-    const username = '@' + url.path.split('/')[1]
-    const description = $('meta[property="og:description"]').attr('content').replace(/\r?\n|\r/g, " ")
-    return `[${Colors.wrap('light_blue', 'Twitter')}] ${username}: ${description}`
+    const description = $('meta[property="og:description"]').attr('content')
+    if (!description || !description.trim()) {
+      throw Error('Public post page has no description')
+    }
+    const author = username ? `@${username}: ` : ''
+    return `[${Colors.wrap('light_blue', 'Twitter')}] ${author}${description.replace(/\s+/g, ' ').trim()}`
   }
-
 }
