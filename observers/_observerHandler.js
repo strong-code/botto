@@ -16,6 +16,8 @@ module.exports = class ObserverHandler {
 
   async init() {
     await db.each('SELECT * FROM observers', [], row => {
+      // Keep historical event rows when a module is removed from disk.
+      if (!fs.existsSync(`${__dirname}/${row.name}.js`)) return
       let reqpath = `./${row.name}.js`
       let observer = new (require(reqpath))();
       ObserverHandler.observerList[row.name] = observer
