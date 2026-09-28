@@ -11,8 +11,12 @@ module.exports = class Botto extends Observer {
   }
 
   async call(opts, respond) {
-    if (this.inFlight) return
+    if (this.inFlight) {
+      console.log(`[botto] skipped, a reply is already in flight (from=${opts.from} to=${opts.to})`)
+      return
+    }
     this.inFlight = true
+    const started = Date.now()
     try {
       // A prior unawaited Redis write may still be pending at dispatch.
       const recent = await MsgCache.get(opts.to, 14)
@@ -35,12 +39,35 @@ module.exports = class Botto extends Observer {
         ? aiConfig.model : 'gemini-3.8-flash-high'
       const timeout = Math.min(Math.max(Number(aiConfig.timeout) || 90000, 10000), 180000)
       const maxLength = Math.min(Math.max(Number(aiConfig.maxLength) || 400, 50), 500)
+      // Logged before the call so a run that never returns still leaves its
+      // inputs (model, budget, prompt size) in the log next to the failure.
+      console.log(
+        `[botto] trigger from=${opts.from} to=${opts.to} lines=${lines.length}` +
+        ` promptChars=${prompt.length} model=${model} timeout=${timeout}ms soulChars=${soul.length}`
+      )
       const answer = await this.ai.run(prompt, {
         model, extraEffort: [], timeout, maxLength
       })
+      const elapsed = Date.now() - started
+      const run = this.ai.lastRun
+      if (run && run.ok === false) {
+        // The fallback string is indistinguishable from a real reply in the
+        // IRC log, so state the reason and the diagnostics the AI layer kept.
+        console.error(
+          `[botto] falling back after ${elapsed}ms: signal=${run.signal || 'none'}` +
+          ` code=${run.code === null ? 'none' : run.code} killed=${run.killed} timedOut=${run.timedOut}` +
+          ` agyElapsed=${run.elapsedMs}ms timeout=${run.timeout}ms` +
+          ` peakRss=${run.peakRssMb}MB out=${run.stdoutBytes}B err=${run.stderrBytes}B`
+        )
+      } else {
+        console.log(
+          `[botto] reply in ${elapsed}ms chars=${answer.length}` +
+          ` agyElapsed=${run ? run.elapsedMs : 'unknown'}ms`
+        )
+      }
       respond(`${opts.from}: ${answer}`)
     } catch (error) {
-      console.error('Botto conversation failed:', error)
+      console.error(`[botto] conversation failed after ${Date.now() - started}ms:`, error)
     } finally {
       this.inFlight = false
     }

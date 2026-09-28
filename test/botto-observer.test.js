@@ -14,7 +14,12 @@ function setup(lines = [], soul) {
     run(prompt, options) { calls.push({ prompt, options }); return Promise.resolve('A conversational reply') }
   }
   const module = { exports: {} }
-  vm.runInNewContext(source, { module, console: { error() {} }, require(id) {
+  const logs = []
+  const errors = []
+  vm.runInNewContext(source, { module, console: {
+    log: (...args) => logs.push(args.join(' ')),
+    error: (...args) => errors.push(args.join(' '))
+  }, require(id) {
     if (id === 'lodash') return { includes: (array, value) => array.includes(value) }
     if (id === './observer.js') return Observer
     if (id === '../util/messageCache.js') return { get: async (channel, count) => {
@@ -24,7 +29,7 @@ function setup(lines = [], soul) {
     if (id === '../config.js') return { ai: { model: 'gemini-3.8-flash-high', soul } }
     throw new Error(`Unexpected require ${id}`)
   } })
-  return { observer: new module.exports(), calls }
+  return { observer: new module.exports(), calls, logs, errors }
 }
 
 test('name matching accepts punctuation and rejects substrings', () => {
@@ -86,4 +91,50 @@ test('only one request runs at once and failed requests release the slot', async
   observer.ai.run = () => Promise.reject(new Error('offline'))
   await observer.call({ from: 'a', to: '#room', text: 'botto' }, text => replies.push(text))
   assert.equal(observer.inFlight, false)
+})
+
+test('logs the trigger inputs before the call and the outcome afterwards', async () => {
+  const { observer, logs } = setup(['<alice>: botto?'])
+  observer.ai.run = () => {
+    observer.ai.lastRun = {
+      ok: true, model: 'gemini-3.8-flash-high', timeout: 90000, elapsedMs: 7100,
+      signal: null, code: 0, killed: false, timedOut: false,
+      stdoutBytes: 84, stderrBytes: 0, stderr: '', promptChars: 700,
+      peakRssMb: 229, rssSamples: 1
+    }
+    return Promise.resolve('A reply')
+  }
+  await observer.call({ from: 'alice', to: '#room', text: 'botto?' }, () => {})
+  assert.match(logs[0], /^\[botto\] trigger from=alice to=#room lines=1 promptChars=\d+ model=gemini-3\.8-flash-high timeout=90000ms soulChars=0$/)
+  assert.match(logs[1], /^\[botto\] reply in \d+ms chars=7 agyElapsed=7100ms$/)
+})
+
+test('logs the failure reason when the AI layer falls back', async () => {
+  const { observer, errors } = setup(['<alice>: botto?'])
+  observer.ai.run = () => {
+    observer.ai.lastRun = {
+      ok: false, model: 'gemini-3.8-flash-high', timeout: 90000, elapsedMs: 380000,
+      signal: 'SIGKILL', code: null, killed: false, timedOut: false,
+      stdoutBytes: 0, stderrBytes: 0, stderr: '', promptChars: 700,
+      peakRssMb: 912, rssSamples: 25
+    }
+    return Promise.resolve('Stupid clanker fell asleep...')
+  }
+  let reply
+  await observer.call({ from: 'alice', to: '#room', text: 'botto?' }, text => { reply = text })
+  assert.equal(reply, 'alice: Stupid clanker fell asleep...')
+  assert.match(errors[0], /falling back after \d+ms: signal=SIGKILL code=none killed=false timedOut=false/)
+  assert.match(errors[0], /agyElapsed=380000ms timeout=90000ms peakRss=912MB/)
+})
+
+test('logs a skipped trigger while another reply is in flight', async () => {
+  const { observer, logs } = setup()
+  let release
+  observer.ai.run = () => new Promise(resolve => { release = resolve })
+  const first = observer.call({ from: 'a', to: '#room', text: 'botto' }, () => {})
+  await Promise.resolve()
+  await observer.call({ from: 'b', to: '#room', text: 'botto' }, () => {})
+  assert.ok(logs.some(line => line === '[botto] skipped, a reply is already in flight (from=b to=#room)'))
+  release('Hi')
+  await first
 })
